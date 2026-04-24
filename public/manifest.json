@@ -1,0 +1,13 @@
+{
+  "name": "DealFlash — Marketplace Québec",
+  "short_name": "DealFlash",
+  "description": "Le marketplace local du Québec pour acheter, vendre et réserver.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a1f4d",
+  "theme_color": "#0a1f4d",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "any", "type": "image/x-icon" }
+  ]
+}

@@ -3,8 +3,21 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Index from "./pages/Index.tsx";
-import NotFound from "./pages/NotFound.tsx";
+import { MainLayout } from "@/components/layout/MainLayout";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import Index from "./pages/Index";
+import Auth from "./pages/Auth";
+import Search from "./pages/Search";
+import ListingDetail from "./pages/ListingDetail";
+import CreateListing from "./pages/CreateListing";
+import Dashboard from "./pages/Dashboard";
+import MyListings from "./pages/MyListings";
+import MyBookings from "./pages/MyBookings";
+import Favorites from "./pages/Favorites";
+import Messages from "./pages/Messages";
+import Profile from "./pages/Profile";
+import Install from "./pages/Install";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
@@ -15,9 +28,22 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<Index />} />
+            <Route path="/recherche" element={<Search />} />
+            <Route path="/categorie/:slug" element={<Search />} />
+            <Route path="/annonce/:id" element={<ListingDetail />} />
+            <Route path="/installer" element={<Install />} />
+            <Route path="/vendre" element={<ProtectedRoute><CreateListing /></ProtectedRoute>} />
+            <Route path="/tableau-de-bord" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/mes-annonces" element={<ProtectedRoute><MyListings /></ProtectedRoute>} />
+            <Route path="/mes-reservations" element={<ProtectedRoute><MyBookings /></ProtectedRoute>} />
+            <Route path="/favoris" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
+            <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+            <Route path="/profil" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

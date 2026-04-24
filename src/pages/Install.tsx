@@ -1,0 +1,49 @@
+import { useEffect } from "react";
+import { Card } from "@/components/ui/card";
+import { Smartphone, Share, Plus, Download } from "lucide-react";
+
+export default function Install() {
+  useEffect(() => { document.title = "Installer DealFlash sur mobile"; }, []);
+
+  return (
+    <div className="container max-w-2xl py-12">
+      <div className="text-center mb-10">
+        <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl gradient-accent shadow-flash mb-4">
+          <Smartphone className="h-8 w-8 text-accent-foreground" />
+        </div>
+        <h1 className="text-3xl font-bold">Installer DealFlash sur votre mobile</h1>
+        <p className="text-muted-foreground mt-2">Accédez au marketplace en un clic, comme une vraie application.</p>
+      </div>
+
+      <Card className="p-6 mb-4">
+        <h2 className="font-semibold mb-3 flex items-center gap-2">📱 iPhone / iPad (Safari)</h2>
+        <ol className="space-y-3 text-sm">
+          <li className="flex gap-3"><span className="font-bold text-accent">1.</span><span>Ouvrez DealFlash dans <strong>Safari</strong> sur votre iPhone.</span></li>
+          <li className="flex gap-3"><span className="font-bold text-accent">2.</span><span>Touchez le bouton <Share className="inline h-4 w-4" /> <strong>Partager</strong> en bas de l'écran.</span></li>
+          <li className="flex gap-3"><span className="font-bold text-accent">3.</span><span>Sélectionnez <Plus className="inline h-4 w-4" /> <strong>« Sur l'écran d'accueil »</strong>.</span></li>
+          <li className="flex gap-3"><span className="font-bold text-accent">4.</span><span>Touchez <strong>Ajouter</strong>. L'icône DealFlash apparaîtra sur votre écran d'accueil.</span></li>
+        </ol>
+      </Card>
+
+      <Card className="p-6 mb-4">
+        <h2 className="font-semibold mb-3 flex items-center gap-2">🤖 Android (Chrome)</h2>
+        <ol className="space-y-3 text-sm">
+          <li className="flex gap-3"><span className="font-bold text-accent">1.</span><span>Ouvrez DealFlash dans <strong>Chrome</strong> sur votre téléphone Android.</span></li>
+          <li className="flex gap-3"><span className="font-bold text-accent">2.</span><span>Touchez le menu <strong>⋮</strong> en haut à droite.</span></li>
+          <li className="flex gap-3"><span className="font-bold text-accent">3.</span><span>Sélectionnez <Download className="inline h-4 w-4" /> <strong>« Installer l'application »</strong> ou <strong>« Ajouter à l'écran d'accueil »</strong>.</span></li>
+          <li className="flex gap-3"><span className="font-bold text-accent">4.</span><span>Confirmez. DealFlash sera ajouté comme une vraie application.</span></li>
+        </ol>
+      </Card>
+
+      <Card className="p-6 bg-secondary/50">
+        <h3 className="font-semibold mb-2">✨ Pourquoi installer ?</h3>
+        <ul className="text-sm text-muted-foreground space-y-1">
+          <li>• Lancement plus rapide depuis l'écran d'accueil</li>
+          <li>• Mode plein écran sans la barre du navigateur</li>
+          <li>• Aucun téléchargement depuis l'App Store ou Google Play</li>
+          <li>• Mises à jour automatiques</li>
+        </ul>
+      </Card>
+    </div>
+  );
+}
