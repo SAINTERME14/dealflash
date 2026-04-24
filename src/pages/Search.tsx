@@ -3,7 +3,7 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { ListingCard, ListingCardData } from "@/components/listing/ListingCard";
 import { Input } from "@/components/ui/input";
-import { Search, Loader2 } from "lucide-react";
+import { Search as SearchIcon, Loader2 } from "lucide-react";
 
 export default function Search() {
   const params = useParams();
@@ -67,7 +67,7 @@ export default function Search() {
           {categoryName ?? "Toutes les annonces"}
         </h1>
         <form onSubmit={handleSubmit} className="relative max-w-xl">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
