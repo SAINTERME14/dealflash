@@ -19,6 +19,8 @@ import {
   CreditCard,
   Clock,
   ChevronDown,
+  Copy,
+  Check,
 } from "lucide-react";
 
 type LogRow = {
