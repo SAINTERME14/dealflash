@@ -19,6 +19,7 @@ import Profile from "./pages/Profile";
 import Install from "./pages/Install";
 import MobileHome from "./pages/MobileHome";
 import NotFound from "./pages/NotFound";
+import Featured from "./pages/Featured";
 
 const queryClient = new QueryClient();
 
