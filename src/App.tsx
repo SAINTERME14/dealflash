@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { AdminRoute } from "@/components/auth/AdminRoute";
+import AdminFeatured from "./pages/AdminFeatured";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Search from "./pages/Search";
@@ -46,6 +48,7 @@ const App = () => (
             <Route path="/favoris" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
             <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
             <Route path="/profil" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/admin/vedette" element={<AdminRoute><AdminFeatured /></AdminRoute>} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

@@ -1,7 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Plus, User, LogOut, Search, Sparkles } from "lucide-react";
+import { Heart, MessageCircle, Plus, User, LogOut, Search, Sparkles, ShieldCheck } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +13,7 @@ import {
 
 export function Header() {
   const { user, signOut } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -68,6 +70,17 @@ export function Header() {
                   <DropdownMenuItem asChild><Link to="/mes-annonces">Mes annonces</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link to="/mes-reservations">Mes réservations</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link to="/profil">Mon profil</Link></DropdownMenuItem>
+                  {isAdmin && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link to="/admin/vedette" className="flex items-center">
+                          <ShieldCheck className="h-4 w-4 mr-2 text-accent" />
+                          Admin · Vedette
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
                     <LogOut className="h-4 w-4 mr-2" /> Se déconnecter
