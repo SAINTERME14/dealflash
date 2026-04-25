@@ -17,6 +17,7 @@ import Favorites from "./pages/Favorites";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
 import Install from "./pages/Install";
+import MobileHome from "./pages/MobileHome";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/categorie/:slug" element={<Search />} />
             <Route path="/annonce/:id" element={<ListingDetail />} />
             <Route path="/installer" element={<Install />} />
+            <Route path="/app" element={<MobileHome />} />
             <Route path="/vendre" element={<ProtectedRoute><CreateListing /></ProtectedRoute>} />
             <Route path="/tableau-de-bord" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/mes-annonces" element={<ProtectedRoute><MyListings /></ProtectedRoute>} />
