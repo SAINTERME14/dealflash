@@ -19,7 +19,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Loader2, Mail, Trash2, UserPlus } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Loader2, Lock, Mail, StickyNote, Trash2, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 
 type ApplicationStatus = "new" | "contacted" | "approved" | "rejected";
@@ -108,6 +118,22 @@ export default function AdminSellerApplications() {
     toast.success("Demande supprimée");
   };
 
+  const saveNotes = async (id: string, notes: string) => {
+    const trimmed = notes.trim();
+    const value = trimmed.length === 0 ? null : trimmed.slice(0, 2000);
+    const { error } = await supabase
+      .from("seller_applications")
+      .update({ notes: value })
+      .eq("id", id);
+    if (error) {
+      toast.error("Enregistrement impossible");
+      return false;
+    }
+    setApps((prev) => prev.map((a) => (a.id === id ? { ...a, notes: value } : a)));
+    toast.success("Notes internes enregistrées");
+    return true;
+  };
+
   const filtered = filter === "all" ? apps : apps.filter((a) => a.status === filter);
   const counts = apps.reduce(
     (acc, a) => {
@@ -178,6 +204,7 @@ export default function AdminSellerApplications() {
                       <TableHead>Courriel</TableHead>
                       <TableHead>Type</TableHead>
                       <TableHead>Statut</TableHead>
+                      <TableHead>Notes</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -224,6 +251,9 @@ export default function AdminSellerApplications() {
                             </SelectContent>
                           </Select>
                         </TableCell>
+                        <TableCell>
+                          <NotesCell app={app} onSave={saveNotes} />
+                        </TableCell>
                         <TableCell className="text-right">
                           <Button
                             variant="ghost"
@@ -244,5 +274,89 @@ export default function AdminSellerApplications() {
         </Card>
       </div>
     </AdminLayout>
+  );
+}
+
+function NotesCell({
+  app,
+  onSave,
+}: {
+  app: Application;
+  onSave: (id: string, notes: string) => Promise<boolean>;
+}) {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(app.notes ?? "");
+  const [saving, setSaving] = useState(false);
+  const hasNotes = !!app.notes && app.notes.trim().length > 0;
+
+  const handleOpenChange = (next: boolean) => {
+    if (next) setValue(app.notes ?? "");
+    setOpen(next);
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    const ok = await onSave(app.id, value);
+    setSaving(false);
+    if (ok) setOpen(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogTrigger asChild>
+        <Button
+          variant={hasNotes ? "secondary" : "ghost"}
+          size="sm"
+          className="h-8 gap-1.5 max-w-[220px]"
+        >
+          <StickyNote className="h-3.5 w-3.5 shrink-0" />
+          {hasNotes ? (
+            <span className="truncate text-xs">{app.notes}</span>
+          ) : (
+            <span className="text-xs text-muted-foreground">Ajouter</span>
+          )}
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <StickyNote className="h-4 w-4" />
+            Notes internes — {app.name}
+          </DialogTitle>
+          <DialogDescription className="flex items-center gap-1.5 text-xs">
+            <Lock className="h-3 w-3" />
+            Visible uniquement par l'équipe DealFlash. Le demandeur ne verra jamais ce contenu.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-2">
+          <Textarea
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder="Ex. : déjà contacté par téléphone, profil intéressant pour B2C…"
+            rows={6}
+            maxLength={2000}
+            disabled={saving}
+          />
+          <p className="text-xs text-muted-foreground text-right">
+            {value.length} / 2000
+          </p>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)} disabled={saving}>
+            Annuler
+          </Button>
+          <Button onClick={handleSave} disabled={saving}>
+            {saving ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Enregistrement…
+              </>
+            ) : (
+              "Enregistrer"
+            )}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
