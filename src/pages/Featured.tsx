@@ -38,14 +38,18 @@ export default function Featured() {
   useEffect(() => {
     (async () => {
       setLoading(true);
+      const nowIso = new Date().toISOString();
       const [catsRes, listRes] = await Promise.all([
         supabase.from("categories").select("id, slug, name").eq("is_active", true).order("display_order"),
         supabase
           .from("listings")
           .select(
-            "id, title, price, currency, city, images, allows_booking, is_featured, original_price, discount_percent, latitude, longitude, category_id, categories(name)"
+            "id, title, price, currency, city, images, allows_booking, is_featured, featured_until, original_price, discount_percent, latitude, longitude, category_id, categories(name)"
           )
           .eq("status", "active")
+          // Exclude expired boosts: keep rows where featured_until is null OR still in the future,
+          // OR where the row qualifies via discount only (is_featured=false handled by the OR below).
+          .or(`featured_until.is.null,featured_until.gt.${nowIso}`)
           .or("is_featured.eq.true,discount_percent.gte.10")
           .order("is_featured", { ascending: false })
           .order("featured_priority", { ascending: false })
@@ -54,11 +58,22 @@ export default function Featured() {
       ]);
       if (catsRes.data) setCategories(catsRes.data);
       if (listRes.data) {
+        const now = Date.now();
         setListings(
-          listRes.data.map((l) => {
-            const { categories, ...rest } = l as typeof l & { categories: { name: string } | null };
-            return { ...rest, category_name: categories?.name } as Row;
-          })
+          listRes.data
+            .map((l) => {
+              const { categories, ...rest } = l as typeof l & { categories: { name: string } | null };
+              const expired =
+                rest.featured_until && new Date(rest.featured_until).getTime() <= now;
+              return {
+                ...rest,
+                // Defensive: strip the boost flag client-side too if expired.
+                is_featured: expired ? false : rest.is_featured,
+                category_name: categories?.name,
+              } as Row;
+            })
+            // Only keep rows that still qualify: boosted (non-expired) OR discount ≥ 10%.
+            .filter((l) => l.is_featured || (l.discount_percent ?? 0) >= 10)
         );
       }
       setLoading(false);

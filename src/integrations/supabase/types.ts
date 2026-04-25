@@ -640,6 +640,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      expire_featured_listings: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

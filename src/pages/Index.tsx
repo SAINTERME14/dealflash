@@ -44,15 +44,21 @@ export default function Index() {
 
       const { data: listings } = await supabase
         .from("listings")
-        .select("id, title, price, currency, city, images, allows_booking, is_featured, original_price, discount_percent, categories(name)")
+        .select("id, title, price, currency, city, images, allows_booking, is_featured, featured_until, original_price, discount_percent, categories(name)")
         .eq("status", "active")
         .order("created_at", { ascending: false })
         .limit(8);
       if (listings) {
+        const now = Date.now();
         setRecent(
           listings.map((l) => {
-            const { categories, ...rest } = l as typeof l & { categories: { name: string } | null };
-            return { ...rest, category_name: categories?.name };
+            const { categories, featured_until, ...rest } = l as typeof l & { categories: { name: string } | null };
+            const expired = featured_until && new Date(featured_until).getTime() <= now;
+            return {
+              ...rest,
+              is_featured: expired ? false : rest.is_featured,
+              category_name: categories?.name,
+            };
           })
         );
       }
