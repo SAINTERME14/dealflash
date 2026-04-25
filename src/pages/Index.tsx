@@ -44,7 +44,7 @@ export default function Index() {
 
       const { data: listings } = await supabase
         .from("listings")
-        .select("id, title, price, currency, city, images, allows_booking, categories(name)")
+        .select("id, title, price, currency, city, images, allows_booking, is_featured, original_price, discount_percent, categories(name)")
         .eq("status", "active")
         .order("created_at", { ascending: false })
         .limit(8);
