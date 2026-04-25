@@ -13,6 +13,7 @@ import AdminUsers from "./pages/AdminUsers";
 import AdminTickets from "./pages/AdminTickets";
 import AdminAuditLog from "./pages/AdminAuditLog";
 import AdminSellerApplications from "./pages/AdminSellerApplications";
+import AdminSellerApplicationDetail from "./pages/AdminSellerApplicationDetail";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Search from "./pages/Search";
@@ -60,6 +61,7 @@ const App = () => (
             <Route path="/admin/tickets" element={<AdminRoute><AdminTickets /></AdminRoute>} />
             <Route path="/admin/journal" element={<AdminRoute><AdminAuditLog /></AdminRoute>} />
             <Route path="/admin/demandes-vendeurs" element={<SellerNotesRoute><AdminSellerApplications /></SellerNotesRoute>} />
+            <Route path="/admin/demandes-vendeurs/:id" element={<SellerNotesRoute><AdminSellerApplicationDetail /></SellerNotesRoute>} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
