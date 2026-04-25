@@ -29,8 +29,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Lock, Mail, StickyNote, Trash2, UserPlus } from "lucide-react";
+import { Loader2, Lock, Mail, ShieldCheck, StickyNote, Trash2, UserPlus } from "lucide-react";
 import { toast } from "sonner";
+import { useCanManageSellerNotes } from "@/hooks/useCanManageSellerNotes";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 
 type ApplicationStatus = "new" | "contacted" | "approved" | "rejected";
 type ListingType = "product" | "vehicle" | "rental" | "hotel" | "service";
@@ -68,6 +70,8 @@ const STATUS_VARIANTS: Record<ApplicationStatus, "default" | "secondary" | "outl
 };
 
 export default function AdminSellerApplications() {
+  const { canManage } = useCanManageSellerNotes();
+  const { isAdmin } = useIsAdmin();
   const [apps, setApps] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<ApplicationStatus | "all">("all");
@@ -154,6 +158,11 @@ export default function AdminSellerApplications() {
           <p className="text-muted-foreground text-sm mt-1">
             Soumissions du formulaire « Devenir vendeur » de la page d'accueil.
           </p>
+          <div className="mt-3 inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-muted text-muted-foreground">
+            <ShieldCheck className="h-3 w-3" />
+            Votre rôle : <span className="font-medium text-foreground">{isAdmin ? "Administrateur" : "Vendeur professionnel"}</span>
+            {!isAdmin && <span>· suppression réservée aux admins</span>}
+          </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -252,17 +261,22 @@ export default function AdminSellerApplications() {
                           </Select>
                         </TableCell>
                         <TableCell>
-                          <NotesCell app={app} onSave={saveNotes} />
+                          <NotesCell app={app} onSave={saveNotes} canEdit={canManage} />
                         </TableCell>
                         <TableCell className="text-right">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => remove(app.id)}
-                            className="h-8 w-8 text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          {isAdmin ? (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => remove(app.id)}
+                              className="h-8 w-8 text-destructive"
+                              title="Supprimer"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">—</span>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -280,9 +294,11 @@ export default function AdminSellerApplications() {
 function NotesCell({
   app,
   onSave,
+  canEdit,
 }: {
   app: Application;
   onSave: (id: string, notes: string) => Promise<boolean>;
+  canEdit: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(app.notes ?? "");
@@ -295,11 +311,36 @@ function NotesCell({
   };
 
   const handleSave = async () => {
+    if (!canEdit) {
+      toast.error("Vous n'avez pas l'autorisation de modifier les notes.");
+      return;
+    }
     setSaving(true);
     const ok = await onSave(app.id, value);
     setSaving(false);
     if (ok) setOpen(false);
   };
+
+  // Read-only state for users without permission
+  if (!canEdit) {
+    if (!hasNotes) {
+      return (
+        <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+          <Lock className="h-3 w-3" />
+          Lecture seule
+        </span>
+      );
+    }
+    return (
+      <span
+        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground max-w-[220px]"
+        title={app.notes ?? ""}
+      >
+        <Lock className="h-3 w-3 shrink-0" />
+        <span className="truncate">{app.notes}</span>
+      </span>
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -325,7 +366,7 @@ function NotesCell({
           </DialogTitle>
           <DialogDescription className="flex items-center gap-1.5 text-xs">
             <Lock className="h-3 w-3" />
-            Visible uniquement par l'équipe DealFlash. Le demandeur ne verra jamais ce contenu.
+            Visible uniquement par l'équipe DealFlash autorisée. Le demandeur ne verra jamais ce contenu.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-2">

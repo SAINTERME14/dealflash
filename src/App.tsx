@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { AdminRoute } from "@/components/auth/AdminRoute";
+import { SellerNotesRoute } from "@/components/auth/SellerNotesRoute";
 import AdminFeatured from "./pages/AdminFeatured";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/AdminUsers";
@@ -58,7 +59,7 @@ const App = () => (
             <Route path="/admin/utilisateurs" element={<AdminRoute><AdminUsers /></AdminRoute>} />
             <Route path="/admin/tickets" element={<AdminRoute><AdminTickets /></AdminRoute>} />
             <Route path="/admin/journal" element={<AdminRoute><AdminAuditLog /></AdminRoute>} />
-            <Route path="/admin/demandes-vendeurs" element={<AdminRoute><AdminSellerApplications /></AdminRoute>} />
+            <Route path="/admin/demandes-vendeurs" element={<SellerNotesRoute><AdminSellerApplications /></SellerNotesRoute>} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

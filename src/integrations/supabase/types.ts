@@ -715,6 +715,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_manage_seller_notes: { Args: { _user_id: string }; Returns: boolean }
       expire_featured_listings: { Args: never; Returns: number }
       has_role: {
         Args: {
