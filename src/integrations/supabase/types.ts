@@ -563,6 +563,39 @@ export type Database = {
         }
         Relationships: []
       }
+      seller_applications: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          listing_type: Database["public"]["Enums"]["listing_type"]
+          name: string
+          notes: string | null
+          status: Database["public"]["Enums"]["seller_application_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          listing_type: Database["public"]["Enums"]["listing_type"]
+          name: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["seller_application_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          listing_type?: Database["public"]["Enums"]["listing_type"]
+          name?: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["seller_application_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       tickets: {
         Row: {
           appointment_id: string | null
@@ -708,6 +741,7 @@ export type Database = {
         | "no_show"
       listing_status: "draft" | "active" | "paused" | "sold" | "archived"
       listing_type: "product" | "vehicle" | "rental" | "hotel" | "service"
+      seller_application_status: "new" | "contacted" | "approved" | "rejected"
       ticket_status:
         | "pending"
         | "paid"
@@ -860,6 +894,7 @@ export const Constants = {
       ],
       listing_status: ["draft", "active", "paused", "sold", "archived"],
       listing_type: ["product", "vehicle", "rental", "hotel", "service"],
+      seller_application_status: ["new", "contacted", "approved", "rejected"],
       ticket_status: [
         "pending",
         "paid",
