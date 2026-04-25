@@ -10,6 +10,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { fr } from "date-fns/locale";
 import { Loader2, Check, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
+import { TicketCheckout } from "./TicketCheckout";
+import { QRCodeSVG } from "qrcode.react";
 
 interface Slot {
   id: string;
@@ -35,16 +37,17 @@ export function BookingDialog({ open, onOpenChange, listing }: Props) {
   const [slots, setSlots] = useState<Slot[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
   const [loading, setLoading] = useState(false);
-  const [confirmCode, setConfirmCode] = useState<string>("");
+  const [appointmentId, setAppointmentId] = useState<string | null>(null);
+  const [ticket, setTicket] = useState<{ confirmation_code: string; qr_code: string } | null>(null);
+  const [polling, setPolling] = useState(false);
   const [form, setForm] = useState({ first_name: "", last_name: "", phone: "", email: "", message: "" });
 
   useEffect(() => {
     if (!open) {
-      setStep(1); setDate(undefined); setSelectedSlot(null); setConfirmCode("");
+      setStep(1); setDate(undefined); setSelectedSlot(null);
+      setAppointmentId(null); setTicket(null); setPolling(false);
     } else if (user) {
-      // prefill email from auth
       setForm((f) => ({ ...f, email: user.email ?? "" }));
-      // load profile for prefill
       supabase.from("profiles").select("display_name, phone").eq("user_id", user.id).maybeSingle()
         .then(({ data }) => {
           if (data) {
@@ -60,7 +63,6 @@ export function BookingDialog({ open, onOpenChange, listing }: Props) {
     }
   }, [open, user]);
 
-  // Load available slots when date changes
   useEffect(() => {
     if (!date) { setSlots([]); return; }
     const dateStr = date.toISOString().slice(0, 10);
@@ -73,43 +75,61 @@ export function BookingDialog({ open, onOpenChange, listing }: Props) {
         .eq("is_available", true)
         .order("start_time");
 
-      // filter out slots already booked (confirmed or pending)
-      const slotIds = (data ?? []).map((s) => `${s.slot_date}-${s.start_time}`);
       const { data: booked } = await supabase
-        .from("bookings")
-        .select("slot_date, start_time")
+        .from("appointments")
+        .select("requested_date, requested_start_time")
         .eq("listing_id", listing.id)
-        .eq("slot_date", dateStr)
-        .in("status", ["pending", "confirmed"]);
-      const bookedKeys = new Set((booked ?? []).map((b) => `${b.slot_date}-${b.start_time}`));
+        .eq("requested_date", dateStr)
+        .in("status", ["requested", "accepted", "paid"]);
+      const bookedKeys = new Set((booked ?? []).map((b: any) => `${b.requested_date}-${b.requested_start_time}`));
       setSlots((data ?? []).filter((s) => !bookedKeys.has(`${s.slot_date}-${s.start_time}`)));
     })();
   }, [date, listing.id]);
 
-  const handleConfirm = async () => {
+  // Poll for ticket creation after payment
+  useEffect(() => {
+    if (!polling || !appointmentId) return;
+    const t = setInterval(async () => {
+      const { data } = await supabase
+        .from("appointments")
+        .select("ticket_id, tickets:ticket_id(confirmation_code, qr_code)")
+        .eq("id", appointmentId)
+        .maybeSingle();
+      const tk = (data as any)?.tickets;
+      if (tk) {
+        setTicket(tk);
+        setStep(5);
+        setPolling(false);
+      }
+    }, 2000);
+    return () => clearInterval(t);
+  }, [polling, appointmentId]);
+
+  const handleCreateAppointment = async () => {
     if (!user || !selectedSlot) return;
     setLoading(true);
-    const { data, error } = await supabase.from("bookings").insert({
+    const { data, error } = await supabase.from("appointments").insert({
       listing_id: listing.id,
       buyer_id: user.id,
       seller_id: listing.seller_id,
-      slot_date: selectedSlot.slot_date,
-      start_time: selectedSlot.start_time,
-      end_time: selectedSlot.end_time,
+      requested_date: selectedSlot.slot_date,
+      requested_start_time: selectedSlot.start_time,
+      requested_end_time: selectedSlot.end_time,
       buyer_first_name: form.first_name,
       buyer_last_name: form.last_name,
       buyer_phone: form.phone,
       buyer_email: form.email,
       message: form.message || null,
-      status: 'pending',
-    }).select("confirmation_code").single();
+      status: 'requested',
+    }).select("id").single();
     setLoading(false);
     if (error) {
       toast.error("Erreur : " + error.message);
-    } else {
-      setConfirmCode(data.confirmation_code);
-      setStep(4);
+      return;
     }
+    setAppointmentId(data.id);
+    setStep(4);
+    setPolling(true);
   };
 
   return (
@@ -123,11 +143,10 @@ export function BookingDialog({ open, onOpenChange, listing }: Props) {
               </button>
             )}
             Réserver une visite
-            <span className="ml-auto text-sm font-normal text-muted-foreground">Étape {step}/4</span>
+            <span className="ml-auto text-sm font-normal text-muted-foreground">Étape {step}/5</span>
           </DialogTitle>
         </DialogHeader>
 
-        {/* Step 1 — date */}
         {step === 1 && (
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">Choisissez une date disponible</p>
@@ -147,7 +166,6 @@ export function BookingDialog({ open, onOpenChange, listing }: Props) {
           </div>
         )}
 
-        {/* Step 2 — slot */}
         {step === 2 && (
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
@@ -180,9 +198,8 @@ export function BookingDialog({ open, onOpenChange, listing }: Props) {
           </div>
         )}
 
-        {/* Step 3 — coordinates */}
         {step === 3 && (
-          <form onSubmit={(e) => { e.preventDefault(); handleConfirm(); }} className="space-y-3">
+          <form onSubmit={(e) => { e.preventDefault(); handleCreateAppointment(); }} className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="first_name">Prénom *</Label>
@@ -207,26 +224,47 @@ export function BookingDialog({ open, onOpenChange, listing }: Props) {
             </div>
             <Button type="submit" variant="hero" size="lg" className="w-full" disabled={loading}>
               {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-              Confirmer la réservation
+              Continuer vers le paiement
             </Button>
           </form>
         )}
 
-        {/* Step 4 — confirmation */}
-        {step === 4 && (
+        {step === 4 && appointmentId && (
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Payez le frais de réservation pour confirmer votre visite. Le paiement du bien se fait sur place.
+            </p>
+            <TicketCheckout
+              listingId={listing.id}
+              appointmentId={appointmentId}
+              kind="appointment"
+              buyer={form}
+              returnUrl={`${window.location.origin}/my-bookings?session_id={CHECKOUT_SESSION_ID}`}
+            />
+            {polling && (
+              <p className="text-xs text-center text-muted-foreground flex items-center justify-center gap-2">
+                <Loader2 className="h-3 w-3 animate-spin" />
+                En attente de confirmation du paiement...
+              </p>
+            )}
+          </div>
+        )}
+
+        {step === 5 && ticket && (
           <div className="text-center py-6 space-y-4">
             <div className="mx-auto h-16 w-16 rounded-full bg-success text-success-foreground flex items-center justify-center">
               <Check className="h-8 w-8" />
             </div>
             <div>
               <h3 className="font-bold text-lg">Réservation confirmée !</h3>
-              <p className="text-sm text-muted-foreground mt-1">
-                Votre code de confirmation
-              </p>
-              <p className="font-mono font-bold text-xl text-accent mt-2">{confirmCode}</p>
+              <p className="text-sm text-muted-foreground mt-1">Votre code de confirmation</p>
+              <p className="font-mono font-bold text-xl text-accent mt-2">{ticket.confirmation_code}</p>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Le vendeur recevra votre demande et vous contactera pour confirmer.
+            <div className="flex justify-center p-4 bg-white rounded-lg">
+              <QRCodeSVG value={ticket.qr_code} size={180} />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Présentez ce QR code au vendeur lors de votre visite.
             </p>
             <Button onClick={() => onOpenChange(false)} variant="default" size="lg" className="w-full">
               Fermer
