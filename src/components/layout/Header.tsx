@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Plus, User, LogOut, Search } from "lucide-react";
+import { Heart, MessageCircle, Plus, User, LogOut, Search, Sparkles } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,6 +40,12 @@ export function Header() {
         </Link>
 
         <nav className="flex items-center gap-1 sm:gap-2">
+          <Button asChild variant="ghost" size="sm" className="hidden md:inline-flex gap-1.5">
+            <Link to="/vedette" aria-label="En vedette">
+              <Sparkles className="h-4 w-4 text-accent" />
+              <span>Vedette</span>
+            </Link>
+          </Button>
           {user ? (
             <>
               <Button asChild variant="ghost" size="icon" className="hidden sm:inline-flex">

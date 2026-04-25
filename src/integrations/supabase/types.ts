@@ -344,11 +344,16 @@ export type Database = {
           created_at: string
           currency: string
           description: string
+          discount_percent: number | null
+          featured_priority: number
+          featured_until: string | null
           id: string
           images: string[]
+          is_featured: boolean
           latitude: number | null
           listing_type: Database["public"]["Enums"]["listing_type"]
           longitude: number | null
+          original_price: number | null
           postal_code: string | null
           price: number
           region: string | null
@@ -370,11 +375,16 @@ export type Database = {
           created_at?: string
           currency?: string
           description: string
+          discount_percent?: number | null
+          featured_priority?: number
+          featured_until?: string | null
           id?: string
           images?: string[]
+          is_featured?: boolean
           latitude?: number | null
           listing_type?: Database["public"]["Enums"]["listing_type"]
           longitude?: number | null
+          original_price?: number | null
           postal_code?: string | null
           price: number
           region?: string | null
@@ -396,11 +406,16 @@ export type Database = {
           created_at?: string
           currency?: string
           description?: string
+          discount_percent?: number | null
+          featured_priority?: number
+          featured_until?: string | null
           id?: string
           images?: string[]
+          is_featured?: boolean
           latitude?: number | null
           listing_type?: Database["public"]["Enums"]["listing_type"]
           longitude?: number | null
+          original_price?: number | null
           postal_code?: string | null
           price?: number
           region?: string | null
