@@ -9,10 +9,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Upload, X, LocateFixed, MapPin } from "lucide-react";
+import { Loader2, LocateFixed, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { useGeolocation } from "@/hooks/useGeolocation";
-import { validateUpload, getAcceptAttribute } from "@/lib/uploadValidation";
+import { BucketImageUploader } from "@/components/upload/BucketImageUploader";
 
 interface Category { id: string; name: string; }
 
@@ -21,7 +21,7 @@ export default function CreateListing() {
   const { user } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  
   const [images, setImages] = useState<string[]>([]);
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const { request: requestGeo, loading: geoLoading } = useGeolocation();
@@ -52,34 +52,6 @@ export default function CreateListing() {
       .then(({ data }) => setCategories(data ?? []));
   }, []);
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || !user) return;
-    setUploading(true);
-    const uploaded: string[] = [];
-    for (const file of Array.from(e.target.files).slice(0, 8 - images.length)) {
-      const check = validateUpload("listings", file);
-      if (!check.ok) {
-        toast.error(check.error!);
-        continue;
-      }
-      const ext = file.name.split('.').pop();
-      const path = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error } = await supabase.storage.from("listings").upload(path, file, {
-        contentType: file.type,
-      });
-      if (error) {
-        toast.error(`Erreur upload : ${error.message}`);
-        continue;
-      }
-      const { data } = supabase.storage.from("listings").getPublicUrl(path);
-      uploaded.push(data.publicUrl);
-    }
-    setImages([...images, ...uploaded]);
-    setUploading(false);
-    e.target.value = "";
-  };
-
-  const removeImage = (idx: number) => setImages(images.filter((_, i) => i !== idx));
 
   const handleSubmit = async (e: React.FormEvent, status: 'draft' | 'active') => {
     e.preventDefault();
@@ -171,23 +143,15 @@ export default function CreateListing() {
 
         <Card className="p-6 space-y-4">
           <Label>Photos (jusqu'à 8)</Label>
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-            {images.map((url, i) => (
-              <div key={i} className="aspect-square relative rounded-lg overflow-hidden border border-border group">
-                <img src={url} alt="" className="w-full h-full object-cover" />
-                <button type="button" onClick={() => removeImage(i)} className="absolute top-1 right-1 h-6 w-6 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 transition-smooth" aria-label="Retirer">
-                  <X className="h-3 w-3" />
-                </button>
-              </div>
-            ))}
-            {images.length < 8 && (
-              <label className="aspect-square rounded-lg border-2 border-dashed border-border hover:border-primary flex flex-col items-center justify-center gap-1 cursor-pointer transition-smooth">
-                {uploading ? <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /> : <Upload className="h-5 w-5 text-muted-foreground" />}
-                <span className="text-xs text-muted-foreground">Ajouter</span>
-                <input type="file" accept={getAcceptAttribute("listings")} multiple className="hidden" onChange={handleUpload} disabled={uploading} />
-              </label>
-            )}
-          </div>
+          {user && (
+            <BucketImageUploader
+              bucket="listings"
+              userId={user.id}
+              value={images}
+              onChange={setImages}
+              maxFiles={8}
+            />
+          )}
         </Card>
 
         <Card className="p-6 space-y-4">
