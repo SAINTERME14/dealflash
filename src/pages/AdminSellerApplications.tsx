@@ -70,6 +70,8 @@ const STATUS_VARIANTS: Record<ApplicationStatus, "default" | "secondary" | "outl
 };
 
 export default function AdminSellerApplications() {
+  const { canManage } = useCanManageSellerNotes();
+  const { isAdmin } = useIsAdmin();
   const [apps, setApps] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<ApplicationStatus | "all">("all");
