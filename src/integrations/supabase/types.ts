@@ -239,6 +239,48 @@ export type Database = {
           },
         ]
       }
+      featured_audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          id: string
+          is_featured: boolean | null
+          listing_id: string
+          new_priority: number | null
+          new_until: string | null
+          old_priority: number | null
+          old_until: string | null
+          was_featured: boolean | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          is_featured?: boolean | null
+          listing_id: string
+          new_priority?: number | null
+          new_until?: string | null
+          old_priority?: number | null
+          old_until?: string | null
+          was_featured?: boolean | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          is_featured?: boolean | null
+          listing_id?: string
+          new_priority?: number | null
+          new_until?: string | null
+          old_priority?: number | null
+          old_until?: string | null
+          was_featured?: boolean | null
+        }
+        Relationships: []
+      }
       flash_sales: {
         Row: {
           created_at: string
