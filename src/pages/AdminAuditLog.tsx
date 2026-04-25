@@ -393,9 +393,33 @@ export default function AdminAuditLog() {
                               <CollapsibleContent asChild>
                                 <TableRow className="bg-muted/30 hover:bg-muted/30">
                                   <TableCell colSpan={5} className="p-0">
-                                    <pre className="text-[11px] font-mono p-4 overflow-x-auto whitespace-pre-wrap break-all text-muted-foreground">
-                                      {JSON.stringify(a.payload, null, 2)}
-                                    </pre>
+                                    <div className="relative group">
+                                      <pre className="text-[11px] font-mono p-4 pr-12 overflow-x-auto whitespace-pre-wrap break-all text-muted-foreground">
+                                        {JSON.stringify(a.payload, null, 2)}
+                                      </pre>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="absolute top-2 right-2 h-7 gap-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                                        onClick={async () => {
+                                          await navigator.clipboard.writeText(JSON.stringify(a.payload, null, 2));
+                                          setCopiedId(a.id);
+                                          setTimeout(() => setCopiedId(null), 1500);
+                                        }}
+                                      >
+                                        {copiedId === a.id ? (
+                                          <>
+                                            <Check className="h-3 w-3" />
+                                            Copié
+                                          </>
+                                        ) : (
+                                          <>
+                                            <Copy className="h-3 w-3" />
+                                            Copier
+                                          </>
+                                        )}
+                                      </Button>
+                                    </div>
                                   </TableCell>
                                 </TableRow>
                               </CollapsibleContent>
