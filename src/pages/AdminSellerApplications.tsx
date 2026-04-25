@@ -1,0 +1,248 @@
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { AdminLayout } from "@/components/admin/AdminLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Loader2, Mail, Trash2, UserPlus } from "lucide-react";
+import { toast } from "sonner";
+
+type ApplicationStatus = "new" | "contacted" | "approved" | "rejected";
+type ListingType = "product" | "vehicle" | "rental" | "hotel" | "service";
+
+interface Application {
+  id: string;
+  name: string;
+  email: string;
+  listing_type: ListingType;
+  status: ApplicationStatus;
+  notes: string | null;
+  created_at: string;
+}
+
+const TYPE_LABELS: Record<ListingType, string> = {
+  product: "Produit",
+  vehicle: "Véhicule",
+  rental: "Location",
+  hotel: "Hébergement",
+  service: "Service",
+};
+
+const STATUS_LABELS: Record<ApplicationStatus, string> = {
+  new: "Nouveau",
+  contacted: "Contacté",
+  approved: "Approuvé",
+  rejected: "Rejeté",
+};
+
+const STATUS_VARIANTS: Record<ApplicationStatus, "default" | "secondary" | "outline" | "destructive"> = {
+  new: "default",
+  contacted: "secondary",
+  approved: "outline",
+  rejected: "destructive",
+};
+
+export default function AdminSellerApplications() {
+  const [apps, setApps] = useState<Application[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<ApplicationStatus | "all">("all");
+
+  useEffect(() => {
+    document.title = "Admin · Demandes vendeurs | DealFlash";
+  }, []);
+
+  const load = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("seller_applications")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) {
+      toast.error("Erreur de chargement");
+    } else {
+      setApps((data ?? []) as Application[]);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const updateStatus = async (id: string, status: ApplicationStatus) => {
+    const { error } = await supabase
+      .from("seller_applications")
+      .update({ status })
+      .eq("id", id);
+    if (error) {
+      toast.error("Mise à jour impossible");
+      return;
+    }
+    setApps((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)));
+    toast.success("Statut mis à jour");
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("Supprimer cette demande ?")) return;
+    const { error } = await supabase.from("seller_applications").delete().eq("id", id);
+    if (error) {
+      toast.error("Suppression impossible");
+      return;
+    }
+    setApps((prev) => prev.filter((a) => a.id !== id));
+    toast.success("Demande supprimée");
+  };
+
+  const filtered = filter === "all" ? apps : apps.filter((a) => a.status === filter);
+  const counts = apps.reduce(
+    (acc, a) => {
+      acc[a.status] = (acc[a.status] ?? 0) + 1;
+      return acc;
+    },
+    { new: 0, contacted: 0, approved: 0, rejected: 0 } as Record<ApplicationStatus, number>
+  );
+
+  return (
+    <AdminLayout>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <UserPlus className="h-6 w-6" />
+            Demandes vendeurs
+          </h1>
+          <p className="text-muted-foreground text-sm mt-1">
+            Soumissions du formulaire « Devenir vendeur » de la page d'accueil.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {(["new", "contacted", "approved", "rejected"] as ApplicationStatus[]).map((s) => (
+            <Card key={s}>
+              <CardContent className="pt-6">
+                <div className="text-xs text-muted-foreground uppercase tracking-wide">
+                  {STATUS_LABELS[s]}
+                </div>
+                <div className="text-2xl font-bold mt-1">{counts[s]}</div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-base">Liste des demandes</CardTitle>
+            <Select value={filter} onValueChange={(v) => setFilter(v as ApplicationStatus | "all")}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Toutes</SelectItem>
+                <SelectItem value="new">Nouveau</SelectItem>
+                <SelectItem value="contacted">Contacté</SelectItem>
+                <SelectItem value="approved">Approuvé</SelectItem>
+                <SelectItem value="rejected">Rejeté</SelectItem>
+              </SelectContent>
+            </Select>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="flex justify-center py-12">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : filtered.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-12">
+                Aucune demande {filter !== "all" ? `« ${STATUS_LABELS[filter as ApplicationStatus]} »` : ""}.
+              </p>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Nom</TableHead>
+                      <TableHead>Courriel</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Statut</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filtered.map((app) => (
+                      <TableRow key={app.id}>
+                        <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                          {new Date(app.created_at).toLocaleDateString("fr-CA", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </TableCell>
+                        <TableCell className="font-medium">{app.name}</TableCell>
+                        <TableCell>
+                          <a
+                            href={`mailto:${app.email}`}
+                            className="text-primary hover:underline inline-flex items-center gap-1"
+                          >
+                            <Mail className="h-3 w-3" />
+                            {app.email}
+                          </a>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{TYPE_LABELS[app.listing_type]}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Select
+                            value={app.status}
+                            onValueChange={(v) => updateStatus(app.id, v as ApplicationStatus)}
+                          >
+                            <SelectTrigger className="w-[140px] h-8">
+                              <SelectValue>
+                                <Badge variant={STATUS_VARIANTS[app.status]} className="text-[10px]">
+                                  {STATUS_LABELS[app.status]}
+                                </Badge>
+                              </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="new">Nouveau</SelectItem>
+                              <SelectItem value="contacted">Contacté</SelectItem>
+                              <SelectItem value="approved">Approuvé</SelectItem>
+                              <SelectItem value="rejected">Rejeté</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => remove(app.id)}
+                            className="h-8 w-8 text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </AdminLayout>
+  );
+}
