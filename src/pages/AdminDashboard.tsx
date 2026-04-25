@@ -184,6 +184,7 @@ export default function AdminDashboard() {
                     </Button>
                   </div>
                 </CardContent>
+              </Card>
             </div>
 
             <AdminAlertsPanel />
