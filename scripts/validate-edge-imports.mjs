@@ -41,12 +41,21 @@ function walk(dir) {
   return out;
 }
 
-/** Extract every import/from specifier from a TS source. */
+/** Extract every static & dynamic import specifier from a JS/TS source. */
 function extractSpecifiers(src) {
-  const re = /(?:from|import)\s*["']([^"']+)["']/g;
   const out = [];
-  let m;
-  while ((m = re.exec(src)) !== null) out.push(m[1]);
+  // Strip line + block comments to avoid false positives
+  const clean = src
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/(^|[^:])\/\/[^\n]*/g, "$1");
+  // import ... from "x" / import "x" / export ... from "x"
+  const staticRe = /(?:from|import|export\s+\*\s+from|export\s+\{[^}]*\}\s+from)\s*["']([^"']+)["']/g;
+  // dynamic import("x")
+  const dynRe = /\bimport\s*\(\s*["']([^"']+)["']\s*\)/g;
+  for (const re of [staticRe, dynRe]) {
+    let m;
+    while ((m = re.exec(clean)) !== null) out.push(m[1]);
+  }
   return out;
 }
 
