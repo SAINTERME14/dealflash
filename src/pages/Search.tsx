@@ -1,18 +1,35 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { ListingCard, ListingCardData } from "@/components/listing/ListingCard";
+import { ListingsMap, MapListing } from "@/components/map/ListingsMap";
 import { Input } from "@/components/ui/input";
-import { Search as SearchIcon, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Search as SearchIcon, Loader2, MapPin, LocateFixed, X } from "lucide-react";
+import { useGeolocation, haversineKm } from "@/hooks/useGeolocation";
+import { toast } from "sonner";
+
+type Row = ListingCardData & {
+  latitude: number | null;
+  longitude: number | null;
+  distanceKm?: number;
+};
 
 export default function Search() {
   const params = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const categorySlug = params.slug;
-  const [listings, setListings] = useState<ListingCardData[]>([]);
+  const [listings, setListings] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [categoryName, setCategoryName] = useState<string | null>(null);
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
+  const [radiusKm, setRadiusKm] = useState<number>(25);
+  const [nearbyOnly, setNearbyOnly] = useState(false);
+  const [view, setView] = useState<"list" | "map">("list");
+
+  const { position, loading: geoLoading, error: geoError, request, clear } = useGeolocation();
 
   useEffect(() => {
     document.title = categoryName
@@ -40,17 +57,17 @@ export default function Search() {
 
       let req = supabase
         .from("listings")
-        .select("id, title, price, currency, city, images, allows_booking")
+        .select("id, title, price, currency, city, images, allows_booking, latitude, longitude")
         .eq("status", "active")
         .order("created_at", { ascending: false })
-        .limit(48);
+        .limit(96);
 
       if (categoryId) req = req.eq("category_id", categoryId);
       const q = searchParams.get("q");
       if (q) req = req.ilike("title", `%${q}%`);
 
       const { data } = await req;
-      setListings(data || []);
+      setListings((data as Row[]) || []);
       setLoading(false);
     })();
   }, [categorySlug, searchParams]);
@@ -60,13 +77,51 @@ export default function Search() {
     setSearchParams(query ? { q: query } : {});
   };
 
+  const requestLocation = async () => {
+    try {
+      await request();
+      setNearbyOnly(true);
+      toast.success("Position obtenue");
+    } catch {
+      // error message handled by hook state
+    }
+  };
+
+  // Compute distance + apply nearby filter + sort
+  const displayed = useMemo(() => {
+    let rows = listings.map((l) => {
+      if (position && l.latitude != null && l.longitude != null) {
+        return { ...l, distanceKm: haversineKm(position, { lat: l.latitude, lng: l.longitude }) };
+      }
+      return l;
+    });
+    if (nearbyOnly && position) {
+      rows = rows.filter((l) => l.distanceKm != null && l.distanceKm <= radiusKm);
+      rows.sort((a, b) => (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity));
+    }
+    return rows;
+  }, [listings, position, nearbyOnly, radiusKm]);
+
+  const mapListings: MapListing[] = displayed
+    .filter((l) => l.latitude != null && l.longitude != null)
+    .map((l) => ({
+      id: l.id,
+      title: l.title,
+      price: l.price,
+      currency: l.currency,
+      city: l.city,
+      images: l.images,
+      latitude: l.latitude as number,
+      longitude: l.longitude as number,
+    }));
+
   return (
     <div className="container py-8">
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-4">
           {categoryName ?? "Toutes les annonces"}
         </h1>
-        <form onSubmit={handleSubmit} className="relative max-w-xl">
+        <form onSubmit={handleSubmit} className="relative max-w-xl mb-4">
           <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             value={query}
@@ -75,21 +130,127 @@ export default function Search() {
             className="pl-10"
           />
         </form>
+
+        {/* Geolocation controls */}
+        <div className="flex flex-col gap-3 p-4 rounded-xl bg-secondary/40 border border-border">
+          <div className="flex flex-wrap items-center gap-3">
+            {!position ? (
+              <Button
+                type="button"
+                onClick={requestLocation}
+                variant="default"
+                size="sm"
+                disabled={geoLoading}
+                className="gap-2"
+              >
+                {geoLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <LocateFixed className="h-4 w-4" />}
+                Utiliser ma position
+              </Button>
+            ) : (
+              <>
+                <div className="flex items-center gap-2 text-sm font-medium text-success">
+                  <MapPin className="h-4 w-4" />
+                  Position activée
+                </div>
+                <Button
+                  type="button"
+                  variant={nearbyOnly ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setNearbyOnly((v) => !v)}
+                >
+                  {nearbyOnly ? "Filtre actif" : "Filtrer à proximité"}
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => { clear(); setNearbyOnly(false); }}
+                  className="gap-1"
+                >
+                  <X className="h-3 w-3" /> Effacer
+                </Button>
+              </>
+            )}
+          </div>
+
+          {position && nearbyOnly && (
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-muted-foreground whitespace-nowrap">
+                Rayon : <span className="font-semibold text-foreground">{radiusKm} km</span>
+              </span>
+              <Slider
+                value={[radiusKm]}
+                onValueChange={(v) => setRadiusKm(v[0])}
+                min={1}
+                max={200}
+                step={1}
+                className="max-w-xs"
+              />
+            </div>
+          )}
+
+          {geoError && <p className="text-xs text-destructive">{geoError}</p>}
+        </div>
       </div>
 
-      {loading ? (
-        <div className="py-20 flex justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <Tabs value={view} onValueChange={(v) => setView(v as "list" | "map")} className="w-full">
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-sm text-muted-foreground">
+            {loading ? "Chargement…" : `${displayed.length} annonce${displayed.length > 1 ? "s" : ""}`}
+          </p>
+          <TabsList>
+            <TabsTrigger value="list">Liste</TabsTrigger>
+            <TabsTrigger value="map">Carte</TabsTrigger>
+          </TabsList>
         </div>
-      ) : listings.length === 0 ? (
-        <div className="py-20 text-center text-muted-foreground">
-          Aucune annonce trouvée.
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-          {listings.map((l) => <ListingCard key={l.id} listing={l} />)}
-        </div>
-      )}
+
+        <TabsContent value="list">
+          {loading ? (
+            <div className="py-20 flex justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : displayed.length === 0 ? (
+            <div className="py-20 text-center text-muted-foreground">
+              Aucune annonce trouvée.
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              {displayed.map((l) => (
+                <div key={l.id} className="relative">
+                  <ListingCard listing={l} />
+                  {l.distanceKm != null && (
+                    <span className="absolute top-2 right-2 z-10 px-2 py-1 rounded-full bg-background/95 text-xs font-semibold shadow-card flex items-center gap-1">
+                      <MapPin className="h-3 w-3 text-accent" />
+                      {l.distanceKm < 1
+                        ? `${Math.round(l.distanceKm * 1000)} m`
+                        : `${l.distanceKm.toFixed(1)} km`}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="map">
+          {loading ? (
+            <div className="py-20 flex justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : mapListings.length === 0 ? (
+            <div className="py-20 text-center text-muted-foreground">
+              Aucune annonce géolocalisée à afficher.
+            </div>
+          ) : (
+            <ListingsMap
+              listings={mapListings}
+              userPosition={position}
+              radiusKm={nearbyOnly ? radiusKm : undefined}
+              height="600px"
+            />
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
