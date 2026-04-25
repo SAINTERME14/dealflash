@@ -143,23 +143,15 @@ export default function CreateListing() {
 
         <Card className="p-6 space-y-4">
           <Label>Photos (jusqu'à 8)</Label>
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-            {images.map((url, i) => (
-              <div key={i} className="aspect-square relative rounded-lg overflow-hidden border border-border group">
-                <img src={url} alt="" className="w-full h-full object-cover" />
-                <button type="button" onClick={() => removeImage(i)} className="absolute top-1 right-1 h-6 w-6 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 transition-smooth" aria-label="Retirer">
-                  <X className="h-3 w-3" />
-                </button>
-              </div>
-            ))}
-            {images.length < 8 && (
-              <label className="aspect-square rounded-lg border-2 border-dashed border-border hover:border-primary flex flex-col items-center justify-center gap-1 cursor-pointer transition-smooth">
-                {uploading ? <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /> : <Upload className="h-5 w-5 text-muted-foreground" />}
-                <span className="text-xs text-muted-foreground">Ajouter</span>
-                <input type="file" accept={getAcceptAttribute("listings")} multiple className="hidden" onChange={handleUpload} disabled={uploading} />
-              </label>
-            )}
-          </div>
+          {user && (
+            <BucketImageUploader
+              bucket="listings"
+              userId={user.id}
+              value={images}
+              onChange={setImages}
+              maxFiles={8}
+            />
+          )}
         </Card>
 
         <Card className="p-6 space-y-4">
