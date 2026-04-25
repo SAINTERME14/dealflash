@@ -15,7 +15,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Loader2, Search, Sparkles } from "lucide-react";
+import { Loader2, Search, Sparkles, RefreshCw } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 type AdminListing = {
   id: string;
@@ -37,12 +45,26 @@ function toLocalDateTimeInput(iso: string | null): string {
   return new Date(d.getTime() - tz).toISOString().slice(0, 16);
 }
 
+function isExpired(iso: string | null): boolean {
+  if (!iso) return false;
+  return new Date(iso).getTime() <= Date.now();
+}
+
+function defaultRenewIso(days = 7): string {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  const tz = d.getTimezoneOffset() * 60000;
+  return new Date(d.getTime() - tz).toISOString().slice(0, 16);
+}
+
 export default function AdminFeatured() {
   const [listings, setListings] = useState<AdminListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<"all" | "featured">("all");
+  const [filter, setFilter] = useState<"all" | "featured" | "expired">("all");
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [renewTarget, setRenewTarget] = useState<AdminListing | null>(null);
+  const [renewDate, setRenewDate] = useState<string>(defaultRenewIso(7));
 
   async function load() {
     setLoading(true);
@@ -79,6 +101,7 @@ export default function AdminFeatured() {
     const q = search.trim().toLowerCase();
     return listings.filter((l) => {
       if (filter === "featured" && !l.is_featured) return false;
+      if (filter === "expired" && !isExpired(l.featured_until)) return false;
       if (!q) return true;
       return (
         l.title.toLowerCase().includes(q) ||
