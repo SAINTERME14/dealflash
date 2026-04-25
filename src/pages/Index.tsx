@@ -117,8 +117,97 @@ export default function Index() {
         </div>
       </section>
 
-      {/* CATEGORIES */}
+      {/* ADMIN QUICK ACCESS (admins only) */}
+      {isAdmin && (
+        <section className="container -mt-8 relative z-10">
+          <div className="rounded-2xl border border-primary/20 bg-card/95 backdrop-blur shadow-elevated p-5 md:p-6">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg gradient-primary text-primary-foreground">
+                  <ShieldCheck className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="font-bold text-base">Espace administrateur</h2>
+                    <Badge variant="secondary" className="text-[10px]">admin</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Accès rapide aux outils de gestion DealFlash.
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
+                <Button asChild size="sm" variant="default" className="gap-1.5">
+                  <Link to="/admin">
+                    <LayoutDashboard className="h-3.5 w-3.5" />
+                    Tableau de bord
+                  </Link>
+                </Button>
+                <Button asChild size="sm" variant="outline" className="gap-1.5">
+                  <Link to="/admin/users">
+                    <Users className="h-3.5 w-3.5" />
+                    Utilisateurs
+                  </Link>
+                </Button>
+                <Button asChild size="sm" variant="outline" className="gap-1.5">
+                  <Link to="/admin/tickets">
+                    <Ticket className="h-3.5 w-3.5" />
+                    Tickets
+                  </Link>
+                </Button>
+                <Button asChild size="sm" variant="outline" className="gap-1.5">
+                  <Link to="/admin/featured">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Vedettes
+                  </Link>
+                </Button>
+                <Button asChild size="sm" variant="outline" className="gap-1.5 col-span-2 sm:col-span-1">
+                  <Link to="/admin/journal">
+                    <History className="h-3.5 w-3.5" />
+                    Journal
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* SUMMARY — What is DealFlash */}
       <section className="container py-16">
+        <div className="max-w-3xl mx-auto text-center">
+          <Badge variant="secondary" className="mb-4">À propos</Badge>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            DealFlash, la marketplace locale du Québec
+          </h2>
+          <p className="text-muted-foreground text-lg leading-relaxed">
+            DealFlash réunit particuliers et commerçants autour d'une plateforme unique pour
+            <strong className="text-foreground"> acheter, vendre, louer et réserver</strong> près de chez vous.
+            Des autos aux logements en passant par les services et les ventes flash, tout se passe
+            en quelques clics avec paiements sécurisés et messagerie intégrée.
+          </p>
+          <div className="mt-6 flex flex-wrap justify-center gap-2 text-xs">
+            <Badge variant="outline">5 types d'annonces</Badge>
+            <Badge variant="outline">Paiement Stripe</Badge>
+            <Badge variant="outline">Réservation de visites</Badge>
+            <Badge variant="outline">Ventes flash</Badge>
+            <Badge variant="outline">Tickets QR</Badge>
+          </div>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Button asChild variant="default" size="lg" className="gap-2">
+              <Link to="/recherche">
+                Explorer les annonces <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg">
+              <Link to="/vendre">Devenir vendeur</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* CATEGORIES */}
+      <section className="container pb-16">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold">Explorer par catégorie</h2>
           <p className="text-muted-foreground mt-2">10 verticales pour trouver exactement ce qu'il vous faut</p>
