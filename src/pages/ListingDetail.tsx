@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, MapPin, Calendar, Heart, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { BookingDialog } from "@/components/booking/BookingDialog";
+import { ListingsMap } from "@/components/map/ListingsMap";
 import { toast } from "sonner";
 
 interface Listing {
@@ -18,6 +19,8 @@ interface Listing {
   city: string | null;
   region: string | null;
   address: string | null;
+  latitude: number | null;
+  longitude: number | null;
   images: string[];
   allows_booking: boolean;
   seller_id: string;
@@ -150,6 +153,31 @@ export default function ListingDetail() {
                     </div>
                   ))}
                 </dl>
+              </Card>
+            )}
+
+            {listing.latitude != null && listing.longitude != null && (
+              <Card className="p-6 mt-4">
+                <h2 className="font-semibold mb-3 flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-accent" /> Emplacement
+                </h2>
+                <ListingsMap
+                  listings={[{
+                    id: listing.id,
+                    title: listing.title,
+                    price: listing.price,
+                    currency: listing.currency,
+                    city: listing.city,
+                    images: listing.images,
+                    latitude: listing.latitude,
+                    longitude: listing.longitude,
+                  }]}
+                  height="320px"
+                  zoom={14}
+                />
+                {listing.address && (
+                  <p className="text-xs text-muted-foreground mt-3">{listing.address}</p>
+                )}
               </Card>
             )}
           </div>
