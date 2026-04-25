@@ -406,6 +406,17 @@ export default function AdminAuditLog() {
                       </span>
                     )}
                   </Button>
+                  <Button
+                    size="sm"
+                    variant="default"
+                    onClick={sendAlertsToSupport}
+                    disabled={filteredAlerts.length === 0}
+                    className="text-xs gap-1.5"
+                    title={`Télécharge le CSV et ouvre votre client mail vers ${SUPPORT_EMAIL}`}
+                  >
+                    <Mail className="h-3.5 w-3.5" />
+                    Envoyer au support
+                  </Button>
                 </div>
               </CardContent>
             </Card>
