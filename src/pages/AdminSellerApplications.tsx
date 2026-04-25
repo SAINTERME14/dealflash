@@ -19,7 +19,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Loader2, Mail, Trash2, UserPlus } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Loader2, Lock, Mail, StickyNote, Trash2, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 
 type ApplicationStatus = "new" | "contacted" | "approved" | "rejected";
@@ -108,6 +118,22 @@ export default function AdminSellerApplications() {
     toast.success("Demande supprimée");
   };
 
+  const saveNotes = async (id: string, notes: string) => {
+    const trimmed = notes.trim();
+    const value = trimmed.length === 0 ? null : trimmed.slice(0, 2000);
+    const { error } = await supabase
+      .from("seller_applications")
+      .update({ notes: value })
+      .eq("id", id);
+    if (error) {
+      toast.error("Enregistrement impossible");
+      return false;
+    }
+    setApps((prev) => prev.map((a) => (a.id === id ? { ...a, notes: value } : a)));
+    toast.success("Notes internes enregistrées");
+    return true;
+  };
+
   const filtered = filter === "all" ? apps : apps.filter((a) => a.status === filter);
   const counts = apps.reduce(
     (acc, a) => {
@@ -178,6 +204,7 @@ export default function AdminSellerApplications() {
                       <TableHead>Courriel</TableHead>
                       <TableHead>Type</TableHead>
                       <TableHead>Statut</TableHead>
+                      <TableHead>Notes</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -223,6 +250,9 @@ export default function AdminSellerApplications() {
                               <SelectItem value="rejected">Rejeté</SelectItem>
                             </SelectContent>
                           </Select>
+                        </TableCell>
+                        <TableCell>
+                          <NotesCell app={app} onSave={saveNotes} />
                         </TableCell>
                         <TableCell className="text-right">
                           <Button
