@@ -26,6 +26,7 @@ interface Category {
 
 export default function Index() {
   const navigate = useNavigate();
+  const { isAdmin } = useIsAdmin();
   const [categories, setCategories] = useState<Category[]>([]);
   const [recent, setRecent] = useState<ListingCardData[]>([]);
   const [search, setSearch] = useState("");
