@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Plus, User, LogOut, Search } from "lucide-react";
+import { Heart, MessageCircle, Plus, User, LogOut, Search, Sparkles } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
