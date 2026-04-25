@@ -231,6 +231,13 @@ export default function AdminFeatured() {
               >
                 En vedette
               </Button>
+              <Button
+                variant={filter === "expired" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilter("expired")}
+              >
+                Expirées
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -253,12 +260,15 @@ export default function AdminFeatured() {
                     <TableHead className="w-28">Prix</TableHead>
                     <TableHead className="w-32">Boost</TableHead>
                     <TableHead className="w-56">Expiration</TableHead>
-                    <TableHead className="w-28">Priorité</TableHead>
-                    <TableHead className="w-32 text-right">Action</TableHead>
+                    <TableHead className="w-24">Expiré</TableHead>
+                    <TableHead className="w-24">Priorité</TableHead>
+                    <TableHead className="w-44 text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filtered.map((row) => (
+                  {filtered.map((row) => {
+                    const expired = isExpired(row.featured_until);
+                    return (
                     <TableRow key={row.id}>
                       <TableCell>
                         <div className="font-medium">{row.title}</div>
@@ -297,6 +307,17 @@ export default function AdminFeatured() {
                         />
                       </TableCell>
                       <TableCell>
+                        {row.featured_until ? (
+                          expired ? (
+                            <Badge variant="destructive" className="text-[10px]">Expiré</Badge>
+                          ) : (
+                            <Badge className="text-[10px] bg-success text-success-foreground">Actif</Badge>
+                          )
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
                         <Input
                           type="number"
                           value={row.featured_priority}
@@ -309,20 +330,33 @@ export default function AdminFeatured() {
                         />
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button
-                          size="sm"
-                          onClick={() => saveRow(row)}
-                          disabled={savingId === row.id}
-                        >
-                          {savingId === row.id ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            "Enregistrer"
-                          )}
-                        </Button>
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => openRenew(row)}
+                            disabled={savingId === row.id}
+                            title="Repousser la date d'expiration"
+                          >
+                            <RefreshCw className="h-3.5 w-3.5 mr-1" />
+                            Renouveler
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => saveRow(row)}
+                            disabled={savingId === row.id}
+                          >
+                            {savingId === row.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              "Enregistrer"
+                            )}
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
-                  ))}
+                    );
+                  })}
                 </TableBody>
               </Table>
             )}
@@ -334,6 +368,44 @@ export default function AdminFeatured() {
           modifier ces champs (verrouillé côté base via les triggers de sécurité).
         </p>
       </div>
+
+      <Dialog open={!!renewTarget} onOpenChange={(open) => !open && setRenewTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Renouveler le boost</DialogTitle>
+            <DialogDescription>
+              {renewTarget?.title}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="flex flex-wrap gap-2">
+              <Button size="sm" variant="outline" onClick={() => setRenewDate(defaultRenewIso(1))}>+1 jour</Button>
+              <Button size="sm" variant="outline" onClick={() => setRenewDate(defaultRenewIso(7))}>+7 jours</Button>
+              <Button size="sm" variant="outline" onClick={() => setRenewDate(defaultRenewIso(14))}>+14 jours</Button>
+              <Button size="sm" variant="outline" onClick={() => setRenewDate(defaultRenewIso(30))}>+30 jours</Button>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="renew-date">Nouvelle date d'expiration</Label>
+              <Input
+                id="renew-date"
+                type="datetime-local"
+                value={renewDate}
+                onChange={(e) => setRenewDate(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRenewTarget(null)}>Annuler</Button>
+            <Button onClick={confirmRenew} disabled={savingId === renewTarget?.id}>
+              {savingId === renewTarget?.id ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "Confirmer"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
