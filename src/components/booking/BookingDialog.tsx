@@ -10,6 +10,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { fr } from "date-fns/locale";
 import { Loader2, Check, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
+import { TicketCheckout } from "./TicketCheckout";
+import { QRCodeSVG } from "qrcode.react";
 
 interface Slot {
   id: string;
