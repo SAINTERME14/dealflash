@@ -22,7 +22,10 @@ import {
   Copy,
   Check,
   Download,
+  Mail,
 } from "lucide-react";
+
+const SUPPORT_EMAIL = "saintermepartners@gmail.com";
 
 type LogRow = {
   id: string;
