@@ -563,6 +563,62 @@ export type Database = {
         }
         Relationships: []
       }
+      seller_application_audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_role: Database["public"]["Enums"]["app_role"] | null
+          application_id: string
+          created_at: string
+          id: string
+          new_status:
+            | Database["public"]["Enums"]["seller_application_status"]
+            | null
+          notes_changed: boolean
+          old_status:
+            | Database["public"]["Enums"]["seller_application_status"]
+            | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          actor_role?: Database["public"]["Enums"]["app_role"] | null
+          application_id: string
+          created_at?: string
+          id?: string
+          new_status?:
+            | Database["public"]["Enums"]["seller_application_status"]
+            | null
+          notes_changed?: boolean
+          old_status?:
+            | Database["public"]["Enums"]["seller_application_status"]
+            | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_role?: Database["public"]["Enums"]["app_role"] | null
+          application_id?: string
+          created_at?: string
+          id?: string
+          new_status?:
+            | Database["public"]["Enums"]["seller_application_status"]
+            | null
+          notes_changed?: boolean
+          old_status?:
+            | Database["public"]["Enums"]["seller_application_status"]
+            | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seller_application_audit_log_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "seller_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seller_applications: {
         Row: {
           created_at: string
@@ -717,6 +773,10 @@ export type Database = {
     Functions: {
       can_manage_seller_notes: { Args: { _user_id: string }; Returns: boolean }
       expire_featured_listings: { Args: never; Returns: number }
+      get_primary_role: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
