@@ -14,6 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
+      appointments: {
+        Row: {
+          buyer_email: string
+          buyer_first_name: string
+          buyer_id: string
+          buyer_last_name: string
+          buyer_phone: string
+          created_at: string
+          id: string
+          listing_id: string
+          message: string | null
+          requested_date: string
+          requested_end_time: string
+          requested_start_time: string
+          responded_at: string | null
+          seller_id: string
+          status: Database["public"]["Enums"]["appointment_status"]
+          ticket_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          buyer_email: string
+          buyer_first_name: string
+          buyer_id: string
+          buyer_last_name: string
+          buyer_phone: string
+          created_at?: string
+          id?: string
+          listing_id: string
+          message?: string | null
+          requested_date: string
+          requested_end_time: string
+          requested_start_time: string
+          responded_at?: string | null
+          seller_id: string
+          status?: Database["public"]["Enums"]["appointment_status"]
+          ticket_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          buyer_email?: string
+          buyer_first_name?: string
+          buyer_id?: string
+          buyer_last_name?: string
+          buyer_phone?: string
+          created_at?: string
+          id?: string
+          listing_id?: string
+          message?: string | null
+          requested_date?: string
+          requested_end_time?: string
+          requested_start_time?: string
+          responded_at?: string | null
+          seller_id?: string
+          status?: Database["public"]["Enums"]["appointment_status"]
+          ticket_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bookings: {
         Row: {
           buyer_email: string
@@ -89,7 +164,11 @@ export type Database = {
           is_active: boolean
           listing_type: Database["public"]["Enums"]["listing_type"]
           name: string
+          parent_id: string | null
           slug: string
+          ticket_fee_max: number | null
+          ticket_fee_type: string
+          ticket_fee_value: number
         }
         Insert: {
           created_at?: string
@@ -100,7 +179,11 @@ export type Database = {
           is_active?: boolean
           listing_type?: Database["public"]["Enums"]["listing_type"]
           name: string
+          parent_id?: string | null
           slug: string
+          ticket_fee_max?: number | null
+          ticket_fee_type?: string
+          ticket_fee_value?: number
         }
         Update: {
           created_at?: string
@@ -111,9 +194,21 @@ export type Database = {
           is_active?: boolean
           listing_type?: Database["public"]["Enums"]["listing_type"]
           name?: string
+          parent_id?: string | null
           slug?: string
+          ticket_fee_max?: number | null
+          ticket_fee_type?: string
+          ticket_fee_value?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       favorites: {
         Row: {
@@ -137,6 +232,62 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "favorites_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      flash_sales: {
+        Row: {
+          created_at: string
+          ends_at: string
+          flash_price: number
+          id: string
+          is_active: boolean
+          listing_id: string
+          regular_price: number
+          seller_id: string
+          starts_at: string
+          stock_limit: number | null
+          stock_sold: number
+          ticket_validity_hours: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          ends_at: string
+          flash_price: number
+          id?: string
+          is_active?: boolean
+          listing_id: string
+          regular_price: number
+          seller_id: string
+          starts_at?: string
+          stock_limit?: number | null
+          stock_sold?: number
+          ticket_validity_hours?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          ends_at?: string
+          flash_price?: number
+          id?: string
+          is_active?: boolean
+          listing_id?: string
+          regular_price?: number
+          seller_id?: string
+          starts_at?: string
+          stock_limit?: number | null
+          stock_sold?: number
+          ticket_validity_hours?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flash_sales_listing_id_fkey"
             columns: ["listing_id"]
             isOneToOne: false
             referencedRelation: "listings"
@@ -185,6 +336,7 @@ export type Database = {
       listings: {
         Row: {
           address: string | null
+          allows_appointment: boolean
           allows_booking: boolean
           attributes: Json
           category_id: string
@@ -203,12 +355,14 @@ export type Database = {
           seller_id: string
           slug: string | null
           status: Database["public"]["Enums"]["listing_status"]
+          subcategory_id: string | null
           title: string
           updated_at: string
           view_count: number
         }
         Insert: {
           address?: string | null
+          allows_appointment?: boolean
           allows_booking?: boolean
           attributes?: Json
           category_id: string
@@ -227,12 +381,14 @@ export type Database = {
           seller_id: string
           slug?: string | null
           status?: Database["public"]["Enums"]["listing_status"]
+          subcategory_id?: string | null
           title: string
           updated_at?: string
           view_count?: number
         }
         Update: {
           address?: string | null
+          allows_appointment?: boolean
           allows_booking?: boolean
           attributes?: Json
           category_id?: string
@@ -251,6 +407,7 @@ export type Database = {
           seller_id?: string
           slug?: string | null
           status?: Database["public"]["Enums"]["listing_status"]
+          subcategory_id?: string | null
           title?: string
           updated_at?: string
           view_count?: number
@@ -259,6 +416,13 @@ export type Database = {
           {
             foreignKeyName: "listings_category_id_fkey"
             columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "listings_subcategory_id_fkey"
+            columns: ["subcategory_id"]
             isOneToOne: false
             referencedRelation: "categories"
             referencedColumns: ["id"]
@@ -342,6 +506,99 @@ export type Database = {
         }
         Relationships: []
       }
+      tickets: {
+        Row: {
+          appointment_id: string | null
+          buyer_email: string
+          buyer_first_name: string
+          buyer_id: string
+          buyer_last_name: string
+          buyer_phone: string
+          confirmation_code: string
+          created_at: string
+          currency: string
+          expires_at: string
+          flash_price: number
+          flash_sale_id: string | null
+          id: string
+          listing_id: string
+          platform_fee: number
+          qr_code: string
+          seller_id: string
+          status: Database["public"]["Enums"]["ticket_status"]
+          stripe_payment_intent: string | null
+          stripe_session_id: string | null
+          total_paid: number
+          updated_at: string
+          validated_at: string | null
+        }
+        Insert: {
+          appointment_id?: string | null
+          buyer_email: string
+          buyer_first_name: string
+          buyer_id: string
+          buyer_last_name: string
+          buyer_phone: string
+          confirmation_code?: string
+          created_at?: string
+          currency?: string
+          expires_at: string
+          flash_price: number
+          flash_sale_id?: string | null
+          id?: string
+          listing_id: string
+          platform_fee: number
+          qr_code?: string
+          seller_id: string
+          status?: Database["public"]["Enums"]["ticket_status"]
+          stripe_payment_intent?: string | null
+          stripe_session_id?: string | null
+          total_paid: number
+          updated_at?: string
+          validated_at?: string | null
+        }
+        Update: {
+          appointment_id?: string | null
+          buyer_email?: string
+          buyer_first_name?: string
+          buyer_id?: string
+          buyer_last_name?: string
+          buyer_phone?: string
+          confirmation_code?: string
+          created_at?: string
+          currency?: string
+          expires_at?: string
+          flash_price?: number
+          flash_sale_id?: string | null
+          id?: string
+          listing_id?: string
+          platform_fee?: number
+          qr_code?: string
+          seller_id?: string
+          status?: Database["public"]["Enums"]["ticket_status"]
+          stripe_payment_intent?: string | null
+          stripe_session_id?: string | null
+          total_paid?: number
+          updated_at?: string
+          validated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tickets_flash_sale_id_fkey"
+            columns: ["flash_sale_id"]
+            isOneToOne: false
+            referencedRelation: "flash_sales"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -378,6 +635,13 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "vendeur_b2c" | "vendeur_c2c" | "acheteur"
+      appointment_status:
+        | "requested"
+        | "accepted"
+        | "rejected"
+        | "paid"
+        | "completed"
+        | "cancelled"
       booking_status:
         | "pending"
         | "confirmed"
@@ -386,6 +650,13 @@ export type Database = {
         | "no_show"
       listing_status: "draft" | "active" | "paused" | "sold" | "archived"
       listing_type: "product" | "vehicle" | "rental" | "hotel" | "service"
+      ticket_status:
+        | "pending"
+        | "paid"
+        | "validated"
+        | "expired"
+        | "refunded"
+        | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -514,6 +785,14 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "vendeur_b2c", "vendeur_c2c", "acheteur"],
+      appointment_status: [
+        "requested",
+        "accepted",
+        "rejected",
+        "paid",
+        "completed",
+        "cancelled",
+      ],
       booking_status: [
         "pending",
         "confirmed",
@@ -523,6 +802,14 @@ export const Constants = {
       ],
       listing_status: ["draft", "active", "paused", "sold", "archived"],
       listing_type: ["product", "vehicle", "rental", "hotel", "service"],
+      ticket_status: [
+        "pending",
+        "paid",
+        "validated",
+        "expired",
+        "refunded",
+        "cancelled",
+      ],
     },
   },
 } as const
