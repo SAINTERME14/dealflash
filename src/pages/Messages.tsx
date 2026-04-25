@@ -49,7 +49,12 @@ export default function Messages() {
       .order("created_at", { ascending: false });
 
     const map = new Map<string, Thread>();
-    for (const m of (data ?? []) as any[]) {
+    type RawMessage = {
+      id: string; content: string; sender_id: string; recipient_id: string;
+      listing_id: string | null; is_read: boolean; created_at: string;
+      listings: { title: string } | null;
+    };
+    for (const m of (data ?? []) as RawMessage[]) {
       const otherId = m.sender_id === user.id ? m.recipient_id : m.sender_id;
       const key = `${otherId}-${m.listing_id ?? 'none'}`;
       if (!map.has(key)) {
@@ -114,7 +119,7 @@ export default function Messages() {
       .on("postgres_changes", {
         event: "INSERT", schema: "public", table: "messages",
       }, (payload) => {
-        const m = payload.new as any;
+        const m = payload.new as Message & { recipient_id: string };
         const involves = (m.sender_id === user.id && m.recipient_id === active.otherId) ||
                          (m.sender_id === active.otherId && m.recipient_id === user.id);
         if (involves) setMessages((prev) => [...prev, m]);

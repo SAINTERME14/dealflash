@@ -135,9 +135,10 @@ Deno.serve(async (req) => {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (e: any) {
+  } catch (e) {
     console.error("create-ticket-checkout error:", e);
-    return new Response(JSON.stringify({ error: e.message || "Server error" }), {
+    const msg = e instanceof Error ? e.message : "Server error";
+    return new Response(JSON.stringify({ error: msg }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

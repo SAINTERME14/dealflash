@@ -1,8 +1,8 @@
-import { createClient } from "npm:@supabase/supabase-js@2";
+import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
 import { type StripeEnv, verifyWebhook } from "../_shared/stripe.ts";
 
-let _supabase: any = null;
-function getSupabase(): any {
+let _supabase: SupabaseClient | null = null;
+function getSupabase(): SupabaseClient {
   if (!_supabase) {
     _supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -12,7 +12,13 @@ function getSupabase(): any {
   return _supabase;
 }
 
-async function handleCheckoutCompleted(session: any) {
+type StripeSession = {
+  id: string;
+  payment_intent?: string | null;
+  metadata?: Record<string, string>;
+};
+
+async function handleCheckoutCompleted(session: StripeSession) {
   const m = session.metadata || {};
   if (!m.kind || !m.listing_id || !m.buyer_id) {
     console.error("checkout.session.completed missing metadata", m);
@@ -81,7 +87,7 @@ async function handleCheckoutCompleted(session: any) {
   console.log("Ticket created", ticket.id, ticket.confirmation_code);
 }
 
-async function handleRefund(charge: any) {
+async function handleRefund(charge: { payment_intent?: string | null }) {
   const supabase = getSupabase();
   const pi = charge.payment_intent;
   if (!pi) return;

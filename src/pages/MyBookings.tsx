@@ -22,7 +22,8 @@ interface Booking {
   listings: { id: string; title: string; images: string[] } | null;
 }
 
-const statusBadge: Record<string, { label: string; variant: any }> = {
+type BadgeVariant = "default" | "secondary" | "outline" | "destructive";
+const statusBadge: Record<string, { label: string; variant: BadgeVariant }> = {
   pending: { label: "En attente", variant: "secondary" },
   confirmed: { label: "Confirmée", variant: "default" },
   cancelled: { label: "Annulée", variant: "outline" },
@@ -44,15 +45,18 @@ export default function MyBookings() {
       supabase.from("bookings").select("*, listings(id, title, images)").eq("buyer_id", user.id).order("slot_date", { ascending: false }),
       supabase.from("bookings").select("*, listings(id, title, images)").eq("seller_id", user.id).order("slot_date", { ascending: false }),
     ]);
-    setAsBuyer((b.data ?? []) as any);
-    setAsSeller((s.data ?? []) as any);
+    setAsBuyer((b.data ?? []) as unknown as Booking[]);
+    setAsSeller((s.data ?? []) as unknown as Booking[]);
     setLoading(false);
   };
 
   useEffect(() => { document.title = "Mes réservations — DealFlash"; load(); }, [user]);
 
   const updateStatus = async (id: string, status: string) => {
-    const { error } = await supabase.from("bookings").update({ status: status as any }).eq("id", id);
+    const { error } = await supabase
+      .from("bookings")
+      .update({ status: status as Booking["status"] })
+      .eq("id", id);
     if (error) toast.error(error.message);
     else { toast.success("Statut mis à jour"); load(); }
   };
