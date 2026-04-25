@@ -1,0 +1,32 @@
+name: Validate Edge Function Imports
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "supabase/functions/**"
+      - "scripts/validate-edge-imports.mjs"
+      - ".github/workflows/validate-edge-imports.yml"
+  pull_request:
+    paths:
+      - "supabase/functions/**"
+      - "scripts/validate-edge-imports.mjs"
+      - ".github/workflows/validate-edge-imports.yml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate Deno imports
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate edge function imports
+        # Fails the build on bare specifiers or known-invalid npm subpaths.
+        run: node scripts/validate-edge-imports.mjs
