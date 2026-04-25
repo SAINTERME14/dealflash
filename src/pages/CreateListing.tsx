@@ -9,10 +9,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Upload, X, LocateFixed, MapPin } from "lucide-react";
+import { Loader2, LocateFixed, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { useGeolocation } from "@/hooks/useGeolocation";
-import { validateUpload, getAcceptAttribute } from "@/lib/uploadValidation";
+import { BucketImageUploader } from "@/components/upload/BucketImageUploader";
 
 interface Category { id: string; name: string; }
 
