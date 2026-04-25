@@ -3,10 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { ListingCard, ListingCardData } from "@/components/listing/ListingCard";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import {
   Search, Home, Hotel, Car, Bike, ShoppingBasket, PawPrint,
   Shirt, Smartphone, Sofa, Wrench, MapPin, ShieldCheck, Zap, Calendar,
+  LayoutDashboard, Users, Ticket, Sparkles, History, ArrowRight,
 } from "lucide-react";
 import heroImage from "@/assets/hero-marketplace.jpg";
 
