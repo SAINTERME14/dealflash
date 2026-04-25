@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/table";
 import { toast } from "sonner";
 import { Loader2, Search, Sparkles } from "lucide-react";
-import { Helmet } from "react-helmet-async";
 
 type AdminListing = {
   id: string;
@@ -68,6 +67,14 @@ export default function AdminFeatured() {
     load();
   }, []);
 
+  useEffect(() => {
+    const prev = document.title;
+    document.title = "Admin — Sélection sponsorisée | DealFlash";
+    return () => {
+      document.title = prev;
+    };
+  }, []);
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return listings.filter((l) => {
@@ -113,11 +120,6 @@ export default function AdminFeatured() {
 
   return (
     <>
-      <Helmet>
-        <title>Admin — Sélection sponsorisée | DealFlash</title>
-        <meta name="description" content="Panneau admin pour gérer les annonces en vedette sur DealFlash." />
-      </Helmet>
-
       <div className="container py-8 space-y-6">
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-lg gradient-accent flex items-center justify-center shadow-flash">
