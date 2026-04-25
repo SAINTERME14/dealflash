@@ -96,6 +96,7 @@ export default function AdminAuditLog() {
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>("all");
   const [openRow, setOpenRow] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [sendingToSupport, setSendingToSupport] = useState(false);
 
   useEffect(() => {
     document.title = "Admin · Journal | DealFlash";
