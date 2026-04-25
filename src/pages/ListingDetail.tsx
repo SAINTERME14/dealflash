@@ -24,7 +24,7 @@ interface Listing {
   images: string[];
   allows_booking: boolean;
   seller_id: string;
-  attributes: Record<string, any>;
+  attributes: Record<string, unknown>;
   categories: { name: string; slug: string } | null;
   profiles: { display_name: string | null; city: string | null; is_verified: boolean } | null;
 }
@@ -48,7 +48,7 @@ export default function ListingDetail() {
         .eq("id", id)
         .maybeSingle();
       if (data) {
-        setListing(data as any);
+        setListing(data as unknown as Listing);
         document.title = `${data.title} — DealFlash`;
         // increment view count (fire and forget)
         supabase.from("listings").update({ view_count: (data.view_count ?? 0) + 1 }).eq("id", id).then();

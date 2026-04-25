@@ -33,7 +33,7 @@ export function useGeolocation() {
           };
           setPosition(p);
           setLoading(false);
-          try { localStorage.setItem("dealflash_geo", JSON.stringify(p)); } catch {}
+          try { localStorage.setItem("dealflash_geo", JSON.stringify(p)); } catch { /* ignore quota errors */ }
           resolve(p);
         },
         (err) => {
@@ -51,7 +51,7 @@ export function useGeolocation() {
 
   const clear = useCallback(() => {
     setPosition(null);
-    try { localStorage.removeItem("dealflash_geo"); } catch {}
+    try { localStorage.removeItem("dealflash_geo"); } catch { /* ignore */ }
   }, []);
 
   return { position, loading, error, request, clear };

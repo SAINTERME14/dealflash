@@ -81,7 +81,7 @@ export function BookingDialog({ open, onOpenChange, listing }: Props) {
         .eq("listing_id", listing.id)
         .eq("requested_date", dateStr)
         .in("status", ["requested", "accepted", "paid"]);
-      const bookedKeys = new Set((booked ?? []).map((b: any) => `${b.requested_date}-${b.requested_start_time}`));
+      const bookedKeys = new Set((booked ?? []).map((b) => `${b.requested_date}-${b.requested_start_time}`));
       setSlots((data ?? []).filter((s) => !bookedKeys.has(`${s.slot_date}-${s.start_time}`)));
     })();
   }, [date, listing.id]);
@@ -95,7 +95,7 @@ export function BookingDialog({ open, onOpenChange, listing }: Props) {
         .select("ticket_id, tickets:ticket_id(confirmation_code, qr_code)")
         .eq("id", appointmentId)
         .maybeSingle();
-      const tk = (data as any)?.tickets;
+      const tk = (data as { tickets?: { confirmation_code: string; qr_code: string } | null } | null)?.tickets;
       if (tk) {
         setTicket(tk);
         setStep(5);

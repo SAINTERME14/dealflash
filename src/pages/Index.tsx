@@ -49,10 +49,12 @@ export default function Index() {
         .order("created_at", { ascending: false })
         .limit(8);
       if (listings) {
-        setRecent(listings.map((l: any) => ({
-          ...l,
-          category_name: l.categories?.name,
-        })));
+        setRecent(
+          listings.map((l) => {
+            const { categories, ...rest } = l as typeof l & { categories: { name: string } | null };
+            return { ...rest, category_name: categories?.name };
+          })
+        );
       }
     })();
   }, []);

@@ -19,7 +19,11 @@ export default function Favorites() {
         .select("listings(id, title, price, currency, city, images, allows_booking)")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
-      setItems((data ?? []).map((d: any) => d.listings).filter(Boolean));
+      setItems(
+        (data ?? [])
+          .map((d) => (d as { listings: ListingCardData | null }).listings)
+          .filter((l): l is ListingCardData => !!l)
+      );
       setLoading(false);
     })();
   }, [user]);
