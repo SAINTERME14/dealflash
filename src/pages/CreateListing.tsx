@@ -21,7 +21,7 @@ export default function CreateListing() {
   const { user } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  
   const [images, setImages] = useState<string[]>([]);
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const { request: requestGeo, loading: geoLoading } = useGeolocation();
