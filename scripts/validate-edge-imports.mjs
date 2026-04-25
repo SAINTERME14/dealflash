@@ -23,14 +23,20 @@ const KNOWN_INVALID_SUBPATHS = [
 
 const VALID_PREFIXES = ["npm:", "jsr:", "node:", "http://", "https://", "./", "../", "/"];
 
-/** Recursively collect *.ts files under a directory. */
+/** Recursively collect Deno source files (.ts/.tsx/.js/.mjs/.cjs/.jsx) under a directory. */
+const SOURCE_EXTS = [".ts", ".tsx", ".js", ".mjs", ".cjs", ".jsx"];
 function walk(dir) {
   const out = [];
   for (const entry of readdirSync(dir)) {
     const full = join(dir, entry);
     const s = statSync(full);
     if (s.isDirectory()) out.push(...walk(full));
-    else if (entry.endsWith(".ts") && !entry.endsWith(".d.ts")) out.push(full);
+    else if (
+      SOURCE_EXTS.some((ext) => entry.endsWith(ext)) &&
+      !entry.endsWith(".d.ts")
+    ) {
+      out.push(full);
+    }
   }
   return out;
 }
