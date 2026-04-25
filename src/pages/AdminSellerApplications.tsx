@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,7 +30,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Lock, Mail, ShieldCheck, StickyNote, Trash2, UserPlus } from "lucide-react";
+import { Loader2, Lock, Mail, Settings2, ShieldCheck, StickyNote, Trash2, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { useCanManageSellerNotes } from "@/hooks/useCanManageSellerNotes";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
