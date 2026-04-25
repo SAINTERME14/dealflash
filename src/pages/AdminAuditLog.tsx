@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -95,6 +96,7 @@ export default function AdminAuditLog() {
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>("all");
   const [openRow, setOpenRow] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [sendingToSupport, setSendingToSupport] = useState(false);
 
   useEffect(() => {
     document.title = "Admin · Journal | DealFlash";
@@ -301,38 +303,46 @@ export default function AdminAuditLog() {
     downloadCsv(buildAlertsCsv(), filename);
   };
 
-  const sendAlertsToSupport = () => {
-    const dateStr = new Date().toISOString().slice(0, 10);
-    const filename = `dealflash-alertes-${dateStr}.csv`;
-    // 1. Trigger CSV download so admin can attach it
-    downloadCsv(buildAlertsCsv(), filename);
-    // 2. Open mail client with prefilled subject + body
-    const counts = filteredAlerts.reduce(
-      (acc, a) => {
-        acc[a.severity] = (acc[a.severity] ?? 0) + 1;
-        return acc;
-      },
-      {} as Record<string, number>,
-    );
-    const subject = `[DealFlash] Rapport d'alertes — ${dateStr} (${filteredAlerts.length})`;
-    const body = [
-      "Bonjour équipe Support,",
-      "",
-      `Veuillez trouver ci-joint le rapport d'alertes système DealFlash du ${dateStr}.`,
-      "",
-      `Total d'alertes : ${filteredAlerts.length}`,
-      `• Critiques : ${counts.critical ?? 0}`,
-      `• Avertissements : ${counts.warning ?? 0}`,
-      `• Info : ${counts.info ?? 0}`,
-      "",
-      `⚠️ Le fichier "${filename}" vient d'être téléchargé sur votre poste.`,
-      "Merci de l'attacher manuellement à cet email avant l'envoi.",
-      "",
-      "Cordialement,",
-      "Admin DealFlash",
-    ].join("\n");
-    const mailto = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailto;
+  const sendAlertsToSupport = async () => {
+    setSendingToSupport(true);
+    try {
+      const dateStr = new Date().toISOString().slice(0, 10);
+      const filename = `dealflash-alertes-${dateStr}.csv`;
+      // 1. Trigger CSV download so admin can attach it
+      downloadCsv(buildAlertsCsv(), filename);
+      // 2. Open mail client with prefilled subject + body
+      const counts = filteredAlerts.reduce(
+        (acc, a) => {
+          acc[a.severity] = (acc[a.severity] ?? 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>,
+      );
+      const subject = `[DealFlash] Rapport d'alertes — ${dateStr} (${filteredAlerts.length})`;
+      const body = [
+        "Bonjour équipe Support,",
+        "",
+        `Veuillez trouver ci-joint le rapport d'alertes système DealFlash du ${dateStr}.`,
+        "",
+        `Total d'alertes : ${filteredAlerts.length}`,
+        `• Critiques : ${counts.critical ?? 0}`,
+        `• Avertissements : ${counts.warning ?? 0}`,
+        `• Info : ${counts.info ?? 0}`,
+        "",
+        `⚠️ Le fichier "${filename}" vient d'être téléchargé sur votre poste.`,
+        "Merci de l'attacher manuellement à cet email avant l'envoi.",
+        "",
+        "Cordialement,",
+        "Admin DealFlash",
+      ].join("\n");
+      const mailto = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = mailto;
+      toast.success("Rapport généré et client mail ouvert", {
+        description: `Le fichier ${filename} a été téléchargé. Pensez à l'attacher à l'email avant l'envoi.`,
+      });
+    } finally {
+      setSendingToSupport(false);
+    }
   };
 
 
@@ -410,12 +420,16 @@ export default function AdminAuditLog() {
                     size="sm"
                     variant="default"
                     onClick={sendAlertsToSupport}
-                    disabled={filteredAlerts.length === 0}
+                    disabled={filteredAlerts.length === 0 || sendingToSupport}
                     className="text-xs gap-1.5"
                     title={`Télécharge le CSV et ouvre votre client mail vers ${SUPPORT_EMAIL}`}
                   >
-                    <Mail className="h-3.5 w-3.5" />
-                    Envoyer au support
+                    {sendingToSupport ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Mail className="h-3.5 w-3.5" />
+                    )}
+                    {sendingToSupport ? "Génération…" : "Envoyer au support"}
                   </Button>
                 </div>
               </CardContent>
