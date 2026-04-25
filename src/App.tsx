@@ -52,7 +52,11 @@ const App = () => (
             <Route path="/favoris" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
             <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
             <Route path="/profil" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
             <Route path="/admin/vedette" element={<AdminRoute><AdminFeatured /></AdminRoute>} />
+            <Route path="/admin/utilisateurs" element={<AdminRoute><AdminUsers /></AdminRoute>} />
+            <Route path="/admin/tickets" element={<AdminRoute><AdminTickets /></AdminRoute>} />
+            <Route path="/admin/journal" element={<AdminRoute><AdminAuditLog /></AdminRoute>} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
