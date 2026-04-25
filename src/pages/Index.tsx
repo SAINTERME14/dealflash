@@ -201,7 +201,7 @@ export default function Index() {
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <Link to="/vendre">Devenir vendeur</Link>
+              <a href="#devenir-vendeur">Devenir vendeur</a>
             </Button>
           </div>
         </div>
