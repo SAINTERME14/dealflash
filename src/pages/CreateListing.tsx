@@ -52,34 +52,6 @@ export default function CreateListing() {
       .then(({ data }) => setCategories(data ?? []));
   }, []);
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || !user) return;
-    setUploading(true);
-    const uploaded: string[] = [];
-    for (const file of Array.from(e.target.files).slice(0, 8 - images.length)) {
-      const check = validateUpload("listings", file);
-      if (!check.ok) {
-        toast.error(check.error!);
-        continue;
-      }
-      const ext = file.name.split('.').pop();
-      const path = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error } = await supabase.storage.from("listings").upload(path, file, {
-        contentType: file.type,
-      });
-      if (error) {
-        toast.error(`Erreur upload : ${error.message}`);
-        continue;
-      }
-      const { data } = supabase.storage.from("listings").getPublicUrl(path);
-      uploaded.push(data.publicUrl);
-    }
-    setImages([...images, ...uploaded]);
-    setUploading(false);
-    e.target.value = "";
-  };
-
-  const removeImage = (idx: number) => setImages(images.filter((_, i) => i !== idx));
 
   const handleSubmit = async (e: React.FormEvent, status: 'draft' | 'active') => {
     e.preventDefault();
