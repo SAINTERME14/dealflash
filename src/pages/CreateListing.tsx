@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Loader2, Upload, X, LocateFixed, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { useGeolocation } from "@/hooks/useGeolocation";
+import { validateUpload, getAcceptAttribute } from "@/lib/uploadValidation";
 
 interface Category { id: string; name: string; }
 
@@ -56,9 +57,16 @@ export default function CreateListing() {
     setUploading(true);
     const uploaded: string[] = [];
     for (const file of Array.from(e.target.files).slice(0, 8 - images.length)) {
+      const check = validateUpload("listings", file);
+      if (!check.ok) {
+        toast.error(check.error!);
+        continue;
+      }
       const ext = file.name.split('.').pop();
       const path = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error } = await supabase.storage.from("listings").upload(path, file);
+      const { error } = await supabase.storage.from("listings").upload(path, file, {
+        contentType: file.type,
+      });
       if (error) {
         toast.error(`Erreur upload : ${error.message}`);
         continue;
@@ -176,7 +184,7 @@ export default function CreateListing() {
               <label className="aspect-square rounded-lg border-2 border-dashed border-border hover:border-primary flex flex-col items-center justify-center gap-1 cursor-pointer transition-smooth">
                 {uploading ? <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /> : <Upload className="h-5 w-5 text-muted-foreground" />}
                 <span className="text-xs text-muted-foreground">Ajouter</span>
-                <input type="file" accept="image/*" multiple className="hidden" onChange={handleUpload} disabled={uploading} />
+                <input type="file" accept={getAcceptAttribute("listings")} multiple className="hidden" onChange={handleUpload} disabled={uploading} />
               </label>
             )}
           </div>
