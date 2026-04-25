@@ -21,6 +21,7 @@ import {
   ChevronDown,
   Copy,
   Check,
+  Download,
 } from "lucide-react";
 
 type LogRow = {
