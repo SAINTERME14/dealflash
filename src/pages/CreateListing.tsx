@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Loader2, Upload, X, LocateFixed, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { useGeolocation } from "@/hooks/useGeolocation";
+import { validateUpload, getAcceptAttribute } from "@/lib/uploadValidation";
 
 interface Category { id: string; name: string; }
 
