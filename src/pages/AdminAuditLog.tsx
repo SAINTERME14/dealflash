@@ -333,7 +333,7 @@ export default function AdminAuditLog() {
                     className="pl-9"
                   />
                 </div>
-                <div className="flex gap-1.5 flex-wrap">
+                <div className="flex gap-1.5 flex-wrap items-center">
                   {SOURCES.map((s) => (
                     <Button
                       key={s}
@@ -345,6 +345,21 @@ export default function AdminAuditLog() {
                       {s === "all" ? "Toutes" : s}
                     </Button>
                   ))}
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={exportAlertsCsv}
+                    disabled={filteredAlerts.length === 0}
+                    className="text-xs gap-1.5"
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    Exporter CSV
+                    {filteredAlerts.length > 0 && (
+                      <span className="text-[10px] text-muted-foreground">
+                        ({filteredAlerts.length})
+                      </span>
+                    )}
+                  </Button>
                 </div>
               </CardContent>
             </Card>
