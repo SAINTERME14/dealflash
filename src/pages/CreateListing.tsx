@@ -9,8 +9,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Upload, X } from "lucide-react";
+import { Loader2, Upload, X, LocateFixed, MapPin } from "lucide-react";
 import { toast } from "sonner";
+import { useGeolocation } from "@/hooks/useGeolocation";
 
 interface Category { id: string; name: string; }
 
@@ -21,6 +22,8 @@ export default function CreateListing() {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [images, setImages] = useState<string[]>([]);
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const { request: requestGeo, loading: geoLoading } = useGeolocation();
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -31,6 +34,16 @@ export default function CreateListing() {
     address: "",
     allows_booking: false,
   });
+
+  const handleUseLocation = async () => {
+    try {
+      const pos = await requestGeo();
+      setCoords({ lat: pos.lat, lng: pos.lng });
+      toast.success("Position enregistrée pour cette annonce");
+    } catch {
+      toast.error("Impossible d'obtenir votre position");
+    }
+  };
 
   useEffect(() => {
     document.title = "Publier une annonce — DealFlash";
@@ -77,6 +90,8 @@ export default function CreateListing() {
       city: form.city || null,
       region: form.region || null,
       address: form.address || null,
+      latitude: coords?.lat ?? null,
+      longitude: coords?.lng ?? null,
       images,
       allows_booking: form.allows_booking,
       status,
@@ -125,6 +140,25 @@ export default function CreateListing() {
               <Input id="city" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Laval" />
             </div>
           </div>
+          <div>
+            <Label htmlFor="address">Adresse (optionnel)</Label>
+            <Input id="address" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="123 rue Principale" />
+          </div>
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            <Button type="button" variant="outline" size="sm" onClick={handleUseLocation} disabled={geoLoading} className="gap-2">
+              {geoLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <LocateFixed className="h-4 w-4" />}
+              {coords ? "Mettre à jour ma position" : "Utiliser ma position GPS"}
+            </Button>
+            {coords && (
+              <span className="text-xs text-muted-foreground inline-flex items-center gap-1">
+                <MapPin className="h-3 w-3 text-accent" />
+                {coords.lat.toFixed(5)}, {coords.lng.toFixed(5)}
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Ajouter votre position GPS permet aux acheteurs de vous trouver sur la carte et de filtrer à proximité.
+          </p>
         </Card>
 
         <Card className="p-6 space-y-4">
