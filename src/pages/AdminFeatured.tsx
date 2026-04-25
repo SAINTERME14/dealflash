@@ -407,6 +407,6 @@ export default function AdminFeatured() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </AdminLayout>
   );
 }
