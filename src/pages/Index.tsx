@@ -12,6 +12,7 @@ import {
   LayoutDashboard, Users, Ticket, Sparkles, History, ArrowRight,
 } from "lucide-react";
 import heroImage from "@/assets/hero-marketplace.jpg";
+import { SellerApplicationForm } from "@/components/home/SellerApplicationForm";
 
 const ICONS: Record<string, typeof Home> = {
   Home, Hotel, Car, Bike, ShoppingBasket, PawPrint, Shirt, Smartphone, Sofa, Wrench,
@@ -277,6 +278,11 @@ export default function Index() {
           </div>
         </section>
       )}
+
+      {/* SELLER APPLICATION FORM */}
+      <div id="devenir-vendeur">
+        <SellerApplicationForm />
+      </div>
 
       {/* CTA SELLERS */}
       <section className="container py-16">
