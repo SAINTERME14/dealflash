@@ -184,7 +184,7 @@ export default function CreateListing() {
               <label className="aspect-square rounded-lg border-2 border-dashed border-border hover:border-primary flex flex-col items-center justify-center gap-1 cursor-pointer transition-smooth">
                 {uploading ? <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /> : <Upload className="h-5 w-5 text-muted-foreground" />}
                 <span className="text-xs text-muted-foreground">Ajouter</span>
-                <input type="file" accept="image/*" multiple className="hidden" onChange={handleUpload} disabled={uploading} />
+                <input type="file" accept={getAcceptAttribute("listings")} multiple className="hidden" onChange={handleUpload} disabled={uploading} />
               </label>
             )}
           </div>
