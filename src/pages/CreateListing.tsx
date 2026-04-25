@@ -90,6 +90,8 @@ export default function CreateListing() {
       city: form.city || null,
       region: form.region || null,
       address: form.address || null,
+      latitude: coords?.lat ?? null,
+      longitude: coords?.lng ?? null,
       images,
       allows_booking: form.allows_booking,
       status,
