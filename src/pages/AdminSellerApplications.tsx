@@ -158,6 +158,11 @@ export default function AdminSellerApplications() {
           <p className="text-muted-foreground text-sm mt-1">
             Soumissions du formulaire « Devenir vendeur » de la page d'accueil.
           </p>
+          <div className="mt-3 inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-muted text-muted-foreground">
+            <ShieldCheck className="h-3 w-3" />
+            Votre rôle : <span className="font-medium text-foreground">{isAdmin ? "Administrateur" : "Vendeur professionnel"}</span>
+            {!isAdmin && <span>· suppression réservée aux admins</span>}
+          </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -256,17 +261,22 @@ export default function AdminSellerApplications() {
                           </Select>
                         </TableCell>
                         <TableCell>
-                          <NotesCell app={app} onSave={saveNotes} />
+                          <NotesCell app={app} onSave={saveNotes} canEdit={canManage} />
                         </TableCell>
                         <TableCell className="text-right">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => remove(app.id)}
-                            className="h-8 w-8 text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          {isAdmin ? (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => remove(app.id)}
+                              className="h-8 w-8 text-destructive"
+                              title="Supprimer"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">—</span>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}
