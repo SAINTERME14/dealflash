@@ -80,7 +80,7 @@ export default function Index() {
         </div>
         <div className="relative container py-20 md:py-28 text-center">
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-primary-foreground animate-fade-in">
-            Le marketplace <span className="text-accent-glow">éclair</span> du Québec
+            Les meilleurs deals, en un éclair.
           </h1>
           <p className="mt-4 text-lg md:text-xl text-primary-foreground/90 max-w-2xl mx-auto animate-fade-in">
             Achetez, vendez et réservez des visites — autos, logements, services et plus, près de chez vous.
