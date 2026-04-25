@@ -21,6 +21,7 @@ import {
   ChevronDown,
   Copy,
   Check,
+  Download,
 } from "lucide-react";
 
 type LogRow = {
@@ -262,6 +263,33 @@ export default function AdminAuditLog() {
     });
   }, [alerts, alertSearch, sourceFilter]);
 
+  const exportAlertsCsv = () => {
+    const escape = (val: string) => `"${val.replace(/"/g, '""')}"`;
+    const headers = ["date", "source", "severity", "title", "description", "payload"];
+    const lines = [headers.join(",")];
+    for (const a of filteredAlerts) {
+      lines.push([
+        escape(new Date(a.created_at).toISOString()),
+        escape(a.source),
+        escape(a.severity),
+        escape(a.title),
+        escape(a.description),
+        escape(JSON.stringify(a.payload)),
+      ].join(","));
+    }
+    // BOM for Excel UTF-8 compatibility
+    const csv = "\uFEFF" + lines.join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `dealflash-alertes-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -305,7 +333,7 @@ export default function AdminAuditLog() {
                     className="pl-9"
                   />
                 </div>
-                <div className="flex gap-1.5 flex-wrap">
+                <div className="flex gap-1.5 flex-wrap items-center">
                   {SOURCES.map((s) => (
                     <Button
                       key={s}
@@ -317,6 +345,21 @@ export default function AdminAuditLog() {
                       {s === "all" ? "Toutes" : s}
                     </Button>
                   ))}
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={exportAlertsCsv}
+                    disabled={filteredAlerts.length === 0}
+                    className="text-xs gap-1.5"
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    Exporter CSV
+                    {filteredAlerts.length > 0 && (
+                      <span className="text-[10px] text-muted-foreground">
+                        ({filteredAlerts.length})
+                      </span>
+                    )}
+                  </Button>
                 </div>
               </CardContent>
             </Card>
