@@ -1,10 +1,11 @@
 import { ReactNode } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { LayoutDashboard, Sparkles, Users, Receipt, History, UserPlus } from "lucide-react";
+import { LayoutDashboard, Sparkles, Users, Receipt, History, UserPlus, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
   { to: "/admin", label: "Vue d'ensemble", icon: LayoutDashboard, end: true },
+  { to: "/admin/contenu", label: "Contenu du site", icon: FileText },
   { to: "/admin/vedette", label: "Sélection sponsorisée", icon: Sparkles },
   { to: "/admin/utilisateurs", label: "Utilisateurs & rôles", icon: Users },
   { to: "/admin/tickets", label: "Tickets & revenus", icon: Receipt },

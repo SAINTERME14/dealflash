@@ -1,6 +1,11 @@
 import { Link } from "react-router-dom";
+import { useSiteText } from "@/hooks/useSiteContent";
 
 export function Footer() {
+  const tagline = useSiteText(
+    "footer.tagline",
+    "Le marketplace québécois pour acheter, vendre et réserver près de chez vous."
+  );
   return (
     <footer className="border-t border-border bg-secondary/30 mt-20">
       <div className="container py-12 grid gap-8 md:grid-cols-4">
@@ -13,9 +18,7 @@ export function Footer() {
               Deal<span className="text-accent">Flash</span>
             </span>
           </div>
-          <p className="text-sm text-muted-foreground">
-            Le marketplace québécois pour acheter, vendre et réserver près de chez vous.
-          </p>
+          <p className="text-sm text-muted-foreground">{tagline}</p>
         </div>
         <div>
           <h3 className="font-semibold mb-3">Marketplace</h3>
