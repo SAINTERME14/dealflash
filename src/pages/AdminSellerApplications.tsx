@@ -276,3 +276,87 @@ export default function AdminSellerApplications() {
     </AdminLayout>
   );
 }
+
+function NotesCell({
+  app,
+  onSave,
+}: {
+  app: Application;
+  onSave: (id: string, notes: string) => Promise<boolean>;
+}) {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(app.notes ?? "");
+  const [saving, setSaving] = useState(false);
+  const hasNotes = !!app.notes && app.notes.trim().length > 0;
+
+  const handleOpenChange = (next: boolean) => {
+    if (next) setValue(app.notes ?? "");
+    setOpen(next);
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    const ok = await onSave(app.id, value);
+    setSaving(false);
+    if (ok) setOpen(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogTrigger asChild>
+        <Button
+          variant={hasNotes ? "secondary" : "ghost"}
+          size="sm"
+          className="h-8 gap-1.5 max-w-[220px]"
+        >
+          <StickyNote className="h-3.5 w-3.5 shrink-0" />
+          {hasNotes ? (
+            <span className="truncate text-xs">{app.notes}</span>
+          ) : (
+            <span className="text-xs text-muted-foreground">Ajouter</span>
+          )}
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <StickyNote className="h-4 w-4" />
+            Notes internes — {app.name}
+          </DialogTitle>
+          <DialogDescription className="flex items-center gap-1.5 text-xs">
+            <Lock className="h-3 w-3" />
+            Visible uniquement par l'équipe DealFlash. Le demandeur ne verra jamais ce contenu.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-2">
+          <Textarea
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder="Ex. : déjà contacté par téléphone, profil intéressant pour B2C…"
+            rows={6}
+            maxLength={2000}
+            disabled={saving}
+          />
+          <p className="text-xs text-muted-foreground text-right">
+            {value.length} / 2000
+          </p>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)} disabled={saving}>
+            Annuler
+          </Button>
+          <Button onClick={handleSave} disabled={saving}>
+            {saving ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Enregistrement…
+              </>
+            ) : (
+              "Enregistrer"
+            )}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
