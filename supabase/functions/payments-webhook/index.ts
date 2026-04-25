@@ -102,10 +102,10 @@ async function handleWebhook(req: Request, env: StripeEnv) {
 
   switch (event.type) {
     case "checkout.session.completed":
-      await handleCheckoutCompleted(event.data.object);
+      await handleCheckoutCompleted(event.data.object as unknown as StripeSession);
       break;
     case "charge.refunded":
-      await handleRefund(event.data.object);
+      await handleRefund(event.data.object as { payment_intent?: string | null });
       break;
     default:
       console.log("Unhandled event:", event.type);
