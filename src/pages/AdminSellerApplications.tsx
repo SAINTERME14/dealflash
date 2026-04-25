@@ -29,8 +29,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Lock, Mail, StickyNote, Trash2, UserPlus } from "lucide-react";
+import { Loader2, Lock, Mail, ShieldCheck, StickyNote, Trash2, UserPlus } from "lucide-react";
 import { toast } from "sonner";
+import { useCanManageSellerNotes } from "@/hooks/useCanManageSellerNotes";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 
 type ApplicationStatus = "new" | "contacted" | "approved" | "rejected";
 type ListingType = "product" | "vehicle" | "rental" | "hotel" | "service";
