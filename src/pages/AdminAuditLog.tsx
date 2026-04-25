@@ -266,7 +266,7 @@ export default function AdminAuditLog() {
     });
   }, [alerts, alertSearch, sourceFilter]);
 
-  const exportAlertsCsv = () => {
+  const buildAlertsCsv = () => {
     const escape = (val: string) => `"${val.replace(/"/g, '""')}"`;
     const headers = ["date", "source", "severity", "title", "description", "payload"];
     const lines = [headers.join(",")];
@@ -281,17 +281,60 @@ export default function AdminAuditLog() {
       ].join(","));
     }
     // BOM for Excel UTF-8 compatibility
-    const csv = "\uFEFF" + lines.join("\n");
+    return "\uFEFF" + lines.join("\n");
+  };
+
+  const downloadCsv = (csv: string, filename: string) => {
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `dealflash-alertes-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
+
+  const exportAlertsCsv = () => {
+    const filename = `dealflash-alertes-${new Date().toISOString().slice(0, 10)}.csv`;
+    downloadCsv(buildAlertsCsv(), filename);
+  };
+
+  const sendAlertsToSupport = () => {
+    const dateStr = new Date().toISOString().slice(0, 10);
+    const filename = `dealflash-alertes-${dateStr}.csv`;
+    // 1. Trigger CSV download so admin can attach it
+    downloadCsv(buildAlertsCsv(), filename);
+    // 2. Open mail client with prefilled subject + body
+    const counts = filteredAlerts.reduce(
+      (acc, a) => {
+        acc[a.severity] = (acc[a.severity] ?? 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+    const subject = `[DealFlash] Rapport d'alertes — ${dateStr} (${filteredAlerts.length})`;
+    const body = [
+      "Bonjour équipe Support,",
+      "",
+      `Veuillez trouver ci-joint le rapport d'alertes système DealFlash du ${dateStr}.`,
+      "",
+      `Total d'alertes : ${filteredAlerts.length}`,
+      `• Critiques : ${counts.critical ?? 0}`,
+      `• Avertissements : ${counts.warning ?? 0}`,
+      `• Info : ${counts.info ?? 0}`,
+      "",
+      `⚠️ Le fichier "${filename}" vient d'être téléchargé sur votre poste.`,
+      "Merci de l'attacher manuellement à cet email avant l'envoi.",
+      "",
+      "Cordialement,",
+      "Admin DealFlash",
+    ].join("\n");
+    const mailto = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailto;
+  };
+
 
   return (
     <AdminLayout>
