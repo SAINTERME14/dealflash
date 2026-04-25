@@ -8,22 +8,24 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { BucketImageUploader } from "@/components/upload/BucketImageUploader";
 
 export default function Profile() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ display_name: "", phone: "", city: "", bio: "" });
+  const [form, setForm] = useState({ display_name: "", phone: "", city: "", bio: "", avatar_url: "" });
 
   useEffect(() => {
     document.title = "Mon profil — DealFlash";
     if (!user) return;
-    supabase.from("profiles").select("display_name, phone, city, bio").eq("user_id", user.id).maybeSingle()
+    supabase.from("profiles").select("display_name, phone, city, bio, avatar_url").eq("user_id", user.id).maybeSingle()
       .then(({ data }) => {
         if (data) setForm({
           display_name: data.display_name ?? "",
           phone: data.phone ?? "",
           city: data.city ?? "",
           bio: data.bio ?? "",
+          avatar_url: data.avatar_url ?? "",
         });
       });
   }, [user]);
@@ -38,11 +40,28 @@ export default function Profile() {
     else toast.success("Profil mis à jour");
   };
 
+  const avatarValue = form.avatar_url ? [form.avatar_url] : [];
+
   return (
     <div className="container max-w-xl py-8">
       <h1 className="text-3xl font-bold mb-6">Mon profil</h1>
       <Card className="p-6">
         <form onSubmit={save} className="space-y-4">
+          <div>
+            <Label>Photo de profil</Label>
+            {user && (
+              <div className="mt-2 max-w-[140px]">
+                <BucketImageUploader
+                  bucket="avatars"
+                  userId={user.id}
+                  value={avatarValue}
+                  onChange={(urls) => setForm({ ...form, avatar_url: urls[0] ?? "" })}
+                  gridClassName="grid-cols-1"
+                  addLabel="Téléverser"
+                />
+              </div>
+            )}
+          </div>
           <div>
             <Label>Courriel</Label>
             <Input value={user?.email ?? ""} disabled />
