@@ -5,6 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "validate:edge": "node scripts/validate-edge-imports.mjs",
+    "prebuild": "node scripts/validate-edge-imports.mjs",
+    "prebuild:dev": "node scripts/validate-edge-imports.mjs",
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
