@@ -265,19 +265,25 @@ export default function AdminSellerApplications() {
                           <NotesCell app={app} onSave={saveNotes} canEdit={canManage} />
                         </TableCell>
                         <TableCell className="text-right">
-                          {isAdmin ? (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => remove(app.id)}
-                              className="h-8 w-8 text-destructive"
-                              title="Supprimer"
-                            >
-                              <Trash2 className="h-4 w-4" />
+                          <div className="inline-flex items-center gap-1">
+                            <Button asChild variant="outline" size="sm" className="h-8 gap-1.5">
+                              <Link to={`/admin/demandes-vendeurs/${app.id}`}>
+                                <Settings2 className="h-3.5 w-3.5" />
+                                Gérer
+                              </Link>
                             </Button>
-                          ) : (
-                            <span className="text-xs text-muted-foreground">—</span>
-                          )}
+                            {isAdmin && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => remove(app.id)}
+                                className="h-8 w-8 text-destructive"
+                                title="Supprimer"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
