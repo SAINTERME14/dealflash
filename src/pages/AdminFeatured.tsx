@@ -15,7 +15,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Loader2, Search, Sparkles } from "lucide-react";
+import { Loader2, Search, Sparkles, RefreshCw } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 type AdminListing = {
   id: string;
@@ -37,12 +45,26 @@ function toLocalDateTimeInput(iso: string | null): string {
   return new Date(d.getTime() - tz).toISOString().slice(0, 16);
 }
 
+function isExpired(iso: string | null): boolean {
+  if (!iso) return false;
+  return new Date(iso).getTime() <= Date.now();
+}
+
+function defaultRenewIso(days = 7): string {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  const tz = d.getTimezoneOffset() * 60000;
+  return new Date(d.getTime() - tz).toISOString().slice(0, 16);
+}
+
 export default function AdminFeatured() {
   const [listings, setListings] = useState<AdminListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<"all" | "featured">("all");
+  const [filter, setFilter] = useState<"all" | "featured" | "expired">("all");
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [renewTarget, setRenewTarget] = useState<AdminListing | null>(null);
+  const [renewDate, setRenewDate] = useState<string>(defaultRenewIso(7));
 
   async function load() {
     setLoading(true);
@@ -79,6 +101,7 @@ export default function AdminFeatured() {
     const q = search.trim().toLowerCase();
     return listings.filter((l) => {
       if (filter === "featured" && !l.is_featured) return false;
+      if (filter === "expired" && !isExpired(l.featured_until)) return false;
       if (!q) return true;
       return (
         l.title.toLowerCase().includes(q) ||
@@ -113,6 +136,51 @@ export default function AdminFeatured() {
       toast.success("Mis à jour", {
         description: row.is_featured ? "Annonce sponsorisée activée" : "Boost désactivé",
       });
+    }
+    setSavingId(null);
+    load();
+  }
+
+  function openRenew(row: AdminListing) {
+    setRenewTarget(row);
+    // Default: extend 7 days from the later of (existing featured_until, now)
+    const base =
+      row.featured_until && new Date(row.featured_until).getTime() > Date.now()
+        ? new Date(row.featured_until)
+        : new Date();
+    base.setDate(base.getDate() + 7);
+    const tz = base.getTimezoneOffset() * 60000;
+    setRenewDate(new Date(base.getTime() - tz).toISOString().slice(0, 16));
+  }
+
+  async function confirmRenew() {
+    if (!renewTarget) return;
+    if (!renewDate) {
+      toast.error("Date requise");
+      return;
+    }
+    const newIso = new Date(renewDate).toISOString();
+    if (new Date(newIso).getTime() <= Date.now()) {
+      toast.error("La date doit être dans le futur");
+      return;
+    }
+    setSavingId(renewTarget.id);
+    const { error } = await supabase
+      .from("listings")
+      .update({
+        is_featured: true,
+        featured_until: newIso,
+        featured_priority: renewTarget.featured_priority || 1,
+      })
+      .eq("id", renewTarget.id);
+
+    if (error) {
+      toast.error("Renouvellement impossible", { description: error.message });
+    } else {
+      toast.success("Boost renouvelé", {
+        description: `Vedette jusqu'au ${new Date(newIso).toLocaleString("fr-CA")}`,
+      });
+      setRenewTarget(null);
     }
     setSavingId(null);
     load();
@@ -163,6 +231,13 @@ export default function AdminFeatured() {
               >
                 En vedette
               </Button>
+              <Button
+                variant={filter === "expired" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilter("expired")}
+              >
+                Expirées
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -185,12 +260,15 @@ export default function AdminFeatured() {
                     <TableHead className="w-28">Prix</TableHead>
                     <TableHead className="w-32">Boost</TableHead>
                     <TableHead className="w-56">Expiration</TableHead>
-                    <TableHead className="w-28">Priorité</TableHead>
-                    <TableHead className="w-32 text-right">Action</TableHead>
+                    <TableHead className="w-24">Expiré</TableHead>
+                    <TableHead className="w-24">Priorité</TableHead>
+                    <TableHead className="w-44 text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filtered.map((row) => (
+                  {filtered.map((row) => {
+                    const expired = isExpired(row.featured_until);
+                    return (
                     <TableRow key={row.id}>
                       <TableCell>
                         <div className="font-medium">{row.title}</div>
@@ -229,6 +307,17 @@ export default function AdminFeatured() {
                         />
                       </TableCell>
                       <TableCell>
+                        {row.featured_until ? (
+                          expired ? (
+                            <Badge variant="destructive" className="text-[10px]">Expiré</Badge>
+                          ) : (
+                            <Badge className="text-[10px] bg-success text-success-foreground">Actif</Badge>
+                          )
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
                         <Input
                           type="number"
                           value={row.featured_priority}
@@ -241,20 +330,33 @@ export default function AdminFeatured() {
                         />
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button
-                          size="sm"
-                          onClick={() => saveRow(row)}
-                          disabled={savingId === row.id}
-                        >
-                          {savingId === row.id ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            "Enregistrer"
-                          )}
-                        </Button>
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => openRenew(row)}
+                            disabled={savingId === row.id}
+                            title="Repousser la date d'expiration"
+                          >
+                            <RefreshCw className="h-3.5 w-3.5 mr-1" />
+                            Renouveler
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => saveRow(row)}
+                            disabled={savingId === row.id}
+                          >
+                            {savingId === row.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              "Enregistrer"
+                            )}
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
-                  ))}
+                    );
+                  })}
                 </TableBody>
               </Table>
             )}
@@ -266,6 +368,44 @@ export default function AdminFeatured() {
           modifier ces champs (verrouillé côté base via les triggers de sécurité).
         </p>
       </div>
+
+      <Dialog open={!!renewTarget} onOpenChange={(open) => !open && setRenewTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Renouveler le boost</DialogTitle>
+            <DialogDescription>
+              {renewTarget?.title}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="flex flex-wrap gap-2">
+              <Button size="sm" variant="outline" onClick={() => setRenewDate(defaultRenewIso(1))}>+1 jour</Button>
+              <Button size="sm" variant="outline" onClick={() => setRenewDate(defaultRenewIso(7))}>+7 jours</Button>
+              <Button size="sm" variant="outline" onClick={() => setRenewDate(defaultRenewIso(14))}>+14 jours</Button>
+              <Button size="sm" variant="outline" onClick={() => setRenewDate(defaultRenewIso(30))}>+30 jours</Button>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="renew-date">Nouvelle date d'expiration</Label>
+              <Input
+                id="renew-date"
+                type="datetime-local"
+                value={renewDate}
+                onChange={(e) => setRenewDate(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRenewTarget(null)}>Annuler</Button>
+            <Button onClick={confirmRenew} disabled={savingId === renewTarget?.id}>
+              {savingId === renewTarget?.id ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "Confirmer"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
