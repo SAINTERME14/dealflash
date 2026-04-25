@@ -24,6 +24,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { AdminLayout } from "@/components/admin/AdminLayout";
 
 type AdminListing = {
   id: string;
@@ -187,8 +188,8 @@ export default function AdminFeatured() {
   }
 
   return (
-    <>
-      <div className="container py-8 space-y-6">
+    <AdminLayout>
+      <div className="space-y-6">
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-lg gradient-accent flex items-center justify-center shadow-flash">
             <Sparkles className="h-5 w-5 text-accent-foreground" />
@@ -406,6 +407,6 @@ export default function AdminFeatured() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </AdminLayout>
   );
 }

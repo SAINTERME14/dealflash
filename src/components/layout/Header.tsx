@@ -74,9 +74,9 @@ export function Header() {
                     <>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
-                        <Link to="/admin/vedette" className="flex items-center">
+                        <Link to="/admin" className="flex items-center">
                           <ShieldCheck className="h-4 w-4 mr-2 text-accent" />
-                          Admin · Vedette
+                          Console admin
                         </Link>
                       </DropdownMenuItem>
                     </>
