@@ -1,1 +1,7 @@
 project_id = "qcxoczfkxiqqvqctqlud"
+
+[functions.create-ticket-checkout]
+verify_jwt = false
+
+[functions.payments-webhook]
+verify_jwt = false
