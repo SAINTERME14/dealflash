@@ -141,6 +141,51 @@ export default function AdminFeatured() {
     load();
   }
 
+  function openRenew(row: AdminListing) {
+    setRenewTarget(row);
+    // Default: extend 7 days from the later of (existing featured_until, now)
+    const base =
+      row.featured_until && new Date(row.featured_until).getTime() > Date.now()
+        ? new Date(row.featured_until)
+        : new Date();
+    base.setDate(base.getDate() + 7);
+    const tz = base.getTimezoneOffset() * 60000;
+    setRenewDate(new Date(base.getTime() - tz).toISOString().slice(0, 16));
+  }
+
+  async function confirmRenew() {
+    if (!renewTarget) return;
+    if (!renewDate) {
+      toast.error("Date requise");
+      return;
+    }
+    const newIso = new Date(renewDate).toISOString();
+    if (new Date(newIso).getTime() <= Date.now()) {
+      toast.error("La date doit être dans le futur");
+      return;
+    }
+    setSavingId(renewTarget.id);
+    const { error } = await supabase
+      .from("listings")
+      .update({
+        is_featured: true,
+        featured_until: newIso,
+        featured_priority: renewTarget.featured_priority || 1,
+      })
+      .eq("id", renewTarget.id);
+
+    if (error) {
+      toast.error("Renouvellement impossible", { description: error.message });
+    } else {
+      toast.success("Boost renouvelé", {
+        description: `Vedette jusqu'au ${new Date(newIso).toLocaleString("fr-CA")}`,
+      });
+      setRenewTarget(null);
+    }
+    setSavingId(null);
+    load();
+  }
+
   return (
     <>
       <div className="container py-8 space-y-6">
