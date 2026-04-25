@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+
+type BookingStatus = Database["public"]["Enums"]["booking_status"];
 
 interface Booking {
   id: string;
@@ -52,10 +55,10 @@ export default function MyBookings() {
 
   useEffect(() => { document.title = "Mes réservations — DealFlash"; load(); }, [user]);
 
-  const updateStatus = async (id: string, status: string) => {
+  const updateStatus = async (id: string, status: BookingStatus) => {
     const { error } = await supabase
       .from("bookings")
-      .update({ status: status as Booking["status"] })
+      .update({ status })
       .eq("id", id);
     if (error) toast.error(error.message);
     else { toast.success("Statut mis à jour"); load(); }
