@@ -420,12 +420,16 @@ export default function AdminAuditLog() {
                     size="sm"
                     variant="default"
                     onClick={sendAlertsToSupport}
-                    disabled={filteredAlerts.length === 0}
+                    disabled={filteredAlerts.length === 0 || sendingToSupport}
                     className="text-xs gap-1.5"
                     title={`Télécharge le CSV et ouvre votre client mail vers ${SUPPORT_EMAIL}`}
                   >
-                    <Mail className="h-3.5 w-3.5" />
-                    Envoyer au support
+                    {sendingToSupport ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Mail className="h-3.5 w-3.5" />
+                    )}
+                    {sendingToSupport ? "Génération…" : "Envoyer au support"}
                   </Button>
                 </div>
               </CardContent>
