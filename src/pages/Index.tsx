@@ -94,7 +94,7 @@ export default function Index() {
             Les meilleurs deals, en un éclair.
           </h1>
           <p className="mt-4 text-lg md:text-xl text-primary-foreground/90 max-w-2xl mx-auto animate-fade-in">
-            Achetez, vendez et réservez des visites — autos, logements, services et plus, près de chez vous.
+            Achetez, vendez, et réservez des visites pour des voitures, des logements, des services et bien plus encore, tout ça près de chez vous.
           </p>
 
           <form onSubmit={handleSearch} className="mt-8 max-w-xl mx-auto flex gap-2 animate-scale-in">
