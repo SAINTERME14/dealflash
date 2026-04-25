@@ -294,9 +294,11 @@ export default function AdminSellerApplications() {
 function NotesCell({
   app,
   onSave,
+  canEdit,
 }: {
   app: Application;
   onSave: (id: string, notes: string) => Promise<boolean>;
+  canEdit: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(app.notes ?? "");
@@ -309,11 +311,36 @@ function NotesCell({
   };
 
   const handleSave = async () => {
+    if (!canEdit) {
+      toast.error("Vous n'avez pas l'autorisation de modifier les notes.");
+      return;
+    }
     setSaving(true);
     const ok = await onSave(app.id, value);
     setSaving(false);
     if (ok) setOpen(false);
   };
+
+  // Read-only state for users without permission
+  if (!canEdit) {
+    if (!hasNotes) {
+      return (
+        <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+          <Lock className="h-3 w-3" />
+          Lecture seule
+        </span>
+      );
+    }
+    return (
+      <span
+        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground max-w-[220px]"
+        title={app.notes ?? ""}
+      >
+        <Lock className="h-3 w-3 shrink-0" />
+        <span className="truncate">{app.notes}</span>
+      </span>
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -339,7 +366,7 @@ function NotesCell({
           </DialogTitle>
           <DialogDescription className="flex items-center gap-1.5 text-xs">
             <Lock className="h-3 w-3" />
-            Visible uniquement par l'équipe DealFlash. Le demandeur ne verra jamais ce contenu.
+            Visible uniquement par l'équipe DealFlash autorisée. Le demandeur ne verra jamais ce contenu.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-2">
