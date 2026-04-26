@@ -11,7 +11,7 @@ describe("validatePetitesAnnonces — autos-occasion", () => {
       vin: "1HGBH41JXMN109186",
     });
     expect(r.ok).toBe(true);
-    if (r.ok) {
+    if (r.ok === true) {
       expect(r.data.year).toBe("2020");
       expect(r.data.vin).toBe("1HGBH41JXMN109186");
     }
@@ -23,7 +23,7 @@ describe("validatePetitesAnnonces — autos-occasion", () => {
       mileage_km: "10000",
     });
     expect(r.ok).toBe(false);
-    if (!r.ok) {
+    if (r.ok === false) {
       expect(r.fieldErrors.year).toBeDefined();
     }
   });
@@ -35,7 +35,7 @@ describe("validatePetitesAnnonces — autos-occasion", () => {
       vin: "INVALIDVIN0000000",
     });
     expect(r.ok).toBe(false);
-    if (!r.ok) {
+    if (r.ok === false) {
       expect(r.fieldErrors.vin).toBeDefined();
     }
   });
@@ -67,7 +67,7 @@ describe("validatePetitesAnnonces — colocation-pa", () => {
       available_from: "31-12-2026",
     });
     expect(r.ok).toBe(false);
-    if (!r.ok) {
+    if (r.ok === false) {
       expect(r.fieldErrors.available_from).toBeDefined();
     }
   });
@@ -78,7 +78,7 @@ describe("validatePetitesAnnonces — colocation-pa", () => {
       room_type: "private",
     });
     expect(r.ok).toBe(false);
-    if (!r.ok) {
+    if (r.ok === false) {
       expect(r.fieldErrors.budget_max).toBeDefined();
     }
   });
@@ -96,7 +96,7 @@ describe("validatePetitesAnnonces — objets-divers", () => {
   it("requires condition", () => {
     const r = validatePetitesAnnonces("objets-divers", { brand: "Sony" });
     expect(r.ok).toBe(false);
-    if (!r.ok) {
+    if (r.ok === false) {
       expect(r.fieldErrors.condition).toBeDefined();
     }
   });
