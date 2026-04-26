@@ -45,6 +45,8 @@ const AdminVerificationDetail = lazy(() => import("./pages/AdminVerificationDeta
 const AdminDropshipping = lazy(() => import("./pages/AdminDropshipping"));
 const AdminSuppliers = lazy(() => import("./pages/AdminSuppliers"));
 const AdminSalesChannels = lazy(() => import("./pages/AdminSalesChannels"));
+const AdminDropshipOverview = lazy(() => import("./pages/AdminDropshipOverview"));
+const AdminDropshipOrders = lazy(() => import("./pages/AdminDropshipOrders"));
 const About = lazy(() => import("./pages/About"));
 
 const queryClient = new QueryClient();
@@ -95,7 +97,9 @@ const App = () => (
               <Route path="/admin/demandes-vendeurs/:id" element={<SellerNotesRoute><AdminSellerApplicationDetail /></SellerNotesRoute>} />
               <Route path="/admin/verifications" element={<AdminRoute><AdminVerifications /></AdminRoute>} />
               <Route path="/admin/verifications/:id" element={<AdminRoute><AdminVerificationDetail /></AdminRoute>} />
-              <Route path="/admin/dropshipping" element={<AdminRoute><AdminDropshipping /></AdminRoute>} />
+              <Route path="/admin/dropshipping" element={<AdminRoute><AdminDropshipOverview /></AdminRoute>} />
+              <Route path="/admin/dropshipping/catalogue" element={<AdminRoute><AdminDropshipping /></AdminRoute>} />
+              <Route path="/admin/dropship-orders" element={<AdminRoute><AdminDropshipOrders /></AdminRoute>} />
               <Route path="/admin/fournisseurs" element={<AdminRoute><AdminSuppliers /></AdminRoute>} />
               <Route path="/admin/canaux" element={<AdminRoute><AdminSalesChannels /></AdminRoute>} />
               <Route path="/a-propos" element={<About />} />
