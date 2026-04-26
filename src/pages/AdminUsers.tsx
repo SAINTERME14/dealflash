@@ -232,9 +232,21 @@ export default function AdminUsers() {
 }
 
 function RoleChip({
-  role, busy, onRemove,
-}: { role: Role; busy: boolean; onRemove: () => void }) {
+  role, busy, onRemove, locked = false,
+}: { role: Role; busy: boolean; onRemove: () => void; locked?: boolean }) {
   const isAdmin = role === "admin";
+
+  if (locked) {
+    return (
+      <span
+        className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] border bg-accent/10 text-accent border-accent/30`}
+        title="Rôle protégé : super-administrateur"
+      >
+        <Crown className="h-3 w-3" /> {role}
+      </span>
+    );
+  }
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
