@@ -51,6 +51,9 @@ const AdminDropshipOrders = lazy(() => import("./pages/AdminDropshipOrders"));
 const About = lazy(() => import("./pages/About"));
 const MyReviews = lazy(() => import("./pages/MyReviews"));
 const SellerStats = lazy(() => import("./pages/SellerStats"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+
+import { CookieConsent } from "@/components/CookieConsent";
 
 const queryClient = new QueryClient();
 
@@ -65,6 +68,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <CookieConsent />
       <BrowserRouter>
         <Suspense fallback={<RouteFallback />}>
           <Routes>
@@ -109,6 +113,7 @@ const App = () => (
               <Route path="/admin/fournisseurs" element={<AdminRoute><AdminSuppliers /></AdminRoute>} />
               <Route path="/admin/canaux" element={<AdminRoute><AdminSalesChannels /></AdminRoute>} />
               <Route path="/a-propos" element={<About />} />
+              <Route path="/politique-confidentialite" element={<PrivacyPolicy />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
