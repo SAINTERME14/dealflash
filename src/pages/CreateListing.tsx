@@ -17,8 +17,12 @@ import { Loader2, LocateFixed, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { BucketImageUploader } from "@/components/upload/BucketImageUploader";
+import { PetitesAnnoncesFields, type PetitesAnnoncesAttributes, type PetitesAnnoncesSubSlug } from "@/components/listing/PetitesAnnoncesFields";
 
-interface Category { id: string; name: string; }
+interface Category { id: string; name: string; slug: string; parent_id: string | null; listing_type: string; }
+
+const PETITES_ANNONCES_SLUG = "petites-annonces";
+const PA_SUB_SLUGS: PetitesAnnoncesSubSlug[] = ["autos-occasion", "colocation-pa", "objets-divers"];
 
 export default function CreateListing() {
   const navigate = useNavigate();
