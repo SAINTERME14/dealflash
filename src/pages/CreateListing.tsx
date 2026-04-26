@@ -46,6 +46,7 @@ const PA_FIELD_LABELS: Record<string, string> = {
 };
 
 const PA_LIVE_REGION_ID = "pa-errors-live";
+const PA_SUMMARY_LIVE_REGION_ID = "pa-errors-summary-live";
 
 function announcePaField(fieldId: string) {
   const region = document.getElementById(PA_LIVE_REGION_ID);
@@ -120,6 +121,25 @@ export default function CreateListing() {
       .order("display_order")
       .then(({ data }) => setCategories(data ?? []));
   }, []);
+
+  // Announce total Petites annonces error count to assistive tech on mount + on change
+  useEffect(() => {
+    const region = document.getElementById(PA_SUMMARY_LIVE_REGION_ID);
+    if (!region) return;
+    const count = Object.values(paErrors).filter(Boolean).length;
+    let message = "";
+    if (count === 0) {
+      message = "Aucune erreur dans le formulaire Petites annonces.";
+    } else if (count === 1) {
+      message = "1 erreur à corriger dans le formulaire Petites annonces.";
+    } else {
+      message = `${count} erreurs à corriger dans le formulaire Petites annonces.`;
+    }
+    // Reset then set so SR re-announces even if message is identical
+    region.textContent = "";
+    const t = window.setTimeout(() => { region.textContent = message; }, 50);
+    return () => window.clearTimeout(t);
+  }, [paErrors]);
 
   const petitesAnnoncesParent = categories.find((c) => c.slug === PETITES_ANNONCES_SLUG && !c.parent_id);
   const isPetitesAnnonces = !!petitesAnnoncesParent && form.category_id === petitesAnnoncesParent.id;
@@ -251,6 +271,14 @@ export default function CreateListing() {
         {/* Polite live region for screen readers when user activates "Corriger maintenant" */}
         <div
           id={PA_LIVE_REGION_ID}
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          className="sr-only"
+        />
+        {/* Polite live region announcing the total number of Petites annonces errors */}
+        <div
+          id={PA_SUMMARY_LIVE_REGION_ID}
           role="status"
           aria-live="polite"
           aria-atomic="true"
