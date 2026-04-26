@@ -652,6 +652,217 @@ export type Database = {
         }
         Relationships: []
       }
+      seller_verification_audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_role: Database["public"]["Enums"]["app_role"] | null
+          created_at: string
+          id: string
+          new_status:
+            | Database["public"]["Enums"]["seller_verification_status"]
+            | null
+          notes: string | null
+          old_status:
+            | Database["public"]["Enums"]["seller_verification_status"]
+            | null
+          verification_id: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          actor_role?: Database["public"]["Enums"]["app_role"] | null
+          created_at?: string
+          id?: string
+          new_status?:
+            | Database["public"]["Enums"]["seller_verification_status"]
+            | null
+          notes?: string | null
+          old_status?:
+            | Database["public"]["Enums"]["seller_verification_status"]
+            | null
+          verification_id: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_role?: Database["public"]["Enums"]["app_role"] | null
+          created_at?: string
+          id?: string
+          new_status?:
+            | Database["public"]["Enums"]["seller_verification_status"]
+            | null
+          notes?: string | null
+          old_status?:
+            | Database["public"]["Enums"]["seller_verification_status"]
+            | null
+          verification_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seller_verification_audit_log_verification_id_fkey"
+            columns: ["verification_id"]
+            isOneToOne: false
+            referencedRelation: "seller_verifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      seller_verification_documents: {
+        Row: {
+          created_at: string
+          document_type: Database["public"]["Enums"]["kyc_document_type"]
+          file_name: string | null
+          file_size: number | null
+          id: string
+          mime_type: string | null
+          review_note: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["kyc_document_status"]
+          storage_path: string
+          updated_at: string
+          user_id: string
+          verification_id: string
+        }
+        Insert: {
+          created_at?: string
+          document_type: Database["public"]["Enums"]["kyc_document_type"]
+          file_name?: string | null
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["kyc_document_status"]
+          storage_path: string
+          updated_at?: string
+          user_id: string
+          verification_id: string
+        }
+        Update: {
+          created_at?: string
+          document_type?: Database["public"]["Enums"]["kyc_document_type"]
+          file_name?: string | null
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["kyc_document_status"]
+          storage_path?: string
+          updated_at?: string
+          user_id?: string
+          verification_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seller_verification_documents_verification_id_fkey"
+            columns: ["verification_id"]
+            isOneToOne: false
+            referencedRelation: "seller_verifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      seller_verifications: {
+        Row: {
+          address_line1: string | null
+          address_line2: string | null
+          business_number: string | null
+          city: string | null
+          consent_data_processing: boolean
+          consent_terms: boolean
+          country: string
+          created_at: string
+          data_retention_until: string | null
+          email: string
+          gst_number: string | null
+          id: string
+          internal_notes: string | null
+          legal_business_name: string | null
+          legal_first_name: string | null
+          legal_last_name: string | null
+          neq_number: string | null
+          phone: string | null
+          postal_code: string | null
+          profile_type: Database["public"]["Enums"]["seller_profile_type"]
+          province: string | null
+          qst_number: string | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["seller_verification_status"]
+          submitted_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address_line1?: string | null
+          address_line2?: string | null
+          business_number?: string | null
+          city?: string | null
+          consent_data_processing?: boolean
+          consent_terms?: boolean
+          country?: string
+          created_at?: string
+          data_retention_until?: string | null
+          email: string
+          gst_number?: string | null
+          id?: string
+          internal_notes?: string | null
+          legal_business_name?: string | null
+          legal_first_name?: string | null
+          legal_last_name?: string | null
+          neq_number?: string | null
+          phone?: string | null
+          postal_code?: string | null
+          profile_type?: Database["public"]["Enums"]["seller_profile_type"]
+          province?: string | null
+          qst_number?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["seller_verification_status"]
+          submitted_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address_line1?: string | null
+          address_line2?: string | null
+          business_number?: string | null
+          city?: string | null
+          consent_data_processing?: boolean
+          consent_terms?: boolean
+          country?: string
+          created_at?: string
+          data_retention_until?: string | null
+          email?: string
+          gst_number?: string | null
+          id?: string
+          internal_notes?: string | null
+          legal_business_name?: string | null
+          legal_first_name?: string | null
+          legal_last_name?: string | null
+          neq_number?: string | null
+          phone?: string | null
+          postal_code?: string | null
+          profile_type?: Database["public"]["Enums"]["seller_profile_type"]
+          province?: string | null
+          qst_number?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["seller_verification_status"]
+          submitted_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       site_content: {
         Row: {
           category: string
@@ -805,6 +1016,7 @@ export type Database = {
     }
     Functions: {
       can_manage_seller_notes: { Args: { _user_id: string }; Returns: boolean }
+      can_publish_listings: { Args: { _user_id: string }; Returns: boolean }
       expire_featured_listings: { Args: never; Returns: number }
       get_primary_role: {
         Args: { _user_id: string }
@@ -833,9 +1045,30 @@ export type Database = {
         | "cancelled"
         | "completed"
         | "no_show"
+      kyc_document_status: "pending" | "accepted" | "rejected"
+      kyc_document_type:
+        | "gov_id_front"
+        | "gov_id_back"
+        | "selfie_with_id"
+        | "proof_of_address"
+        | "business_registration"
+        | "tax_certificate_neq"
+        | "tax_certificate_bn"
+        | "tax_certificate_gst_qst"
+        | "work_authorization"
+        | "professional_license"
+        | "other"
       listing_status: "draft" | "active" | "paused" | "sold" | "archived"
       listing_type: "product" | "vehicle" | "rental" | "hotel" | "service"
       seller_application_status: "new" | "contacted" | "approved" | "rejected"
+      seller_profile_type: "individual" | "self_employed" | "corporation"
+      seller_verification_status:
+        | "draft"
+        | "submitted"
+        | "under_review"
+        | "more_info_required"
+        | "approved"
+        | "rejected"
       ticket_status:
         | "pending"
         | "paid"
@@ -986,9 +1219,32 @@ export const Constants = {
         "completed",
         "no_show",
       ],
+      kyc_document_status: ["pending", "accepted", "rejected"],
+      kyc_document_type: [
+        "gov_id_front",
+        "gov_id_back",
+        "selfie_with_id",
+        "proof_of_address",
+        "business_registration",
+        "tax_certificate_neq",
+        "tax_certificate_bn",
+        "tax_certificate_gst_qst",
+        "work_authorization",
+        "professional_license",
+        "other",
+      ],
       listing_status: ["draft", "active", "paused", "sold", "archived"],
       listing_type: ["product", "vehicle", "rental", "hotel", "service"],
       seller_application_status: ["new", "contacted", "approved", "rejected"],
+      seller_profile_type: ["individual", "self_employed", "corporation"],
+      seller_verification_status: [
+        "draft",
+        "submitted",
+        "under_review",
+        "more_info_required",
+        "approved",
+        "rejected",
+      ],
       ticket_status: [
         "pending",
         "paid",
