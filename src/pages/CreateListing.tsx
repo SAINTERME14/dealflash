@@ -45,6 +45,19 @@ const PA_FIELD_LABELS: Record<string, string> = {
   brand: "Marque",
 };
 
+const PA_LIVE_REGION_ID = "pa-errors-live";
+
+function announcePaField(fieldId: string) {
+  const region = document.getElementById(PA_LIVE_REGION_ID);
+  if (!region) return;
+  const label = PA_FIELD_LABELS[fieldId] ?? fieldId;
+  // Reset then set so the same message re-triggers an SR announcement
+  region.textContent = "";
+  window.setTimeout(() => {
+    region.textContent = `Champ en erreur : ${label}. Focus déplacé sur le champ.`;
+  }, 50);
+}
+
 function focusPaField(fieldId: string) {
   requestAnimationFrame(() => {
     const el = document.getElementById(fieldId);
@@ -60,6 +73,8 @@ function focusPaField(fieldId: string) {
     void (el as HTMLElement).offsetWidth;
     el.classList.add(FLASH);
     window.setTimeout(() => el.classList.remove(FLASH), 1300);
+    // Screen-reader announcement
+    announcePaField(fieldId);
   });
 }
 
