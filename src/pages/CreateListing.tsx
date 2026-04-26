@@ -292,10 +292,19 @@ export default function CreateListing() {
           if (orderedErrors.length === 0) return null;
           return (
             <Alert variant="destructive" role="alert" aria-live="polite">
-              <AlertTitle>
-                {orderedErrors.length === 1
-                  ? "1 champ à corriger"
-                  : `${orderedErrors.length} champs à corriger`}
+              <AlertTitle className="flex flex-wrap items-center justify-between gap-2">
+                <span>
+                  {orderedErrors.length === 1
+                    ? "1 champ à corriger"
+                    : `${orderedErrors.length} champs à corriger`}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => focusPaField(orderedErrors[0].key)}
+                  className="text-sm font-medium underline underline-offset-2 hover:no-underline"
+                >
+                  Voir les erreurs ({orderedErrors.length})
+                </button>
               </AlertTitle>
               <AlertDescription>
                 <ul className="mt-2 space-y-1">
