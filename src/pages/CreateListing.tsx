@@ -36,6 +36,7 @@ export default function CreateListing() {
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const { request: requestGeo, loading: geoLoading } = useGeolocation();
   const [paAttributes, setPaAttributes] = useState<PetitesAnnoncesAttributes>({});
+  const [paErrors, setPaErrors] = useState<PetitesAnnoncesFieldErrors>({});
   const [form, setForm] = useState({
     title: "",
     description: "",
