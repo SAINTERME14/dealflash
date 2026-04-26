@@ -34,11 +34,13 @@ export default function CreateListing() {
   const [images, setImages] = useState<string[]>([]);
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const { request: requestGeo, loading: geoLoading } = useGeolocation();
+  const [paAttributes, setPaAttributes] = useState<PetitesAnnoncesAttributes>({});
   const [form, setForm] = useState({
     title: "",
     description: "",
     price: "",
     category_id: "",
+    subcategory_id: "",
     city: "",
     region: "QC",
     address: "",
@@ -47,9 +49,26 @@ export default function CreateListing() {
 
   useEffect(() => {
     document.title = "Publier une annonce — DealFlash";
-    supabase.from("categories").select("id, name").eq("is_active", true).order("display_order")
+    supabase
+      .from("categories")
+      .select("id, name, slug, parent_id, listing_type")
+      .eq("is_active", true)
+      .order("display_order")
       .then(({ data }) => setCategories(data ?? []));
   }, []);
+
+  const petitesAnnoncesParent = categories.find((c) => c.slug === PETITES_ANNONCES_SLUG && !c.parent_id);
+  const isPetitesAnnonces = !!petitesAnnoncesParent && form.category_id === petitesAnnoncesParent.id;
+  const paSubcategories = isPetitesAnnonces
+    ? categories.filter((c) => c.parent_id === petitesAnnoncesParent!.id)
+    : [];
+  const selectedSub = paSubcategories.find((c) => c.id === form.subcategory_id);
+  const selectedSubSlug = selectedSub && (PA_SUB_SLUGS as string[]).includes(selectedSub.slug)
+    ? (selectedSub.slug as PetitesAnnoncesSubSlug)
+    : null;
+
+  // Top-level categories only for the main selector
+  const topLevelCategories = categories.filter((c) => !c.parent_id);
 
   const handleUseLocation = async () => {
     try {
