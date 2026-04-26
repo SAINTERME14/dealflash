@@ -52,7 +52,7 @@ export function Footer() {
           <p>© {new Date().getFullYear()} DealFlash Inc. — Laval, Québec, Canada</p>
           <div className="flex gap-4">
             <Link to="/conditions" className="hover:text-foreground transition-smooth">Conditions</Link>
-            <Link to="/confidentialite" className="hover:text-foreground transition-smooth">Confidentialité</Link>
+            <Link to="/politique-confidentialite" className="hover:text-foreground transition-smooth">Confidentialité</Link>
           </div>
         </div>
       </div>
