@@ -276,6 +276,14 @@ export default function CreateListing() {
           aria-atomic="true"
           className="sr-only"
         />
+        {/* Polite live region announcing the total number of Petites annonces errors */}
+        <div
+          id={PA_SUMMARY_LIVE_REGION_ID}
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          className="sr-only"
+        />
         {selectedSubSlug && Object.keys(paErrors).length > 0 && (() => {
           const order = PA_FIELD_ORDER[selectedSubSlug];
           const orderedErrors = order
