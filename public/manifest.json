@@ -2,13 +2,17 @@
   "name": "DealFlash — Marketplace Québec",
   "short_name": "DealFlash",
   "description": "Le marketplace local du Québec pour acheter, vendre et réserver.",
-  "start_url": "/app",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#0a1f4d",
   "theme_color": "#0a1f4d",
   "orientation": "portrait",
+  "lang": "fr-CA",
+  "categories": ["shopping", "lifestyle", "business"],
   "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
     { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
     { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
