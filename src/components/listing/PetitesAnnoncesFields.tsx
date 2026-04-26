@@ -181,7 +181,7 @@ export function PetitesAnnoncesFields({ subSlug, values, onChange, errors = {} }
           <div>
             <Label htmlFor="furnished">Meublé</Label>
             <Select value={values.furnished ?? ""} onValueChange={(v) => set({ furnished: v })}>
-              <SelectTrigger className={cn(errors.furnished && errorInputClass)}>
+              <SelectTrigger id="furnished" className={cn(errors.furnished && errorInputClass)}>
                 <SelectValue placeholder="Choisir" />
               </SelectTrigger>
               <SelectContent>
