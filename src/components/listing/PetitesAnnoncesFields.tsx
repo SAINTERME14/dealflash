@@ -85,7 +85,7 @@ export function PetitesAnnoncesFields({ subSlug, values, onChange, errors = {} }
           <div>
             <Label htmlFor="transmission">Transmission</Label>
             <Select value={values.transmission ?? ""} onValueChange={(v) => set({ transmission: v })}>
-              <SelectTrigger className={cn(errors.transmission && errorInputClass)}>
+              <SelectTrigger id="transmission" className={cn(errors.transmission && errorInputClass)}>
                 <SelectValue placeholder="Choisir" />
               </SelectTrigger>
               <SelectContent>
