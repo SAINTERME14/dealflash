@@ -244,7 +244,7 @@ export default function CreateListing() {
                   setPaErrors({});
                 }}
               >
-                <SelectTrigger><SelectValue placeholder="Auto, colocation, objet…" /></SelectTrigger>
+                <SelectTrigger id="subcategory"><SelectValue placeholder="Auto, colocation, objet…" /></SelectTrigger>
                 <SelectContent>
                   {paSubcategories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                 </SelectContent>
