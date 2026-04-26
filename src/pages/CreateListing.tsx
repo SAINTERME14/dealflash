@@ -119,10 +119,35 @@ export default function CreateListing() {
       toast.error("Veuillez remplir tous les champs obligatoires");
       return;
     }
+
+    // Petites annonces : sous-catégorie obligatoire + validation des champs spécifiques
+    let attributes: Record<string, unknown> = {};
+    let listingType = selectedSub?.listing_type ?? topLevelCategories.find((c) => c.id === form.category_id)?.listing_type ?? "product";
+    if (isPetitesAnnonces) {
+      if (!form.subcategory_id || !selectedSubSlug) {
+        toast.error("Veuillez choisir une sous-catégorie");
+        return;
+      }
+      if (selectedSubSlug === "autos-occasion" && (!paAttributes.year || !paAttributes.mileage_km)) {
+        toast.error("Année et kilométrage sont obligatoires");
+        return;
+      }
+      if (selectedSubSlug === "colocation-pa" && (!paAttributes.budget_max || !paAttributes.room_type)) {
+        toast.error("Budget et type de chambre sont obligatoires");
+        return;
+      }
+      if (selectedSubSlug === "objets-divers" && !paAttributes.condition) {
+        toast.error("L'état de l'objet est obligatoire");
+        return;
+      }
+      attributes = { ...paAttributes };
+    }
+
     setLoading(true);
     const { data, error } = await supabase.from("listings").insert({
       seller_id: user.id,
       category_id: form.category_id,
+      subcategory_id: form.subcategory_id || null,
       title: form.title,
       description: form.description,
       price: parseFloat(form.price),
@@ -133,6 +158,8 @@ export default function CreateListing() {
       longitude: coords?.lng ?? null,
       images,
       allows_booking: form.allows_booking,
+      attributes,
+      listing_type: listingType as "product" | "vehicle" | "rental" | "hotel" | "service",
       status,
     }).select("id").single();
     setLoading(false);
