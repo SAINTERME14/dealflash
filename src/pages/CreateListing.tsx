@@ -53,6 +53,13 @@ function focusPaField(fieldId: string) {
     if (typeof (el as HTMLElement).focus === "function") {
       try { (el as HTMLElement).focus({ preventScroll: true }); } catch { /* noop */ }
     }
+    // Flash highlight: restart animation if class is already present
+    const FLASH = "animate-field-flash";
+    el.classList.remove(FLASH);
+    // Force reflow so the animation can replay
+    void (el as HTMLElement).offsetWidth;
+    el.classList.add(FLASH);
+    window.setTimeout(() => el.classList.remove(FLASH), 1300);
   });
 }
 
