@@ -27,6 +27,35 @@ export default function CreateListing() {
   const { isAdmin, loading: adminLoading } = useIsAdmin();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
+  const [images, setImages] = useState<string[]>([]);
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const { request: requestGeo, loading: geoLoading } = useGeolocation();
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    price: "",
+    category_id: "",
+    city: "",
+    region: "QC",
+    address: "",
+    allows_booking: false,
+  });
+
+  useEffect(() => {
+    document.title = "Publier une annonce — DealFlash";
+    supabase.from("categories").select("id, name").eq("is_active", true).order("display_order")
+      .then(({ data }) => setCategories(data ?? []));
+  }, []);
+
+  const handleUseLocation = async () => {
+    try {
+      const pos = await requestGeo();
+      setCoords({ lat: pos.lat, lng: pos.lng });
+      toast.success("Position enregistrée pour cette annonce");
+    } catch {
+      toast.error("Impossible d'obtenir votre position");
+    }
+  };
 
   // Block listing creation if not verified (admins bypass)
   if (verifLoading || adminLoading) {
@@ -58,37 +87,6 @@ export default function CreateListing() {
       </div>
     );
   }
-
-  
-  const [images, setImages] = useState<string[]>([]);
-  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
-  const { request: requestGeo, loading: geoLoading } = useGeolocation();
-  const [form, setForm] = useState({
-    title: "",
-    description: "",
-    price: "",
-    category_id: "",
-    city: "",
-    region: "QC",
-    address: "",
-    allows_booking: false,
-  });
-
-  const handleUseLocation = async () => {
-    try {
-      const pos = await requestGeo();
-      setCoords({ lat: pos.lat, lng: pos.lng });
-      toast.success("Position enregistrée pour cette annonce");
-    } catch {
-      toast.error("Impossible d'obtenir votre position");
-    }
-  };
-
-  useEffect(() => {
-    document.title = "Publier une annonce — DealFlash";
-    supabase.from("categories").select("id, name").eq("is_active", true).order("display_order")
-      .then(({ data }) => setCategories(data ?? []));
-  }, []);
 
 
   const handleSubmit = async (e: React.FormEvent, status: 'draft' | 'active') => {
