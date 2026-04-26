@@ -17,8 +17,12 @@ import { Loader2, LocateFixed, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { BucketImageUploader } from "@/components/upload/BucketImageUploader";
+import { PetitesAnnoncesFields, type PetitesAnnoncesAttributes, type PetitesAnnoncesSubSlug } from "@/components/listing/PetitesAnnoncesFields";
 
-interface Category { id: string; name: string; }
+interface Category { id: string; name: string; slug: string; parent_id: string | null; listing_type: string; }
+
+const PETITES_ANNONCES_SLUG = "petites-annonces";
+const PA_SUB_SLUGS: PetitesAnnoncesSubSlug[] = ["autos-occasion", "colocation-pa", "objets-divers"];
 
 export default function CreateListing() {
   const navigate = useNavigate();
@@ -30,11 +34,13 @@ export default function CreateListing() {
   const [images, setImages] = useState<string[]>([]);
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const { request: requestGeo, loading: geoLoading } = useGeolocation();
+  const [paAttributes, setPaAttributes] = useState<PetitesAnnoncesAttributes>({});
   const [form, setForm] = useState({
     title: "",
     description: "",
     price: "",
     category_id: "",
+    subcategory_id: "",
     city: "",
     region: "QC",
     address: "",
@@ -43,9 +49,26 @@ export default function CreateListing() {
 
   useEffect(() => {
     document.title = "Publier une annonce — DealFlash";
-    supabase.from("categories").select("id, name").eq("is_active", true).order("display_order")
+    supabase
+      .from("categories")
+      .select("id, name, slug, parent_id, listing_type")
+      .eq("is_active", true)
+      .order("display_order")
       .then(({ data }) => setCategories(data ?? []));
   }, []);
+
+  const petitesAnnoncesParent = categories.find((c) => c.slug === PETITES_ANNONCES_SLUG && !c.parent_id);
+  const isPetitesAnnonces = !!petitesAnnoncesParent && form.category_id === petitesAnnoncesParent.id;
+  const paSubcategories = isPetitesAnnonces
+    ? categories.filter((c) => c.parent_id === petitesAnnoncesParent!.id)
+    : [];
+  const selectedSub = paSubcategories.find((c) => c.id === form.subcategory_id);
+  const selectedSubSlug = selectedSub && (PA_SUB_SLUGS as string[]).includes(selectedSub.slug)
+    ? (selectedSub.slug as PetitesAnnoncesSubSlug)
+    : null;
+
+  // Top-level categories only for the main selector
+  const topLevelCategories = categories.filter((c) => !c.parent_id);
 
   const handleUseLocation = async () => {
     try {
@@ -96,10 +119,35 @@ export default function CreateListing() {
       toast.error("Veuillez remplir tous les champs obligatoires");
       return;
     }
+
+    // Petites annonces : sous-catégorie obligatoire + validation des champs spécifiques
+    let attributes: Record<string, unknown> = {};
+    let listingType = selectedSub?.listing_type ?? topLevelCategories.find((c) => c.id === form.category_id)?.listing_type ?? "product";
+    if (isPetitesAnnonces) {
+      if (!form.subcategory_id || !selectedSubSlug) {
+        toast.error("Veuillez choisir une sous-catégorie");
+        return;
+      }
+      if (selectedSubSlug === "autos-occasion" && (!paAttributes.year || !paAttributes.mileage_km)) {
+        toast.error("Année et kilométrage sont obligatoires");
+        return;
+      }
+      if (selectedSubSlug === "colocation-pa" && (!paAttributes.budget_max || !paAttributes.room_type)) {
+        toast.error("Budget et type de chambre sont obligatoires");
+        return;
+      }
+      if (selectedSubSlug === "objets-divers" && !paAttributes.condition) {
+        toast.error("L'état de l'objet est obligatoire");
+        return;
+      }
+      attributes = { ...paAttributes };
+    }
+
     setLoading(true);
     const { data, error } = await supabase.from("listings").insert({
       seller_id: user.id,
       category_id: form.category_id,
+      subcategory_id: form.subcategory_id || null,
       title: form.title,
       description: form.description,
       price: parseFloat(form.price),
@@ -110,6 +158,8 @@ export default function CreateListing() {
       longitude: coords?.lng ?? null,
       images,
       allows_booking: form.allows_booking,
+      attributes: attributes as Record<string, string>,
+      listing_type: listingType as "product" | "vehicle" | "rental" | "hotel" | "service",
       status,
     }).select("id").single();
     setLoading(false);
@@ -135,13 +185,48 @@ export default function CreateListing() {
           </div>
           <div>
             <Label htmlFor="category">Catégorie *</Label>
-            <Select value={form.category_id} onValueChange={(v) => setForm({ ...form, category_id: v })}>
+            <Select
+              value={form.category_id}
+              onValueChange={(v) => {
+                setForm({ ...form, category_id: v, subcategory_id: "" });
+                setPaAttributes({});
+              }}
+            >
               <SelectTrigger><SelectValue placeholder="Choisir une catégorie" /></SelectTrigger>
               <SelectContent>
-                {categories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                {topLevelCategories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
+
+          {isPetitesAnnonces && (
+            <div>
+              <Label htmlFor="subcategory">Sous-catégorie *</Label>
+              <Select
+                value={form.subcategory_id}
+                onValueChange={(v) => {
+                  setForm({ ...form, subcategory_id: v });
+                  setPaAttributes({});
+                }}
+              >
+                <SelectTrigger><SelectValue placeholder="Auto, colocation, objet…" /></SelectTrigger>
+                <SelectContent>
+                  {paSubcategories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {selectedSubSlug && (
+            <div className="rounded-md border border-border bg-muted/30 p-4">
+              <p className="text-sm font-medium mb-3">Détails spécifiques</p>
+              <PetitesAnnoncesFields
+                subSlug={selectedSubSlug}
+                values={paAttributes}
+                onChange={setPaAttributes}
+              />
+            </div>
+          )}
           <div>
             <Label htmlFor="description">Description *</Label>
             <Textarea id="description" rows={6} required value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Décrivez votre article en détail…" />
