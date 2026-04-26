@@ -14,6 +14,7 @@ import AdminUsers from "./pages/AdminUsers";
 import AdminTickets from "./pages/AdminTickets";
 import AdminAuditLog from "./pages/AdminAuditLog";
 import AdminTasks from "./pages/AdminTasks";
+import AdminFinances from "./pages/AdminFinances";
 import AdminSellerApplications from "./pages/AdminSellerApplications";
 import AdminSellerApplicationDetail from "./pages/AdminSellerApplicationDetail";
 import AdminVerifications from "./pages/AdminVerifications";
