@@ -139,9 +139,11 @@ export default function CreateListing() {
       }
       const result = validatePetitesAnnonces(selectedSubSlug, paAttributes as Record<string, unknown>);
       if (result.ok === false) {
+        setPaErrors(result.fieldErrors);
         toast.error(result.error);
         return;
       }
+      setPaErrors({});
       attributes = result.data;
     }
 
