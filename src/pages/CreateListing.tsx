@@ -160,12 +160,16 @@ export default function CreateListing() {
     if (isPetitesAnnonces) {
       if (!form.subcategory_id || !selectedSubSlug) {
         toast.error("Veuillez choisir une sous-catégorie");
+        requestAnimationFrame(() => {
+          document.getElementById("subcategory")?.scrollIntoView({ behavior: "smooth", block: "center" });
+        });
         return;
       }
       const result = validatePetitesAnnonces(selectedSubSlug, paAttributes as Record<string, unknown>);
       if (result.ok === false) {
         setPaErrors(result.fieldErrors);
         toast.error(result.error);
+        scrollToFirstPaError(selectedSubSlug, result.fieldErrors);
         return;
       }
       setPaErrors({});
