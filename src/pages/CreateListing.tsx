@@ -17,7 +17,7 @@ import { Loader2, LocateFixed, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { BucketImageUploader } from "@/components/upload/BucketImageUploader";
-import { PetitesAnnoncesFields, type PetitesAnnoncesAttributes, type PetitesAnnoncesSubSlug } from "@/components/listing/PetitesAnnoncesFields";
+import { PetitesAnnoncesFields, type PetitesAnnoncesAttributes, type PetitesAnnoncesSubSlug, type PetitesAnnoncesFieldErrors } from "@/components/listing/PetitesAnnoncesFields";
 import { validatePetitesAnnonces } from "@/lib/petitesAnnoncesValidation";
 
 interface Category { id: string; name: string; slug: string; parent_id: string | null; listing_type: string; }
@@ -36,6 +36,7 @@ export default function CreateListing() {
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const { request: requestGeo, loading: geoLoading } = useGeolocation();
   const [paAttributes, setPaAttributes] = useState<PetitesAnnoncesAttributes>({});
+  const [paErrors, setPaErrors] = useState<PetitesAnnoncesFieldErrors>({});
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -138,9 +139,11 @@ export default function CreateListing() {
       }
       const result = validatePetitesAnnonces(selectedSubSlug, paAttributes as Record<string, unknown>);
       if (result.ok === false) {
+        setPaErrors(result.fieldErrors);
         toast.error(result.error);
         return;
       }
+      setPaErrors({});
       attributes = result.data;
     }
 
@@ -191,6 +194,7 @@ export default function CreateListing() {
               onValueChange={(v) => {
                 setForm({ ...form, category_id: v, subcategory_id: "" });
                 setPaAttributes({});
+                setPaErrors({});
               }}
             >
               <SelectTrigger><SelectValue placeholder="Choisir une catégorie" /></SelectTrigger>
@@ -208,6 +212,7 @@ export default function CreateListing() {
                 onValueChange={(v) => {
                   setForm({ ...form, subcategory_id: v });
                   setPaAttributes({});
+                  setPaErrors({});
                 }}
               >
                 <SelectTrigger><SelectValue placeholder="Auto, colocation, objet…" /></SelectTrigger>
@@ -224,7 +229,11 @@ export default function CreateListing() {
               <PetitesAnnoncesFields
                 subSlug={selectedSubSlug}
                 values={paAttributes}
-                onChange={setPaAttributes}
+                onChange={(next) => {
+                  setPaAttributes(next);
+                  if (Object.keys(paErrors).length > 0) setPaErrors({});
+                }}
+                errors={paErrors}
               />
             </div>
           )}
