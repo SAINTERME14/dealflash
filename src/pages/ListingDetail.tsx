@@ -198,6 +198,13 @@ export default function ListingDetail() {
           <Card className="p-6 shadow-elevated lg:sticky lg:top-20">
             <p className="text-3xl font-bold text-primary">{formattedPrice}</p>
             {listing.categories && <Badge variant="secondary" className="mt-2">{listing.categories.name}</Badge>}
+            {listingStats && listingStats.total > 0 && (
+              <a href="#avis" className="mt-3 flex items-center gap-2 text-sm hover:underline">
+                <StarRating value={listingStats.avg} size="sm" />
+                <span className="font-medium">{listingStats.avg.toFixed(1)}</span>
+                <span className="text-muted-foreground">({listingStats.total} avis)</span>
+              </a>
+            )}
 
             <div className="mt-6 space-y-2">
               {listing.allows_booking && (
