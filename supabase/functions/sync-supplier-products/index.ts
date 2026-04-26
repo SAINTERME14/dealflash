@@ -4,6 +4,7 @@
 // Sécurisé : exige un JWT admin valide.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { listCJProducts, type CJProductListItem } from "../_shared/cj.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -14,6 +15,9 @@ interface SyncBody {
   supplier_id: string;
   mode?: "csv" | "api";
   csv?: string; // contenu CSV brut (mode csv)
+  page?: number; // mode api CJ : page à synchroniser (par défaut 1)
+  pageSize?: number; // taille de page (max 200)
+  maxPages?: number; // nb max de pages à parcourir (par défaut 5)
 }
 
 interface ParsedProduct {
@@ -109,11 +113,46 @@ Deno.serve(async (req) => {
     if (body.mode === "csv" && body.csv) {
       products = parseCsv(body.csv);
     } else if (supplier.type === "cj_dropshipping") {
-      // Scaffolding CJ Dropshipping — branchement API à compléter avec credentials réels
-      // Doc : https://developers.cjdropshipping.com
-      return new Response(JSON.stringify({
-        error: "CJ Dropshipping API non configurée. Ajoutez la clé API CJ via Lovable Cloud puis activez la synchronisation."
-      }), { status: 501, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      // Sync live via l'API CJ Dropshipping
+      if (!Deno.env.get("CJ_EMAIL") || !Deno.env.get("CJ_API_KEY")) {
+        return new Response(JSON.stringify({
+          error: "Secrets CJ_EMAIL et CJ_API_KEY non configurés"
+        }), { status: 501, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      const pageSize = Math.min(body.pageSize ?? 50, 200);
+      const maxPages = Math.min(body.maxPages ?? 5, 20);
+      const startPage = body.page ?? 1;
+      const collected: CJProductListItem[] = [];
+      try {
+        for (let p = startPage; p < startPage + maxPages; p++) {
+          const resp = await listCJProducts({ pageNum: p, pageSize });
+          if (!resp?.list?.length) break;
+          collected.push(...resp.list);
+          if (resp.list.length < pageSize) break;
+          // throttle ~1 req/s recommandé par CJ
+          await new Promise((r) => setTimeout(r, 1100));
+        }
+      } catch (e) {
+        return new Response(JSON.stringify({
+          error: e instanceof Error ? e.message : "Erreur API CJ"
+        }), { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      products = collected.map((p) => {
+        const imgs = p.productImageSet
+          ? p.productImageSet.split(/[;,]\s*/).filter(Boolean)
+          : (p.productImage ? [p.productImage] : []);
+        return {
+          external_sku: p.productSku || p.pid,
+          title: p.productNameEn || p.productName,
+          description: p.categoryName,
+          wholesale_price: p.sellPrice ? parseFloat(String(p.sellPrice).split("--")[0]) || 0 : 0,
+          currency: "USD",
+          stock_quantity: null,
+          images: imgs,
+          source_url: p.productUrl,
+          raw_data: p as unknown as Record<string, unknown>,
+        };
+      }).filter((p) => p.external_sku && p.title);
     } else if (supplier.type === "generic_api" && supplier.api_endpoint) {
       const resp = await fetch(supplier.api_endpoint, {
         headers: supplier.api_key_secret_name

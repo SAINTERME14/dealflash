@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, ShoppingCart, ExternalLink } from "lucide-react";
+import { Loader2, ShoppingCart, ExternalLink, Send, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
 type OrderStatus = "pending" | "ordered" | "shipped" | "delivered" | "cancelled" | "refunded";
@@ -31,7 +31,7 @@ interface DropshipOrder {
   dealflash_product_id: string;
   ticket_id: string | null;
   dealflash_products?: { title: string; internal_sku: string } | null;
-  suppliers?: { name: string } | null;
+  suppliers?: { name: string; type: string } | null;
 }
 
 const statusVariants: Record<OrderStatus, "default" | "secondary" | "outline" | "destructive"> = {
@@ -57,6 +57,8 @@ export default function AdminDropshipOrders() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<OrderStatus | "all">("all");
   const [editing, setEditing] = useState<DropshipOrder | null>(null);
+  const [actionId, setActionId] = useState<string | null>(null);
+  const [syncingTracking, setSyncingTracking] = useState(false);
   const [form, setForm] = useState({
     status: "pending" as OrderStatus,
     external_order_id: "",
@@ -65,11 +67,43 @@ export default function AdminDropshipOrders() {
     notes: "",
   });
 
+  const placeOnCJ = async (o: DropshipOrder) => {
+    setActionId(o.id);
+    try {
+      const { data, error } = await supabase.functions.invoke("cj-place-order", {
+        body: { dropship_order_id: o.id },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      toast.success(`Commande envoyée à CJ (réf : ${data.external_order_id})`);
+      load();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erreur envoi CJ");
+    } finally {
+      setActionId(null);
+    }
+  };
+
+  const syncTracking = async () => {
+    setSyncingTracking(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("cj-sync-tracking", { body: {} });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      toast.success(`${data.updated ?? 0} commande(s) mise(s) à jour sur ${data.scanned ?? 0} scannées`);
+      load();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erreur sync tracking");
+    } finally {
+      setSyncingTracking(false);
+    }
+  };
+
   const load = async () => {
     setLoading(true);
     let query = supabase
       .from("dropship_orders")
-      .select("*, dealflash_products(title, internal_sku), suppliers(name)")
+      .select("*, dealflash_products(title, internal_sku), suppliers(name, type)")
       .order("created_at", { ascending: false });
     if (filter !== "all") query = query.eq("status", filter);
     const { data, error } = await query;
@@ -122,15 +156,21 @@ export default function AdminDropshipOrders() {
               Suivi des commandes passées aux fournisseurs externes.
             </p>
           </div>
-          <Select value={filter} onValueChange={(v) => setFilter(v as OrderStatus | "all")}>
-            <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tous les statuts</SelectItem>
-              {Object.entries(statusLabels).map(([k, v]) => (
-                <SelectItem key={k} value={k}>{v}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button onClick={syncTracking} variant="outline" size="sm" disabled={syncingTracking}>
+              {syncingTracking ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <RefreshCw className="h-4 w-4 mr-1" />}
+              Sync tracking CJ
+            </Button>
+            <Select value={filter} onValueChange={(v) => setFilter(v as OrderStatus | "all")}>
+              <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tous les statuts</SelectItem>
+                {Object.entries(statusLabels).map(([k, v]) => (
+                  <SelectItem key={k} value={k}>{v}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {loading ? (
@@ -169,9 +209,22 @@ export default function AdminDropshipOrders() {
                       )}
                     </div>
                   </div>
-                  <Button onClick={() => openEdit(o)} variant="outline" size="sm" className="self-start">
-                    Modifier
-                  </Button>
+                  <div className="flex flex-col gap-2 self-start">
+                    {o.status === "pending" && o.suppliers?.type === "cj_dropshipping" && (
+                      <Button
+                        onClick={() => placeOnCJ(o)}
+                        variant="hero"
+                        size="sm"
+                        disabled={actionId === o.id}
+                      >
+                        {actionId === o.id ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Send className="h-3 w-3 mr-1" />}
+                        Envoyer à CJ
+                      </Button>
+                    )}
+                    <Button onClick={() => openEdit(o)} variant="outline" size="sm">
+                      Modifier
+                    </Button>
+                  </div>
                 </div>
               </Card>
             ))}
