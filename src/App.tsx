@@ -48,6 +48,8 @@ const AdminSalesChannels = lazy(() => import("./pages/AdminSalesChannels"));
 const AdminDropshipOverview = lazy(() => import("./pages/AdminDropshipOverview"));
 const AdminDropshipOrders = lazy(() => import("./pages/AdminDropshipOrders"));
 const About = lazy(() => import("./pages/About"));
+const MyReviews = lazy(() => import("./pages/MyReviews"));
+const SellerStats = lazy(() => import("./pages/SellerStats"));
 
 const queryClient = new QueryClient();
 
@@ -82,6 +84,8 @@ const App = () => (
               <Route path="/favoris" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
               <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
               <Route path="/profil" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="/mes-avis" element={<ProtectedRoute><MyReviews /></ProtectedRoute>} />
+              <Route path="/statistiques-vendeur" element={<ProtectedRoute><SellerStats /></ProtectedRoute>} />
               <Route path="/support" element={<ProtectedRoute><Support /></ProtectedRoute>} />
               <Route path="/support/:id" element={<ProtectedRoute><SupportTicket /></ProtectedRoute>} />
               <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
