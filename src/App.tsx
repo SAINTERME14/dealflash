@@ -42,6 +42,10 @@ const AdminSellerApplications = lazy(() => import("./pages/AdminSellerApplicatio
 const AdminSellerApplicationDetail = lazy(() => import("./pages/AdminSellerApplicationDetail"));
 const AdminVerifications = lazy(() => import("./pages/AdminVerifications"));
 const AdminVerificationDetail = lazy(() => import("./pages/AdminVerificationDetail"));
+const AdminDropshipping = lazy(() => import("./pages/AdminDropshipping"));
+const AdminSuppliers = lazy(() => import("./pages/AdminSuppliers"));
+const AdminSalesChannels = lazy(() => import("./pages/AdminSalesChannels"));
+const About = lazy(() => import("./pages/About"));
 
 const queryClient = new QueryClient();
 
@@ -91,6 +95,10 @@ const App = () => (
               <Route path="/admin/demandes-vendeurs/:id" element={<SellerNotesRoute><AdminSellerApplicationDetail /></SellerNotesRoute>} />
               <Route path="/admin/verifications" element={<AdminRoute><AdminVerifications /></AdminRoute>} />
               <Route path="/admin/verifications/:id" element={<AdminRoute><AdminVerificationDetail /></AdminRoute>} />
+              <Route path="/admin/dropshipping" element={<AdminRoute><AdminDropshipping /></AdminRoute>} />
+              <Route path="/admin/fournisseurs" element={<AdminRoute><AdminSuppliers /></AdminRoute>} />
+              <Route path="/admin/canaux" element={<AdminRoute><AdminSalesChannels /></AdminRoute>} />
+              <Route path="/a-propos" element={<About />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>

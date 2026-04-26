@@ -255,6 +255,230 @@ export type Database = {
           },
         ]
       }
+      channel_listings: {
+        Row: {
+          channel_id: string
+          created_at: string
+          dealflash_product_id: string
+          external_id: string | null
+          external_url: string | null
+          id: string
+          last_error: string | null
+          last_synced_at: string | null
+          payload: Json
+          status: Database["public"]["Enums"]["channel_listing_status"]
+          updated_at: string
+        }
+        Insert: {
+          channel_id: string
+          created_at?: string
+          dealflash_product_id: string
+          external_id?: string | null
+          external_url?: string | null
+          id?: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          payload?: Json
+          status?: Database["public"]["Enums"]["channel_listing_status"]
+          updated_at?: string
+        }
+        Update: {
+          channel_id?: string
+          created_at?: string
+          dealflash_product_id?: string
+          external_id?: string | null
+          external_url?: string | null
+          id?: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          payload?: Json
+          status?: Database["public"]["Enums"]["channel_listing_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "channel_listings_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "sales_channels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "channel_listings_dealflash_product_id_fkey"
+            columns: ["dealflash_product_id"]
+            isOneToOne: false
+            referencedRelation: "dealflash_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dealflash_products: {
+        Row: {
+          cost_price: number
+          created_at: string
+          currency: string
+          description: string | null
+          id: string
+          images: string[]
+          internal_notes: string | null
+          internal_sku: string
+          listing_id: string | null
+          margin_percent: number
+          selling_price: number
+          status: Database["public"]["Enums"]["dealflash_product_status"]
+          stock_quantity: number | null
+          supplier_product_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          cost_price: number
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          images?: string[]
+          internal_notes?: string | null
+          internal_sku: string
+          listing_id?: string | null
+          margin_percent?: number
+          selling_price: number
+          status?: Database["public"]["Enums"]["dealflash_product_status"]
+          stock_quantity?: number | null
+          supplier_product_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          cost_price?: number
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          images?: string[]
+          internal_notes?: string | null
+          internal_sku?: string
+          listing_id?: string | null
+          margin_percent?: number
+          selling_price?: number
+          status?: Database["public"]["Enums"]["dealflash_product_status"]
+          stock_quantity?: number | null
+          supplier_product_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dealflash_products_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dealflash_products_supplier_product_id_fkey"
+            columns: ["supplier_product_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dropship_orders: {
+        Row: {
+          channel_id: string | null
+          cost_amount: number
+          created_at: string
+          currency: string
+          dealflash_product_id: string
+          delivered_at: string | null
+          external_order_id: string | null
+          id: string
+          notes: string | null
+          ordered_at: string | null
+          quantity: number
+          shipped_at: string | null
+          shipping_address: Json | null
+          status: Database["public"]["Enums"]["dropship_order_status"]
+          supplier_id: string
+          ticket_id: string | null
+          tracking_number: string | null
+          tracking_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          channel_id?: string | null
+          cost_amount: number
+          created_at?: string
+          currency?: string
+          dealflash_product_id: string
+          delivered_at?: string | null
+          external_order_id?: string | null
+          id?: string
+          notes?: string | null
+          ordered_at?: string | null
+          quantity?: number
+          shipped_at?: string | null
+          shipping_address?: Json | null
+          status?: Database["public"]["Enums"]["dropship_order_status"]
+          supplier_id: string
+          ticket_id?: string | null
+          tracking_number?: string | null
+          tracking_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          channel_id?: string | null
+          cost_amount?: number
+          created_at?: string
+          currency?: string
+          dealflash_product_id?: string
+          delivered_at?: string | null
+          external_order_id?: string | null
+          id?: string
+          notes?: string | null
+          ordered_at?: string | null
+          quantity?: number
+          shipped_at?: string | null
+          shipping_address?: Json | null
+          status?: Database["public"]["Enums"]["dropship_order_status"]
+          supplier_id?: string
+          ticket_id?: string | null
+          tracking_number?: string | null
+          tracking_url?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dropship_orders_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "sales_channels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dropship_orders_dealflash_product_id_fkey"
+            columns: ["dealflash_product_id"]
+            isOneToOne: false
+            referencedRelation: "dealflash_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dropship_orders_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dropship_orders_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       favorites: {
         Row: {
           created_at: string
@@ -641,6 +865,45 @@ export type Database = {
         }
         Relationships: []
       }
+      sales_channels: {
+        Row: {
+          api_endpoint: string | null
+          api_key_secret_name: string | null
+          config: Json
+          created_at: string
+          id: string
+          name: string
+          notes: string | null
+          status: Database["public"]["Enums"]["supplier_status"]
+          type: Database["public"]["Enums"]["sales_channel_type"]
+          updated_at: string
+        }
+        Insert: {
+          api_endpoint?: string | null
+          api_key_secret_name?: string | null
+          config?: Json
+          created_at?: string
+          id?: string
+          name: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["supplier_status"]
+          type: Database["public"]["Enums"]["sales_channel_type"]
+          updated_at?: string
+        }
+        Update: {
+          api_endpoint?: string | null
+          api_key_secret_name?: string | null
+          config?: Json
+          created_at?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["supplier_status"]
+          type?: Database["public"]["Enums"]["sales_channel_type"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       seller_application_audit_log: {
         Row: {
           action: string
@@ -974,6 +1237,113 @@ export type Database = {
         }
         Relationships: []
       }
+      supplier_products: {
+        Row: {
+          created_at: string
+          currency: string
+          description: string | null
+          external_sku: string
+          id: string
+          images: string[]
+          last_synced_at: string | null
+          raw_data: Json
+          source_url: string | null
+          stock_quantity: number | null
+          supplier_id: string
+          title: string
+          updated_at: string
+          wholesale_price: number
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          description?: string | null
+          external_sku: string
+          id?: string
+          images?: string[]
+          last_synced_at?: string | null
+          raw_data?: Json
+          source_url?: string | null
+          stock_quantity?: number | null
+          supplier_id: string
+          title: string
+          updated_at?: string
+          wholesale_price: number
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          description?: string | null
+          external_sku?: string
+          id?: string
+          images?: string[]
+          last_synced_at?: string | null
+          raw_data?: Json
+          source_url?: string | null
+          stock_quantity?: number | null
+          supplier_id?: string
+          title?: string
+          updated_at?: string
+          wholesale_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplier_products_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      suppliers: {
+        Row: {
+          api_endpoint: string | null
+          api_key_secret_name: string | null
+          config: Json
+          contact_email: string | null
+          contact_url: string | null
+          created_at: string
+          default_lead_time_days: number | null
+          id: string
+          name: string
+          notes: string | null
+          status: Database["public"]["Enums"]["supplier_status"]
+          type: Database["public"]["Enums"]["supplier_type"]
+          updated_at: string
+        }
+        Insert: {
+          api_endpoint?: string | null
+          api_key_secret_name?: string | null
+          config?: Json
+          contact_email?: string | null
+          contact_url?: string | null
+          created_at?: string
+          default_lead_time_days?: number | null
+          id?: string
+          name: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["supplier_status"]
+          type?: Database["public"]["Enums"]["supplier_type"]
+          updated_at?: string
+        }
+        Update: {
+          api_endpoint?: string | null
+          api_key_secret_name?: string | null
+          config?: Json
+          contact_email?: string | null
+          contact_url?: string | null
+          created_at?: string
+          default_lead_time_days?: number | null
+          id?: string
+          name?: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["supplier_status"]
+          type?: Database["public"]["Enums"]["supplier_type"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       support_ticket_messages: {
         Row: {
           author_id: string
@@ -1208,6 +1578,20 @@ export type Database = {
         | "cancelled"
         | "completed"
         | "no_show"
+      channel_listing_status:
+        | "draft"
+        | "pending"
+        | "published"
+        | "error"
+        | "removed"
+      dealflash_product_status: "draft" | "listed" | "paused" | "archived"
+      dropship_order_status:
+        | "pending"
+        | "ordered"
+        | "shipped"
+        | "delivered"
+        | "cancelled"
+        | "refunded"
       kyc_document_status: "pending" | "accepted" | "rejected"
       kyc_document_type:
         | "gov_id_front"
@@ -1235,6 +1619,13 @@ export type Database = {
         | "listing_featured"
         | "support_reply"
         | "admin_announcement"
+      sales_channel_type:
+        | "amazon"
+        | "temu"
+        | "ebay"
+        | "walmart"
+        | "shopify"
+        | "custom"
       seller_application_status: "new" | "contacted" | "approved" | "rejected"
       seller_profile_type: "individual" | "self_employed" | "corporation"
       seller_verification_status:
@@ -1244,6 +1635,14 @@ export type Database = {
         | "more_info_required"
         | "approved"
         | "rejected"
+      supplier_status: "active" | "paused" | "disabled"
+      supplier_type:
+        | "cj_dropshipping"
+        | "aliexpress"
+        | "alibaba"
+        | "generic_api"
+        | "csv_import"
+        | "manual"
       support_ticket_category:
         | "payment"
         | "listing"
@@ -1410,6 +1809,22 @@ export const Constants = {
         "completed",
         "no_show",
       ],
+      channel_listing_status: [
+        "draft",
+        "pending",
+        "published",
+        "error",
+        "removed",
+      ],
+      dealflash_product_status: ["draft", "listed", "paused", "archived"],
+      dropship_order_status: [
+        "pending",
+        "ordered",
+        "shipped",
+        "delivered",
+        "cancelled",
+        "refunded",
+      ],
       kyc_document_status: ["pending", "accepted", "rejected"],
       kyc_document_type: [
         "gov_id_front",
@@ -1439,6 +1854,14 @@ export const Constants = {
         "support_reply",
         "admin_announcement",
       ],
+      sales_channel_type: [
+        "amazon",
+        "temu",
+        "ebay",
+        "walmart",
+        "shopify",
+        "custom",
+      ],
       seller_application_status: ["new", "contacted", "approved", "rejected"],
       seller_profile_type: ["individual", "self_employed", "corporation"],
       seller_verification_status: [
@@ -1448,6 +1871,15 @@ export const Constants = {
         "more_info_required",
         "approved",
         "rejected",
+      ],
+      supplier_status: ["active", "paused", "disabled"],
+      supplier_type: [
+        "cj_dropshipping",
+        "aliexpress",
+        "alibaba",
+        "generic_api",
+        "csv_import",
+        "manual",
       ],
       support_ticket_category: [
         "payment",
