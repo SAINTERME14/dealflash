@@ -158,7 +158,7 @@ export default function CreateListing() {
       longitude: coords?.lng ?? null,
       images,
       allows_booking: form.allows_booking,
-      attributes,
+      attributes: attributes as Record<string, string>,
       listing_type: listingType as "product" | "vehicle" | "rental" | "hotel" | "service",
       status,
     }).select("id").single();
