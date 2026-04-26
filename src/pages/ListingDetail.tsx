@@ -183,6 +183,11 @@ export default function ListingDetail() {
                 )}
               </Card>
             )}
+
+            <Card className="p-6 mt-4" id="avis">
+              <h2 className="font-semibold mb-4">Avis des acheteurs</h2>
+              <ReviewList listingId={listing.id} sellerId={listing.seller_id} />
+            </Card>
           </div>
         </div>
 
