@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => ({
     VitePWA({
       registerType: "autoUpdate",
       devOptions: { enabled: false },
-      includeAssets: ["favicon.ico", "icon-512.png"],
+      includeAssets: ["favicon.ico", "icon-192.png", "icon-512.png"],
       manifest: {
         name: "DealFlash — Marketplace Québec",
         short_name: "DealFlash",
@@ -29,7 +29,11 @@ export default defineConfig(({ mode }) => ({
         background_color: "#0a1f4d",
         theme_color: "#0a1f4d",
         orientation: "portrait",
+        lang: "fr-CA",
+        categories: ["shopping", "lifestyle", "business"],
         icons: [
+          { src: "/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+          { src: "/icon-192.png", sizes: "192x192", type: "image/png", purpose: "maskable" },
           { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
           { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
         ],

@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+import { EnableNotificationsButton } from "./EnableNotificationsButton";
 
 export function NotificationsBell() {
   const { notifications, unreadCount, markAsRead, markAllAsRead, remove } = useNotifications();
@@ -84,6 +85,7 @@ export function NotificationsBell() {
             </ul>
           )}
         </ScrollArea>
+        <EnableNotificationsButton />
       </PopoverContent>
     </Popover>
   );
