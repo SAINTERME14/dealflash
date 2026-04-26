@@ -255,6 +255,15 @@ export default function CreateListing() {
                     </li>
                   ))}
                 </ul>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="destructive"
+                  className="mt-3"
+                  onClick={() => focusPaField(orderedErrors[0].key)}
+                >
+                  Corriger maintenant
+                </Button>
               </AlertDescription>
             </Alert>
           );
