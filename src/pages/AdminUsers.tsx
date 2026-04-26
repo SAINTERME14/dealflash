@@ -9,12 +9,13 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Loader2, Search, ShieldCheck, Trash2 } from "lucide-react";
+import { Crown, Loader2, Search, ShieldCheck, Trash2 } from "lucide-react";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useIsSuperAdmin } from "@/hooks/useIsSuperAdmin";
 
 type Role = "admin" | "vendeur_b2c" | "vendeur_c2c" | "acheteur";
 const ALL_ROLES: Role[] = ["admin", "vendeur_b2c", "vendeur_c2c", "acheteur"];
@@ -35,9 +36,11 @@ type RoleRow = {
 export default function AdminUsers() {
   const [profiles, setProfiles] = useState<ProfileRow[]>([]);
   const [roles, setRoles] = useState<RoleRow[]>([]);
+  const [superAdminIds, setSuperAdminIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
+  const { isSuperAdmin } = useIsSuperAdmin();
 
   useEffect(() => {
     document.title = "Admin · Utilisateurs | DealFlash";
@@ -45,18 +48,20 @@ export default function AdminUsers() {
 
   async function load() {
     setLoading(true);
-    const [pRes, rRes] = await Promise.all([
+    const [pRes, rRes, sRes] = await Promise.all([
       supabase
         .from("profiles")
         .select("user_id, display_name, city, is_verified, created_at")
         .order("created_at", { ascending: false })
         .limit(300),
       supabase.from("user_roles").select("user_id, role"),
+      supabase.from("super_admins").select("user_id"),
     ]);
     if (pRes.error) toast.error("Erreur profils", { description: pRes.error.message });
     if (rRes.error) toast.error("Erreur rôles", { description: rRes.error.message });
     setProfiles((pRes.data ?? []) as ProfileRow[]);
     setRoles((rRes.data ?? []) as RoleRow[]);
+    setSuperAdminIds(new Set((sRes.data ?? []).map((s: { user_id: string }) => s.user_id)));
     setLoading(false);
   }
 
