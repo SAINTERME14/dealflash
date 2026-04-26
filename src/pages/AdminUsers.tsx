@@ -15,7 +15,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useIsSuperAdmin } from "@/hooks/useIsSuperAdmin";
+
 
 type Role = "admin" | "vendeur_b2c" | "vendeur_c2c" | "acheteur";
 const ALL_ROLES: Role[] = ["admin", "vendeur_b2c", "vendeur_c2c", "acheteur"];
@@ -40,7 +40,7 @@ export default function AdminUsers() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
-  const { isSuperAdmin } = useIsSuperAdmin();
+  
 
   useEffect(() => {
     document.title = "Admin · Utilisateurs | DealFlash";
