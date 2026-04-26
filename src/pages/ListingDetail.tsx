@@ -8,6 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, MapPin, Calendar, Heart, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { BookingDialog } from "@/components/booking/BookingDialog";
 import { ListingsMap } from "@/components/map/ListingsMap";
+import { ReviewList } from "@/components/reviews/ReviewList";
+import { StarRating } from "@/components/reviews/StarRating";
+import { useListingRatingStats, useSellerRatingStats } from "@/hooks/useReviews";
 import { toast } from "sonner";
 
 interface Listing {
