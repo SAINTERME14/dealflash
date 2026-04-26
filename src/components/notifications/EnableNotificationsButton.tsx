@@ -21,7 +21,7 @@ export function EnableNotificationsButton() {
   if (permission === "granted") {
     return (
       <div className="flex items-center gap-2 text-xs text-muted-foreground px-3 py-2 border-t">
-        <BellRing className="h-3.5 w-3.5 text-green-600" />
+        <BellRing className="h-3.5 w-3.5 text-primary" />
         Notifications activées
       </div>
     );

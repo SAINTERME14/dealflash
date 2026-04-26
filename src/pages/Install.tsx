@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Smartphone, Share, Plus, Download } from "lucide-react";
+import { InstallButton } from "@/components/pwa/InstallButton";
 
 export default function Install() {
   useEffect(() => { document.title = "Installer DealFlash sur mobile"; }, []);
@@ -13,6 +14,9 @@ export default function Install() {
         </div>
         <h1 className="text-3xl font-bold">Installer DealFlash sur votre mobile</h1>
         <p className="text-muted-foreground mt-2">Accédez au marketplace en un clic, comme une vraie application.</p>
+        <div className="mt-6 flex justify-center">
+          <InstallButton />
+        </div>
       </div>
 
       <Card className="p-6 mb-4">

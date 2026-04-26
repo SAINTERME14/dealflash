@@ -15,7 +15,7 @@ export function InstallButton({ variant = "default", className }: Props) {
   if (isInstalled) {
     return (
       <div className={`flex items-center gap-2 text-sm text-muted-foreground ${className ?? ""}`}>
-        <CheckCircle2 className="h-4 w-4 text-green-600" />
+        <CheckCircle2 className="h-4 w-4 text-primary" />
         Application déjà installée
       </div>
     );
