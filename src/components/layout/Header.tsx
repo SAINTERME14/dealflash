@@ -72,6 +72,7 @@ export function Header() {
                   <DropdownMenuItem asChild><Link to="/mes-annonces">Mes annonces</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link to="/mes-reservations">Mes réservations</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link to="/profil">Mon profil</Link></DropdownMenuItem>
+                  <DropdownMenuItem asChild><Link to="/support">Support & aide</Link></DropdownMenuItem>
                   {isAdmin && (
                     <>
                       <DropdownMenuSeparator />
