@@ -1611,6 +1611,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      set_vault_service_role_key: { Args: { _key: string }; Returns: undefined }
     }
     Enums: {
       admin_task_priority: "low" | "normal" | "high" | "urgent"
