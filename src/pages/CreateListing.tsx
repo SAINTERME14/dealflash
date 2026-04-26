@@ -185,13 +185,48 @@ export default function CreateListing() {
           </div>
           <div>
             <Label htmlFor="category">Catégorie *</Label>
-            <Select value={form.category_id} onValueChange={(v) => setForm({ ...form, category_id: v })}>
+            <Select
+              value={form.category_id}
+              onValueChange={(v) => {
+                setForm({ ...form, category_id: v, subcategory_id: "" });
+                setPaAttributes({});
+              }}
+            >
               <SelectTrigger><SelectValue placeholder="Choisir une catégorie" /></SelectTrigger>
               <SelectContent>
-                {categories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                {topLevelCategories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
+
+          {isPetitesAnnonces && (
+            <div>
+              <Label htmlFor="subcategory">Sous-catégorie *</Label>
+              <Select
+                value={form.subcategory_id}
+                onValueChange={(v) => {
+                  setForm({ ...form, subcategory_id: v });
+                  setPaAttributes({});
+                }}
+              >
+                <SelectTrigger><SelectValue placeholder="Auto, colocation, objet…" /></SelectTrigger>
+                <SelectContent>
+                  {paSubcategories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {selectedSubSlug && (
+            <div className="rounded-md border border-border bg-muted/30 p-4">
+              <p className="text-sm font-medium mb-3">Détails spécifiques</p>
+              <PetitesAnnoncesFields
+                subSlug={selectedSubSlug}
+                values={paAttributes}
+                onChange={setPaAttributes}
+              />
+            </div>
+          )}
           <div>
             <Label htmlFor="description">Description *</Label>
             <Textarea id="description" rows={6} required value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Décrivez votre article en détail…" />
