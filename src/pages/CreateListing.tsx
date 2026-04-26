@@ -31,23 +31,38 @@ const PA_FIELD_ORDER: Record<PetitesAnnoncesSubSlug, string[]> = {
   "objets-divers": ["condition", "brand"],
 };
 
+const PA_FIELD_LABELS: Record<string, string> = {
+  year: "Année",
+  mileage_km: "Kilométrage",
+  transmission: "Transmission",
+  fuel: "Carburant",
+  vin: "VIN",
+  budget_max: "Budget max",
+  room_type: "Type de chambre",
+  available_from: "Disponible à partir du",
+  furnished: "Meublé",
+  condition: "État",
+  brand: "Marque",
+};
+
+function focusPaField(fieldId: string) {
+  requestAnimationFrame(() => {
+    const el = document.getElementById(fieldId);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (typeof (el as HTMLElement).focus === "function") {
+      try { (el as HTMLElement).focus({ preventScroll: true }); } catch { /* noop */ }
+    }
+  });
+}
+
 function scrollToFirstPaError(
   subSlug: PetitesAnnoncesSubSlug,
   fieldErrors: Record<string, string | undefined>,
 ) {
   const order = PA_FIELD_ORDER[subSlug];
   const firstKey = order.find((k) => fieldErrors[k]);
-  if (!firstKey) return;
-  // Wait for the error UI to render before scrolling
-  requestAnimationFrame(() => {
-    const el = document.getElementById(firstKey);
-    if (!el) return;
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
-    // Focus native inputs; Radix Select triggers are buttons and are also focusable
-    if (typeof (el as HTMLElement).focus === "function") {
-      try { (el as HTMLElement).focus({ preventScroll: true }); } catch { /* noop */ }
-    }
-  });
+  if (firstKey) focusPaField(firstKey);
 }
 
 export default function CreateListing() {
@@ -211,6 +226,39 @@ export default function CreateListing() {
       <p className="text-muted-foreground mb-8">Décrivez votre article ou service en quelques étapes.</p>
 
       <form className="space-y-6">
+        {selectedSubSlug && Object.keys(paErrors).length > 0 && (() => {
+          const order = PA_FIELD_ORDER[selectedSubSlug];
+          const orderedErrors = order
+            .filter((k) => paErrors[k as keyof typeof paErrors])
+            .map((k) => ({ key: k, message: paErrors[k as keyof typeof paErrors] as string }));
+          if (orderedErrors.length === 0) return null;
+          return (
+            <Alert variant="destructive" role="alert" aria-live="polite">
+              <AlertTitle>
+                {orderedErrors.length === 1
+                  ? "1 champ à corriger"
+                  : `${orderedErrors.length} champs à corriger`}
+              </AlertTitle>
+              <AlertDescription>
+                <ul className="mt-2 space-y-1">
+                  {orderedErrors.map(({ key, message }) => (
+                    <li key={key}>
+                      <button
+                        type="button"
+                        onClick={() => focusPaField(key)}
+                        className="text-left underline underline-offset-2 hover:no-underline"
+                      >
+                        <span className="font-medium">{PA_FIELD_LABELS[key] ?? key}</span>
+                        {" — "}
+                        <span>{message}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </AlertDescription>
+            </Alert>
+          );
+        })()}
         <Card className="p-6 space-y-4">
           <div>
             <Label htmlFor="title">Titre de l'annonce *</Label>
