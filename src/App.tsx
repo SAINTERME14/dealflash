@@ -12,6 +12,7 @@ import { Loader2 } from "lucide-react";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 
 // Lazy-loaded routes (code-splitting)
 const Search = lazy(() => import("./pages/Search"));
@@ -68,6 +69,7 @@ const App = () => (
         <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route path="/auth" element={<Auth />} />
+            <Route path="/admin/connexion" element={<AdminLogin />} />
             <Route element={<MainLayout />}>
               <Route path="/" element={<Index />} />
               <Route path="/recherche" element={<Search />} />
