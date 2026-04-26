@@ -152,7 +152,7 @@ export function PetitesAnnoncesFields({ subSlug, values, onChange, errors = {} }
           <div>
             <Label htmlFor="room_type">Type de chambre *</Label>
             <Select value={values.room_type ?? ""} onValueChange={(v) => set({ room_type: v })}>
-              <SelectTrigger className={cn(errors.room_type && errorInputClass)}>
+              <SelectTrigger id="room_type" className={cn(errors.room_type && errorInputClass)}>
                 <SelectValue placeholder="Choisir" />
               </SelectTrigger>
               <SelectContent>
