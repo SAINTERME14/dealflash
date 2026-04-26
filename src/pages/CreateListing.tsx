@@ -46,6 +46,7 @@ const PA_FIELD_LABELS: Record<string, string> = {
 };
 
 const PA_LIVE_REGION_ID = "pa-errors-live";
+const PA_SUMMARY_LIVE_REGION_ID = "pa-errors-summary-live";
 
 function announcePaField(fieldId: string) {
   const region = document.getElementById(PA_LIVE_REGION_ID);
