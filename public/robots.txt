@@ -12,3 +12,17 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /tableau-de-bord
+Disallow: /mes-annonces
+Disallow: /mes-reservations
+Disallow: /favoris
+Disallow: /messages
+Disallow: /profil
+Disallow: /support
+Disallow: /support/
+Disallow: /vendre
+Disallow: /devenir-vendeur
+
+Sitemap: https://www.dealflash.ca/sitemap.xml

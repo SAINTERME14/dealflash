@@ -569,6 +569,39 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          link: string | null
+          message: string | null
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          message?: string | null
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          message?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["notification_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -941,6 +974,89 @@ export type Database = {
         }
         Relationships: []
       }
+      support_ticket_messages: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          id: string
+          is_admin_reply: boolean
+          ticket_id: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string
+          id?: string
+          is_admin_reply?: boolean
+          ticket_id: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_admin_reply?: boolean
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_ticket_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      support_tickets: {
+        Row: {
+          assignee_id: string | null
+          category: Database["public"]["Enums"]["support_ticket_category"]
+          created_at: string
+          description: string
+          id: string
+          priority: Database["public"]["Enums"]["support_ticket_priority"]
+          related_listing_id: string | null
+          related_ticket_id: string | null
+          resolved_at: string | null
+          status: Database["public"]["Enums"]["support_ticket_status"]
+          subject: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assignee_id?: string | null
+          category?: Database["public"]["Enums"]["support_ticket_category"]
+          created_at?: string
+          description: string
+          id?: string
+          priority?: Database["public"]["Enums"]["support_ticket_priority"]
+          related_listing_id?: string | null
+          related_ticket_id?: string | null
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["support_ticket_status"]
+          subject: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assignee_id?: string | null
+          category?: Database["public"]["Enums"]["support_ticket_category"]
+          created_at?: string
+          description?: string
+          id?: string
+          priority?: Database["public"]["Enums"]["support_ticket_priority"]
+          related_listing_id?: string | null
+          related_ticket_id?: string | null
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["support_ticket_status"]
+          subject?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       tickets: {
         Row: {
           appointment_id: string | null
@@ -1107,6 +1223,18 @@ export type Database = {
         | "other"
       listing_status: "draft" | "active" | "paused" | "sold" | "archived"
       listing_type: "product" | "vehicle" | "rental" | "hotel" | "service"
+      notification_type:
+        | "ticket_purchased"
+        | "ticket_validated"
+        | "ticket_expired"
+        | "booking_requested"
+        | "booking_confirmed"
+        | "booking_cancelled"
+        | "message_received"
+        | "kyc_status_changed"
+        | "listing_featured"
+        | "support_reply"
+        | "admin_announcement"
       seller_application_status: "new" | "contacted" | "approved" | "rejected"
       seller_profile_type: "individual" | "self_employed" | "corporation"
       seller_verification_status:
@@ -1116,6 +1244,20 @@ export type Database = {
         | "more_info_required"
         | "approved"
         | "rejected"
+      support_ticket_category:
+        | "payment"
+        | "listing"
+        | "account"
+        | "kyc"
+        | "technical"
+        | "other"
+      support_ticket_priority: "low" | "normal" | "high" | "urgent"
+      support_ticket_status:
+        | "open"
+        | "in_progress"
+        | "waiting_user"
+        | "resolved"
+        | "closed"
       ticket_status:
         | "pending"
         | "paid"
@@ -1284,6 +1426,19 @@ export const Constants = {
       ],
       listing_status: ["draft", "active", "paused", "sold", "archived"],
       listing_type: ["product", "vehicle", "rental", "hotel", "service"],
+      notification_type: [
+        "ticket_purchased",
+        "ticket_validated",
+        "ticket_expired",
+        "booking_requested",
+        "booking_confirmed",
+        "booking_cancelled",
+        "message_received",
+        "kyc_status_changed",
+        "listing_featured",
+        "support_reply",
+        "admin_announcement",
+      ],
       seller_application_status: ["new", "contacted", "approved", "rejected"],
       seller_profile_type: ["individual", "self_employed", "corporation"],
       seller_verification_status: [
@@ -1293,6 +1448,22 @@ export const Constants = {
         "more_info_required",
         "approved",
         "rejected",
+      ],
+      support_ticket_category: [
+        "payment",
+        "listing",
+        "account",
+        "kyc",
+        "technical",
+        "other",
+      ],
+      support_ticket_priority: ["low", "normal", "high", "urgent"],
+      support_ticket_status: [
+        "open",
+        "in_progress",
+        "waiting_user",
+        "resolved",
+        "closed",
       ],
       ticket_status: [
         "pending",

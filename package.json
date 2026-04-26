@@ -47,6 +47,7 @@
     "@stripe/react-stripe-js": "^6.2.0",
     "@stripe/stripe-js": "7.9.0",
     "@supabase/supabase-js": "^2.104.1",
+    "@tanstack/query-core": "^5.100.5",
     "@tanstack/react-query": "^5.83.0",
     "@types/leaflet": "^1.9.21",
     "class-variance-authority": "^0.7.1",
