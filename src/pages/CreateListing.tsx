@@ -226,6 +226,39 @@ export default function CreateListing() {
       <p className="text-muted-foreground mb-8">Décrivez votre article ou service en quelques étapes.</p>
 
       <form className="space-y-6">
+        {selectedSubSlug && Object.keys(paErrors).length > 0 && (() => {
+          const order = PA_FIELD_ORDER[selectedSubSlug];
+          const orderedErrors = order
+            .filter((k) => paErrors[k as keyof typeof paErrors])
+            .map((k) => ({ key: k, message: paErrors[k as keyof typeof paErrors] as string }));
+          if (orderedErrors.length === 0) return null;
+          return (
+            <Alert variant="destructive" role="alert" aria-live="polite">
+              <AlertTitle>
+                {orderedErrors.length === 1
+                  ? "1 champ à corriger"
+                  : `${orderedErrors.length} champs à corriger`}
+              </AlertTitle>
+              <AlertDescription>
+                <ul className="mt-2 space-y-1">
+                  {orderedErrors.map(({ key, message }) => (
+                    <li key={key}>
+                      <button
+                        type="button"
+                        onClick={() => focusPaField(key)}
+                        className="text-left underline underline-offset-2 hover:no-underline"
+                      >
+                        <span className="font-medium">{PA_FIELD_LABELS[key] ?? key}</span>
+                        {" — "}
+                        <span>{message}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </AlertDescription>
+            </Alert>
+          );
+        })()}
         <Card className="p-6 space-y-4">
           <div>
             <Label htmlFor="title">Titre de l'annonce *</Label>
