@@ -301,6 +301,7 @@ export default function CreateListing() {
                 <button
                   type="button"
                   onClick={() => focusPaField(orderedErrors[0].key)}
+                  aria-label={`Voir les ${orderedErrors.length} ${orderedErrors.length === 1 ? "erreur" : "erreurs"} Petites annonces et aller au premier champ en erreur : ${PA_FIELD_LABELS[orderedErrors[0].key] ?? orderedErrors[0].key}`}
                   className="text-sm font-medium underline underline-offset-2 hover:no-underline"
                 >
                   Voir les erreurs ({orderedErrors.length})
