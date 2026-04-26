@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { LayoutDashboard, Sparkles, Users, Receipt, History, UserPlus, FileText, ShieldCheck, KanbanSquare, Wallet, LifeBuoy, Package, Truck, Globe } from "lucide-react";
+import { LayoutDashboard, Sparkles, Users, Receipt, History, UserPlus, FileText, ShieldCheck, KanbanSquare, Wallet, LifeBuoy, Package, Truck, Globe, ShoppingCart, Boxes } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
@@ -14,7 +14,9 @@ const items = [
   { to: "/admin/taches", label: "Tâches internes", icon: KanbanSquare },
   { to: "/admin/verifications", label: "Vérifications KYC", icon: ShieldCheck },
   { to: "/admin/demandes-vendeurs", label: "Demandes vendeurs", icon: UserPlus },
-  { to: "/admin/dropshipping", label: "Catalogue dropshipping", icon: Package },
+  { to: "/admin/dropshipping", label: "Dropshipping (vue)", icon: Boxes, end: true },
+  { to: "/admin/dropshipping/catalogue", label: "Catalogue produits", icon: Package },
+  { to: "/admin/dropship-orders", label: "Commandes fournisseurs", icon: ShoppingCart },
   { to: "/admin/fournisseurs", label: "Fournisseurs", icon: Truck },
   { to: "/admin/canaux", label: "Canaux de vente", icon: Globe },
   { to: "/admin/journal", label: "Journal d'audit", icon: History },

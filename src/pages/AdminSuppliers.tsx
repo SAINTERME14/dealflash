@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Plus, Pencil, Trash2, Truck } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, Truck, RefreshCw, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 type SupplierType = "cj_dropshipping" | "aliexpress" | "alibaba" | "generic_api" | "csv_import" | "manual";
@@ -41,6 +41,9 @@ export default function AdminSuppliers() {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Supplier | null>(null);
+  const [syncingId, setSyncingId] = useState<string | null>(null);
+  const [csvDialog, setCsvDialog] = useState<Supplier | null>(null);
+  const [csvText, setCsvText] = useState("");
 
   const [form, setForm] = useState({
     name: "",
@@ -122,6 +125,41 @@ export default function AdminSuppliers() {
     else { toast.success("Supprimé"); load(); }
   };
 
+  const syncApi = async (s: Supplier) => {
+    setSyncingId(s.id);
+    try {
+      const { data, error } = await supabase.functions.invoke("sync-supplier-products", {
+        body: { supplier_id: s.id, mode: "api" },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      toast.success(`${data.imported ?? 0} produits importés depuis ${s.name}`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erreur de synchronisation");
+    } finally {
+      setSyncingId(null);
+    }
+  };
+
+  const importCsv = async () => {
+    if (!csvDialog || !csvText.trim()) return;
+    setSyncingId(csvDialog.id);
+    try {
+      const { data, error } = await supabase.functions.invoke("sync-supplier-products", {
+        body: { supplier_id: csvDialog.id, mode: "csv", csv: csvText },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      toast.success(`${data.imported ?? 0} produits importés`);
+      setCsvDialog(null);
+      setCsvText("");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erreur d'import");
+    } finally {
+      setSyncingId(null);
+    }
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -158,7 +196,15 @@ export default function AdminSuppliers() {
                   {s.contact_email && <p className="text-xs text-muted-foreground">{s.contact_email}</p>}
                   {s.notes && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{s.notes}</p>}
                 </div>
-                <div className="flex gap-2 shrink-0">
+                <div className="flex flex-wrap gap-2 shrink-0">
+                  <Button onClick={() => setCsvDialog(s)} variant="outline" size="sm" title="Importer CSV">
+                    <Upload className="h-3 w-3" />
+                  </Button>
+                  {(s.type === "generic_api" || s.type === "cj_dropshipping") && (
+                    <Button onClick={() => syncApi(s)} variant="outline" size="sm" disabled={syncingId === s.id} title="Synchroniser API">
+                      {syncingId === s.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
+                    </Button>
+                  )}
                   <Button onClick={() => openEdit(s)} variant="outline" size="sm"><Pencil className="h-3 w-3" /></Button>
                   <Button onClick={() => remove(s.id)} variant="ghost" size="sm" className="text-destructive"><Trash2 className="h-3 w-3" /></Button>
                 </div>
@@ -205,6 +251,31 @@ export default function AdminSuppliers() {
             <DialogFooter>
               <Button variant="outline" onClick={() => setOpen(false)}>Annuler</Button>
               <Button onClick={save} variant="hero">{editing ? "Enregistrer" : "Créer"}</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={!!csvDialog} onOpenChange={(v) => { if (!v) { setCsvDialog(null); setCsvText(""); } }}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader><DialogTitle>Importer un CSV — {csvDialog?.name}</DialogTitle></DialogHeader>
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Colonnes attendues : <code>sku, title, price, description, currency, stock, image_url, source_url</code>
+              </p>
+              <Textarea
+                rows={10}
+                value={csvText}
+                onChange={(e) => setCsvText(e.target.value)}
+                placeholder="sku,title,price,stock&#10;ABC-001,Produit exemple,12.99,100"
+                className="font-mono text-xs"
+              />
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => { setCsvDialog(null); setCsvText(""); }}>Annuler</Button>
+              <Button onClick={importCsv} variant="hero" disabled={syncingId === csvDialog?.id || !csvText.trim()}>
+                {syncingId === csvDialog?.id && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
+                Importer
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
