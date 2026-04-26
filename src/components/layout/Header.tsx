@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { Button } from "@/components/ui/button";
 import { Heart, MessageCircle, Plus, User, LogOut, Search, Sparkles, ShieldCheck } from "lucide-react";
+import { NotificationsBell } from "@/components/notifications/NotificationsBell";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -56,6 +57,7 @@ export function Header() {
               <Button asChild variant="ghost" size="icon" className="hidden sm:inline-flex">
                 <Link to="/messages" aria-label="Messages"><MessageCircle className="h-5 w-5" /></Link>
               </Button>
+              <NotificationsBell />
               <Button asChild variant="accent" size="sm" className="gap-1.5">
                 <Link to="/vendre"><Plus className="h-4 w-4" /><span className="hidden sm:inline">Vendre</span></Link>
               </Button>
