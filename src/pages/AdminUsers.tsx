@@ -163,13 +163,19 @@ export default function AdminUsers() {
                 <TableBody>
                   {filtered.map((p) => {
                     const userRoles = rolesByUser.get(p.user_id) ?? new Set<Role>();
+                    const isUserSuperAdmin = superAdminIds.has(p.user_id);
                     return (
                       <TableRow key={p.user_id}>
                         <TableCell>
-                          <div className="font-medium">
+                          <div className="font-medium flex items-center flex-wrap gap-1">
                             {p.display_name ?? "(sans nom)"}
+                            {isUserSuperAdmin && (
+                              <Badge className="text-[10px] bg-accent text-accent-foreground gap-1">
+                                <Crown className="h-3 w-3" /> Super-admin
+                              </Badge>
+                            )}
                             {p.is_verified && (
-                              <Badge className="ml-2 text-[10px] bg-success text-success-foreground">
+                              <Badge className="text-[10px] bg-success text-success-foreground">
                                 Vérifié
                               </Badge>
                             )}
@@ -189,6 +195,7 @@ export default function AdminUsers() {
                                   key={r}
                                   role={r}
                                   busy={busy === p.user_id + r}
+                                  locked={r === "admin" && isUserSuperAdmin}
                                   onRemove={() => removeRole(p.user_id, r)}
                                 />
                               ))
