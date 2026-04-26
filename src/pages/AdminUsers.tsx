@@ -97,6 +97,10 @@ export default function AdminUsers() {
   }
 
   async function removeRole(userId: string, role: Role) {
+    if (role === "admin" && superAdminIds.has(userId)) {
+      toast.error("Impossible de retirer le rôle admin d'un super-administrateur.");
+      return;
+    }
     setBusy(userId + role);
     const { error } = await supabase
       .from("user_roles")
