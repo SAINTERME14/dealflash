@@ -248,6 +248,14 @@ export default function CreateListing() {
       <p className="text-muted-foreground mb-8">Décrivez votre article ou service en quelques étapes.</p>
 
       <form className="space-y-6">
+        {/* Polite live region for screen readers when user activates "Corriger maintenant" */}
+        <div
+          id={PA_LIVE_REGION_ID}
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          className="sr-only"
+        />
         {selectedSubSlug && Object.keys(paErrors).length > 0 && (() => {
           const order = PA_FIELD_ORDER[selectedSubSlug];
           const orderedErrors = order
