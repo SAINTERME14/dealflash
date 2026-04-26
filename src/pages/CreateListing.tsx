@@ -31,23 +31,38 @@ const PA_FIELD_ORDER: Record<PetitesAnnoncesSubSlug, string[]> = {
   "objets-divers": ["condition", "brand"],
 };
 
+const PA_FIELD_LABELS: Record<string, string> = {
+  year: "Année",
+  mileage_km: "Kilométrage",
+  transmission: "Transmission",
+  fuel: "Carburant",
+  vin: "VIN",
+  budget_max: "Budget max",
+  room_type: "Type de chambre",
+  available_from: "Disponible à partir du",
+  furnished: "Meublé",
+  condition: "État",
+  brand: "Marque",
+};
+
+function focusPaField(fieldId: string) {
+  requestAnimationFrame(() => {
+    const el = document.getElementById(fieldId);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (typeof (el as HTMLElement).focus === "function") {
+      try { (el as HTMLElement).focus({ preventScroll: true }); } catch { /* noop */ }
+    }
+  });
+}
+
 function scrollToFirstPaError(
   subSlug: PetitesAnnoncesSubSlug,
   fieldErrors: Record<string, string | undefined>,
 ) {
   const order = PA_FIELD_ORDER[subSlug];
   const firstKey = order.find((k) => fieldErrors[k]);
-  if (!firstKey) return;
-  // Wait for the error UI to render before scrolling
-  requestAnimationFrame(() => {
-    const el = document.getElementById(firstKey);
-    if (!el) return;
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
-    // Focus native inputs; Radix Select triggers are buttons and are also focusable
-    if (typeof (el as HTMLElement).focus === "function") {
-      try { (el as HTMLElement).focus({ preventScroll: true }); } catch { /* noop */ }
-    }
-  });
+  if (firstKey) focusPaField(firstKey);
 }
 
 export default function CreateListing() {
