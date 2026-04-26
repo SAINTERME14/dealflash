@@ -92,12 +92,18 @@ export default {
           from: { opacity: "0", transform: "scale(0.96)" },
           to: { opacity: "1", transform: "scale(1)" },
         },
+        "field-flash": {
+          "0%, 100%": { boxShadow: "0 0 0 0 hsl(var(--destructive) / 0)" },
+          "20%": { boxShadow: "0 0 0 4px hsl(var(--destructive) / 0.45)" },
+          "60%": { boxShadow: "0 0 0 6px hsl(var(--destructive) / 0.15)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.4s ease-out",
         "scale-in": "scale-in 0.25s ease-out",
+        "field-flash": "field-flash 1.2s ease-out",
       },
     },
   },
