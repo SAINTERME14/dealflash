@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_tasks: {
+        Row: {
+          assignee_id: string | null
+          completed_at: string | null
+          created_at: string
+          created_by: string
+          description: string | null
+          due_date: string | null
+          id: string
+          position: number
+          priority: Database["public"]["Enums"]["admin_task_priority"]
+          status: Database["public"]["Enums"]["admin_task_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assignee_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          position?: number
+          priority?: Database["public"]["Enums"]["admin_task_priority"]
+          status?: Database["public"]["Enums"]["admin_task_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assignee_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          position?: number
+          priority?: Database["public"]["Enums"]["admin_task_priority"]
+          status?: Database["public"]["Enums"]["admin_task_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       appointments: {
         Row: {
           buyer_email: string
@@ -1031,6 +1076,8 @@ export type Database = {
       }
     }
     Enums: {
+      admin_task_priority: "low" | "normal" | "high" | "urgent"
+      admin_task_status: "todo" | "in_progress" | "done" | "archived"
       app_role: "admin" | "vendeur_b2c" | "vendeur_c2c" | "acheteur"
       appointment_status:
         | "requested"
@@ -1203,6 +1250,8 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      admin_task_priority: ["low", "normal", "high", "urgent"],
+      admin_task_status: ["todo", "in_progress", "done", "archived"],
       app_role: ["admin", "vendeur_b2c", "vendeur_c2c", "acheteur"],
       appointment_status: [
         "requested",
