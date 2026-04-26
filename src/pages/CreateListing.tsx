@@ -229,7 +229,11 @@ export default function CreateListing() {
               <PetitesAnnoncesFields
                 subSlug={selectedSubSlug}
                 values={paAttributes}
-                onChange={setPaAttributes}
+                onChange={(next) => {
+                  setPaAttributes(next);
+                  if (Object.keys(paErrors).length > 0) setPaErrors({});
+                }}
+                errors={paErrors}
               />
             </div>
           )}
