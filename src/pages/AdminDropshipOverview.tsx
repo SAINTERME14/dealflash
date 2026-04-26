@@ -132,7 +132,64 @@ export default function AdminDropshipOverview() {
             <Button asChild variant="outline" size="sm"><Link to="/admin/dropship-orders">Commandes</Link></Button>
           </div>
         </Card>
+
+        <AutomationCard />
       </div>
     </AdminLayout>
+  );
+}
+
+function AutomationCard() {
+  const [activating, setActivating] = useState(false);
+  const [activated, setActivated] = useState(false);
+
+  const activate = async () => {
+    setActivating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("setup-vault-keys");
+      if (error) throw error;
+      if ((data as { ok?: boolean })?.ok) {
+        setActivated(true);
+        toast.success("Automatisations CJ activées", {
+          description: "Commandes auto-envoyées + tracking sync toutes les 6h.",
+        });
+      } else {
+        throw new Error((data as { error?: string })?.error ?? "Échec inconnu");
+      }
+    } catch (e) {
+      toast.error("Activation échouée", { description: e instanceof Error ? e.message : "Erreur" });
+    } finally {
+      setActivating(false);
+    }
+  };
+
+  return (
+    <Card className="p-6 border-primary/30">
+      <div className="flex items-start gap-4">
+        <div className="p-3 rounded-lg bg-primary/10">
+          <Zap className="h-6 w-6 text-primary" />
+        </div>
+        <div className="flex-1">
+          <h2 className="font-semibold">Automatisations CJ Dropshipping</h2>
+          <ul className="text-sm text-muted-foreground mt-2 space-y-1 list-disc pl-5">
+            <li>Création auto de commande fournisseur dès qu'un ticket est payé</li>
+            <li>Envoi auto à CJ Dropshipping (sans clic admin)</li>
+            <li>Sync des numéros de tracking toutes les 6 heures (cron)</li>
+          </ul>
+          <p className="text-xs text-muted-foreground mt-3">
+            À activer une seule fois après installation (ou après rotation des clés).
+          </p>
+        </div>
+        <Button onClick={activate} disabled={activating || activated} size="sm">
+          {activated ? (
+            <><CheckCircle2 className="h-4 w-4 mr-2" /> Activé</>
+          ) : activating ? (
+            <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Activation…</>
+          ) : (
+            "Activer les automatismes"
+          )}
+        </Button>
+      </div>
+    </Card>
   );
 }
