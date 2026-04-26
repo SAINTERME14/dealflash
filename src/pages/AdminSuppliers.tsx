@@ -254,6 +254,31 @@ export default function AdminSuppliers() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        <Dialog open={!!csvDialog} onOpenChange={(v) => { if (!v) { setCsvDialog(null); setCsvText(""); } }}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader><DialogTitle>Importer un CSV — {csvDialog?.name}</DialogTitle></DialogHeader>
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Colonnes attendues : <code>sku, title, price, description, currency, stock, image_url, source_url</code>
+              </p>
+              <Textarea
+                rows={10}
+                value={csvText}
+                onChange={(e) => setCsvText(e.target.value)}
+                placeholder="sku,title,price,stock&#10;ABC-001,Produit exemple,12.99,100"
+                className="font-mono text-xs"
+              />
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => { setCsvDialog(null); setCsvText(""); }}>Annuler</Button>
+              <Button onClick={importCsv} variant="hero" disabled={syncingId === csvDialog?.id || !csvText.trim()}>
+                {syncingId === csvDialog?.id && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
+                Importer
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );
