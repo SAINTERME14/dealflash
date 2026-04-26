@@ -42,6 +42,7 @@ export function Footer() {
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li><Link to="/aide" className="hover:text-foreground transition-smooth">Centre d'aide</Link></li>
             <li><Link to="/contact" className="hover:text-foreground transition-smooth">Nous contacter</Link></li>
+            <li><Link to="/a-propos" className="hover:text-foreground transition-smooth">À propos</Link></li>
             <li><Link to="/installer" className="hover:text-foreground transition-smooth">Installer l'app</Link></li>
           </ul>
         </div>

@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Package, Calendar, Heart, MessageCircle, Plus, TrendingUp } from "lucide-react";
+import { Package, Calendar, Heart, MessageCircle, Plus, TrendingUp, Star, BarChart3 } from "lucide-react";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -62,11 +62,11 @@ export default function Dashboard() {
         ))}
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         <Card className="p-6">
           <h2 className="font-semibold mb-3 flex items-center gap-2"><Package className="h-4 w-4" /> Vendre</h2>
           <p className="text-sm text-muted-foreground mb-4">Publiez de nouvelles annonces et gérez celles qui sont en ligne.</p>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button asChild variant="default" size="sm"><Link to="/vendre">Publier</Link></Button>
             <Button asChild variant="outline" size="sm"><Link to="/mes-annonces">Mes annonces</Link></Button>
           </div>
@@ -74,9 +74,17 @@ export default function Dashboard() {
         <Card className="p-6">
           <h2 className="font-semibold mb-3 flex items-center gap-2"><MessageCircle className="h-4 w-4" /> Communications</h2>
           <p className="text-sm text-muted-foreground mb-4">Vos messages et réservations en un coup d'œil.</p>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button asChild variant="default" size="sm"><Link to="/messages">Messages</Link></Button>
             <Button asChild variant="outline" size="sm"><Link to="/mes-reservations">Réservations</Link></Button>
+          </div>
+        </Card>
+        <Card className="p-6">
+          <h2 className="font-semibold mb-3 flex items-center gap-2"><BarChart3 className="h-4 w-4" /> Performance</h2>
+          <p className="text-sm text-muted-foreground mb-4">Statistiques de vente, revenus, conversion et avis reçus.</p>
+          <div className="flex gap-2 flex-wrap">
+            <Button asChild variant="default" size="sm"><Link to="/statistiques-vendeur"><BarChart3 className="h-4 w-4" /> Statistiques</Link></Button>
+            <Button asChild variant="outline" size="sm"><Link to="/mes-avis"><Star className="h-4 w-4" /> Mes avis</Link></Button>
           </div>
         </Card>
       </div>

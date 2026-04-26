@@ -26,3 +26,4 @@ Disallow: /vendre
 Disallow: /devenir-vendeur
 
 Sitemap: https://www.dealflash.ca/sitemap.xml
+Sitemap: https://qcxoczfkxiqqvqctqlud.supabase.co/functions/v1/sitemap

@@ -8,6 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, MapPin, Calendar, Heart, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { BookingDialog } from "@/components/booking/BookingDialog";
 import { ListingsMap } from "@/components/map/ListingsMap";
+import { ReviewList } from "@/components/reviews/ReviewList";
+import { StarRating } from "@/components/reviews/StarRating";
+import { useListingRatingStats, useSellerRatingStats } from "@/hooks/useReviews";
 import { toast } from "sonner";
 
 interface Listing {
@@ -38,6 +41,8 @@ export default function ListingDetail() {
   const [imgIdx, setImgIdx] = useState(0);
   const [isFav, setIsFav] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
+  const { data: listingStats } = useListingRatingStats(listing?.id);
+  const { data: sellerStats } = useSellerRatingStats(listing?.seller_id);
 
   useEffect(() => {
     if (!id) return;
@@ -180,6 +185,11 @@ export default function ListingDetail() {
                 )}
               </Card>
             )}
+
+            <Card className="p-6 mt-4" id="avis">
+              <h2 className="font-semibold mb-4">Avis des acheteurs</h2>
+              <ReviewList listingId={listing.id} sellerId={listing.seller_id} />
+            </Card>
           </div>
         </div>
 
@@ -188,6 +198,13 @@ export default function ListingDetail() {
           <Card className="p-6 shadow-elevated lg:sticky lg:top-20">
             <p className="text-3xl font-bold text-primary">{formattedPrice}</p>
             {listing.categories && <Badge variant="secondary" className="mt-2">{listing.categories.name}</Badge>}
+            {listingStats && listingStats.total > 0 && (
+              <a href="#avis" className="mt-3 flex items-center gap-2 text-sm hover:underline">
+                <StarRating value={listingStats.avg} size="sm" />
+                <span className="font-medium">{listingStats.avg.toFixed(1)}</span>
+                <span className="text-muted-foreground">({listingStats.total} avis)</span>
+              </a>
+            )}
 
             <div className="mt-6 space-y-2">
               {listing.allows_booking && (
@@ -217,6 +234,12 @@ export default function ListingDetail() {
                       {listing.profiles.is_verified && <Badge variant="secondary" className="text-xs">✓ Vérifié</Badge>}
                     </p>
                     {listing.profiles.city && <p className="text-xs text-muted-foreground">{listing.profiles.city}</p>}
+                    {sellerStats && sellerStats.total > 0 && (
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <StarRating value={sellerStats.avg} size="sm" />
+                        <span className="text-xs text-muted-foreground">{sellerStats.avg.toFixed(1)} · {sellerStats.total} avis</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

@@ -916,6 +916,72 @@ export type Database = {
         }
         Relationships: []
       }
+      reviews: {
+        Row: {
+          buyer_id: string
+          comment: string | null
+          created_at: string
+          hidden_reason: string | null
+          id: string
+          is_hidden: boolean
+          listing_id: string
+          rating: number
+          seller_id: string
+          seller_response: string | null
+          seller_response_at: string | null
+          ticket_id: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          buyer_id: string
+          comment?: string | null
+          created_at?: string
+          hidden_reason?: string | null
+          id?: string
+          is_hidden?: boolean
+          listing_id: string
+          rating: number
+          seller_id: string
+          seller_response?: string | null
+          seller_response_at?: string | null
+          ticket_id: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          buyer_id?: string
+          comment?: string | null
+          created_at?: string
+          hidden_reason?: string | null
+          id?: string
+          is_hidden?: boolean
+          listing_id?: string
+          rating?: number
+          seller_id?: string
+          seller_response?: string | null
+          seller_response_at?: string | null
+          ticket_id?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: true
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sales_channels: {
         Row: {
           api_endpoint: string | null
@@ -1600,9 +1666,23 @@ export type Database = {
       can_manage_seller_notes: { Args: { _user_id: string }; Returns: boolean }
       can_publish_listings: { Args: { _user_id: string }; Returns: boolean }
       expire_featured_listings: { Args: never; Returns: number }
+      get_listing_rating_stats: {
+        Args: { _listing_id: string }
+        Returns: {
+          avg_rating: number
+          total_reviews: number
+        }[]
+      }
       get_primary_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
+      }
+      get_seller_rating_stats: {
+        Args: { _seller_id: string }
+        Returns: {
+          avg_rating: number
+          total_reviews: number
+        }[]
       }
       has_role: {
         Args: {
