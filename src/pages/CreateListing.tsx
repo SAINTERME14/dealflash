@@ -17,7 +17,7 @@ import { Loader2, LocateFixed, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { BucketImageUploader } from "@/components/upload/BucketImageUploader";
-import { PetitesAnnoncesFields, type PetitesAnnoncesAttributes, type PetitesAnnoncesSubSlug } from "@/components/listing/PetitesAnnoncesFields";
+import { PetitesAnnoncesFields, type PetitesAnnoncesAttributes, type PetitesAnnoncesSubSlug, type PetitesAnnoncesFieldErrors } from "@/components/listing/PetitesAnnoncesFields";
 import { validatePetitesAnnonces } from "@/lib/petitesAnnoncesValidation";
 
 interface Category { id: string; name: string; slug: string; parent_id: string | null; listing_type: string; }
