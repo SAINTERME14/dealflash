@@ -136,8 +136,8 @@ export default function CreateListing() {
         toast.error("Veuillez choisir une sous-catégorie");
         return;
       }
-      const result = validatePetitesAnnonces(selectedSubSlug, paAttributes);
-      if (!result.ok) {
+      const result = validatePetitesAnnonces(selectedSubSlug, paAttributes as Record<string, unknown>);
+      if (result.ok === false) {
         toast.error(result.error);
         return;
       }
