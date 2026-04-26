@@ -156,15 +156,21 @@ export default function AdminDropshipOrders() {
               Suivi des commandes passées aux fournisseurs externes.
             </p>
           </div>
-          <Select value={filter} onValueChange={(v) => setFilter(v as OrderStatus | "all")}>
-            <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tous les statuts</SelectItem>
-              {Object.entries(statusLabels).map(([k, v]) => (
-                <SelectItem key={k} value={k}>{v}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button onClick={syncTracking} variant="outline" size="sm" disabled={syncingTracking}>
+              {syncingTracking ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <RefreshCw className="h-4 w-4 mr-1" />}
+              Sync tracking CJ
+            </Button>
+            <Select value={filter} onValueChange={(v) => setFilter(v as OrderStatus | "all")}>
+              <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tous les statuts</SelectItem>
+                {Object.entries(statusLabels).map(([k, v]) => (
+                  <SelectItem key={k} value={k}>{v}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {loading ? (
@@ -203,9 +209,22 @@ export default function AdminDropshipOrders() {
                       )}
                     </div>
                   </div>
-                  <Button onClick={() => openEdit(o)} variant="outline" size="sm" className="self-start">
-                    Modifier
-                  </Button>
+                  <div className="flex flex-col gap-2 self-start">
+                    {o.status === "pending" && o.suppliers?.type === "cj_dropshipping" && (
+                      <Button
+                        onClick={() => placeOnCJ(o)}
+                        variant="hero"
+                        size="sm"
+                        disabled={actionId === o.id}
+                      >
+                        {actionId === o.id ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Send className="h-3 w-3 mr-1" />}
+                        Envoyer à CJ
+                      </Button>
+                    )}
+                    <Button onClick={() => openEdit(o)} variant="outline" size="sm">
+                      Modifier
+                    </Button>
+                  </div>
                 </div>
               </Card>
             ))}
