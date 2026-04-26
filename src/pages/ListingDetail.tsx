@@ -41,6 +41,8 @@ export default function ListingDetail() {
   const [imgIdx, setImgIdx] = useState(0);
   const [isFav, setIsFav] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
+  const { data: listingStats } = useListingRatingStats(listing?.id);
+  const { data: sellerStats } = useSellerRatingStats(listing?.seller_id);
 
   useEffect(() => {
     if (!id) return;
