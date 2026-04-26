@@ -15,6 +15,9 @@ import AdminTickets from "./pages/AdminTickets";
 import AdminAuditLog from "./pages/AdminAuditLog";
 import AdminSellerApplications from "./pages/AdminSellerApplications";
 import AdminSellerApplicationDetail from "./pages/AdminSellerApplicationDetail";
+import AdminVerifications from "./pages/AdminVerifications";
+import AdminVerificationDetail from "./pages/AdminVerificationDetail";
+import SellerVerification from "./pages/SellerVerification";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Search from "./pages/Search";
@@ -50,6 +53,7 @@ const App = () => (
             <Route path="/installer" element={<Install />} />
             <Route path="/app" element={<MobileHome />} />
             <Route path="/vendre" element={<ProtectedRoute><CreateListing /></ProtectedRoute>} />
+            <Route path="/devenir-vendeur" element={<ProtectedRoute><SellerVerification /></ProtectedRoute>} />
             <Route path="/tableau-de-bord" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/mes-annonces" element={<ProtectedRoute><MyListings /></ProtectedRoute>} />
             <Route path="/mes-reservations" element={<ProtectedRoute><MyBookings /></ProtectedRoute>} />
@@ -64,6 +68,8 @@ const App = () => (
             <Route path="/admin/journal" element={<AdminRoute><AdminAuditLog /></AdminRoute>} />
             <Route path="/admin/demandes-vendeurs" element={<SellerNotesRoute><AdminSellerApplications /></SellerNotesRoute>} />
             <Route path="/admin/demandes-vendeurs/:id" element={<SellerNotesRoute><AdminSellerApplicationDetail /></SellerNotesRoute>} />
+            <Route path="/admin/verifications" element={<AdminRoute><AdminVerifications /></AdminRoute>} />
+            <Route path="/admin/verifications/:id" element={<AdminRoute><AdminVerificationDetail /></AdminRoute>} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

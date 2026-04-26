@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useSellerVerification } from "@/hooks/useSellerVerification";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ShieldCheck, Loader2 as Loader2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,9 +23,10 @@ interface Category { id: string; name: string; }
 export default function CreateListing() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { canPublish, loading: verifLoading, verification } = useSellerVerification();
+  const { isAdmin, loading: adminLoading } = useIsAdmin();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
-  
   const [images, setImages] = useState<string[]>([]);
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const { request: requestGeo, loading: geoLoading } = useGeolocation();
@@ -36,6 +41,12 @@ export default function CreateListing() {
     allows_booking: false,
   });
 
+  useEffect(() => {
+    document.title = "Publier une annonce — DealFlash";
+    supabase.from("categories").select("id, name").eq("is_active", true).order("display_order")
+      .then(({ data }) => setCategories(data ?? []));
+  }, []);
+
   const handleUseLocation = async () => {
     try {
       const pos = await requestGeo();
@@ -46,11 +57,36 @@ export default function CreateListing() {
     }
   };
 
-  useEffect(() => {
-    document.title = "Publier une annonce — DealFlash";
-    supabase.from("categories").select("id, name").eq("is_active", true).order("display_order")
-      .then(({ data }) => setCategories(data ?? []));
-  }, []);
+  // Block listing creation if not verified (admins bypass)
+  if (verifLoading || adminLoading) {
+    return (
+      <div className="container py-12 flex justify-center">
+        <Loader2Icon className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!isAdmin && !canPublish) {
+    return (
+      <div className="container max-w-2xl py-10 space-y-4">
+        <Alert>
+          <ShieldCheck className="h-4 w-4" />
+          <AlertTitle>Vérification requise</AlertTitle>
+          <AlertDescription className="space-y-3">
+            <p>
+              Pour publier des annonces sur DealFlash, vous devez d'abord compléter votre dossier
+              de vérification d'identité conforme aux exigences canadiennes.
+            </p>
+            <Button asChild>
+              <Link to="/devenir-vendeur">
+                {verification ? "Continuer mon dossier" : "Commencer la vérification"}
+              </Link>
+            </Button>
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
 
   const handleSubmit = async (e: React.FormEvent, status: 'draft' | 'active') => {
