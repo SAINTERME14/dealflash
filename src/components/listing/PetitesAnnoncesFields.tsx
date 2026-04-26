@@ -204,7 +204,7 @@ export function PetitesAnnoncesFields({ subSlug, values, onChange, errors = {} }
         <div>
           <Label htmlFor="condition">État *</Label>
           <Select value={values.condition ?? ""} onValueChange={(v) => set({ condition: v })}>
-            <SelectTrigger className={cn(errors.condition && errorInputClass)}>
+            <SelectTrigger id="condition" className={cn(errors.condition && errorInputClass)}>
               <SelectValue placeholder="Choisir" />
             </SelectTrigger>
             <SelectContent>
