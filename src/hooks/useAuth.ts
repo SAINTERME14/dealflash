@@ -63,13 +63,6 @@ function subscribe(listener: () => void) {
 
   return () => {
     listeners.delete(listener);
-
-    if (listeners.size === 0 && authUnsubscribe) {
-      authUnsubscribe();
-      authUnsubscribe = null;
-      authInitialized = false;
-      authInitPromise = null;
-    }
   };
 }
 
