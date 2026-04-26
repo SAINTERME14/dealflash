@@ -196,7 +196,15 @@ export default function AdminSuppliers() {
                   {s.contact_email && <p className="text-xs text-muted-foreground">{s.contact_email}</p>}
                   {s.notes && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{s.notes}</p>}
                 </div>
-                <div className="flex gap-2 shrink-0">
+                <div className="flex flex-wrap gap-2 shrink-0">
+                  <Button onClick={() => setCsvDialog(s)} variant="outline" size="sm" title="Importer CSV">
+                    <Upload className="h-3 w-3" />
+                  </Button>
+                  {(s.type === "generic_api" || s.type === "cj_dropshipping") && (
+                    <Button onClick={() => syncApi(s)} variant="outline" size="sm" disabled={syncingId === s.id} title="Synchroniser API">
+                      {syncingId === s.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
+                    </Button>
+                  )}
                   <Button onClick={() => openEdit(s)} variant="outline" size="sm"><Pencil className="h-3 w-3" /></Button>
                   <Button onClick={() => remove(s.id)} variant="ghost" size="sm" className="text-destructive"><Trash2 className="h-3 w-3" /></Button>
                 </div>
