@@ -25,6 +25,31 @@ interface Category { id: string; name: string; slug: string; parent_id: string |
 const PETITES_ANNONCES_SLUG = "petites-annonces";
 const PA_SUB_SLUGS: PetitesAnnoncesSubSlug[] = ["autos-occasion", "colocation-pa", "objets-divers"];
 
+const PA_FIELD_ORDER: Record<PetitesAnnoncesSubSlug, string[]> = {
+  "autos-occasion": ["year", "mileage_km", "transmission", "fuel", "vin"],
+  "colocation-pa": ["budget_max", "room_type", "available_from", "furnished"],
+  "objets-divers": ["condition", "brand"],
+};
+
+function scrollToFirstPaError(
+  subSlug: PetitesAnnoncesSubSlug,
+  fieldErrors: Record<string, string | undefined>,
+) {
+  const order = PA_FIELD_ORDER[subSlug];
+  const firstKey = order.find((k) => fieldErrors[k]);
+  if (!firstKey) return;
+  // Wait for the error UI to render before scrolling
+  requestAnimationFrame(() => {
+    const el = document.getElementById(firstKey);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    // Focus native inputs; Radix Select triggers are buttons and are also focusable
+    if (typeof (el as HTMLElement).focus === "function") {
+      try { (el as HTMLElement).focus({ preventScroll: true }); } catch { /* noop */ }
+    }
+  });
+}
+
 export default function CreateListing() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -135,12 +160,16 @@ export default function CreateListing() {
     if (isPetitesAnnonces) {
       if (!form.subcategory_id || !selectedSubSlug) {
         toast.error("Veuillez choisir une sous-catégorie");
+        requestAnimationFrame(() => {
+          document.getElementById("subcategory")?.scrollIntoView({ behavior: "smooth", block: "center" });
+        });
         return;
       }
       const result = validatePetitesAnnonces(selectedSubSlug, paAttributes as Record<string, unknown>);
       if (result.ok === false) {
         setPaErrors(result.fieldErrors);
         toast.error(result.error);
+        scrollToFirstPaError(selectedSubSlug, result.fieldErrors);
         return;
       }
       setPaErrors({});
@@ -215,7 +244,7 @@ export default function CreateListing() {
                   setPaErrors({});
                 }}
               >
-                <SelectTrigger><SelectValue placeholder="Auto, colocation, objet…" /></SelectTrigger>
+                <SelectTrigger id="subcategory"><SelectValue placeholder="Auto, colocation, objet…" /></SelectTrigger>
                 <SelectContent>
                   {paSubcategories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                 </SelectContent>

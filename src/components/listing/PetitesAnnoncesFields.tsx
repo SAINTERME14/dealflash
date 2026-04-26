@@ -85,7 +85,7 @@ export function PetitesAnnoncesFields({ subSlug, values, onChange, errors = {} }
           <div>
             <Label htmlFor="transmission">Transmission</Label>
             <Select value={values.transmission ?? ""} onValueChange={(v) => set({ transmission: v })}>
-              <SelectTrigger className={cn(errors.transmission && errorInputClass)}>
+              <SelectTrigger id="transmission" className={cn(errors.transmission && errorInputClass)}>
                 <SelectValue placeholder="Choisir" />
               </SelectTrigger>
               <SelectContent>
@@ -98,7 +98,7 @@ export function PetitesAnnoncesFields({ subSlug, values, onChange, errors = {} }
           <div>
             <Label htmlFor="fuel">Carburant</Label>
             <Select value={values.fuel ?? ""} onValueChange={(v) => set({ fuel: v })}>
-              <SelectTrigger className={cn(errors.fuel && errorInputClass)}>
+              <SelectTrigger id="fuel" className={cn(errors.fuel && errorInputClass)}>
                 <SelectValue placeholder="Choisir" />
               </SelectTrigger>
               <SelectContent>
@@ -152,7 +152,7 @@ export function PetitesAnnoncesFields({ subSlug, values, onChange, errors = {} }
           <div>
             <Label htmlFor="room_type">Type de chambre *</Label>
             <Select value={values.room_type ?? ""} onValueChange={(v) => set({ room_type: v })}>
-              <SelectTrigger className={cn(errors.room_type && errorInputClass)}>
+              <SelectTrigger id="room_type" className={cn(errors.room_type && errorInputClass)}>
                 <SelectValue placeholder="Choisir" />
               </SelectTrigger>
               <SelectContent>
@@ -181,7 +181,7 @@ export function PetitesAnnoncesFields({ subSlug, values, onChange, errors = {} }
           <div>
             <Label htmlFor="furnished">Meublé</Label>
             <Select value={values.furnished ?? ""} onValueChange={(v) => set({ furnished: v })}>
-              <SelectTrigger className={cn(errors.furnished && errorInputClass)}>
+              <SelectTrigger id="furnished" className={cn(errors.furnished && errorInputClass)}>
                 <SelectValue placeholder="Choisir" />
               </SelectTrigger>
               <SelectContent>
@@ -204,7 +204,7 @@ export function PetitesAnnoncesFields({ subSlug, values, onChange, errors = {} }
         <div>
           <Label htmlFor="condition">État *</Label>
           <Select value={values.condition ?? ""} onValueChange={(v) => set({ condition: v })}>
-            <SelectTrigger className={cn(errors.condition && errorInputClass)}>
+            <SelectTrigger id="condition" className={cn(errors.condition && errorInputClass)}>
               <SelectValue placeholder="Choisir" />
             </SelectTrigger>
             <SelectContent>
