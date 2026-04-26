@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { BucketImageUploader } from "@/components/upload/BucketImageUploader";
 import { PetitesAnnoncesFields, type PetitesAnnoncesAttributes, type PetitesAnnoncesSubSlug } from "@/components/listing/PetitesAnnoncesFields";
+import { validatePetitesAnnonces } from "@/lib/petitesAnnoncesValidation";
 
 interface Category { id: string; name: string; slug: string; parent_id: string | null; listing_type: string; }
 
@@ -120,27 +121,27 @@ export default function CreateListing() {
       return;
     }
 
-    // Petites annonces : sous-catégorie obligatoire + validation des champs spécifiques
-    let attributes: Record<string, unknown> = {};
-    let listingType = selectedSub?.listing_type ?? topLevelCategories.find((c) => c.id === form.category_id)?.listing_type ?? "product";
+    // Prix : doit être un nombre positif valide
+    const priceNum = parseFloat(form.price);
+    if (!Number.isFinite(priceNum) || priceNum < 0 || priceNum > 10_000_000) {
+      toast.error("Prix invalide");
+      return;
+    }
+
+    // Petites annonces : sous-catégorie obligatoire + validation Zod stricte
+    let attributes: Record<string, string> = {};
+    const listingType = selectedSub?.listing_type ?? topLevelCategories.find((c) => c.id === form.category_id)?.listing_type ?? "product";
     if (isPetitesAnnonces) {
       if (!form.subcategory_id || !selectedSubSlug) {
         toast.error("Veuillez choisir une sous-catégorie");
         return;
       }
-      if (selectedSubSlug === "autos-occasion" && (!paAttributes.year || !paAttributes.mileage_km)) {
-        toast.error("Année et kilométrage sont obligatoires");
+      const result = validatePetitesAnnonces(selectedSubSlug, paAttributes as Record<string, unknown>);
+      if (result.ok === false) {
+        toast.error(result.error);
         return;
       }
-      if (selectedSubSlug === "colocation-pa" && (!paAttributes.budget_max || !paAttributes.room_type)) {
-        toast.error("Budget et type de chambre sont obligatoires");
-        return;
-      }
-      if (selectedSubSlug === "objets-divers" && !paAttributes.condition) {
-        toast.error("L'état de l'objet est obligatoire");
-        return;
-      }
-      attributes = { ...paAttributes };
+      attributes = result.data;
     }
 
     setLoading(true);
