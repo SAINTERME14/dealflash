@@ -58,12 +58,14 @@ export const objetsDiversSchema = z.object({
 
 export type PetitesAnnoncesSubSlug = "autos-occasion" | "colocation-pa" | "objets-divers";
 
+export type PetitesAnnoncesFieldErrors = Partial<Record<string, string>>;
+
 export function validatePetitesAnnonces(
   subSlug: PetitesAnnoncesSubSlug,
   raw: Record<string, unknown>,
 ):
   | { ok: true; data: Record<string, string> }
-  | { ok: false; error: string } {
+  | { ok: false; error: string; fieldErrors: PetitesAnnoncesFieldErrors } {
   try {
     const data =
       subSlug === "autos-occasion"
@@ -79,8 +81,19 @@ export function validatePetitesAnnonces(
     return { ok: true, data: clean };
   } catch (e) {
     if (e instanceof z.ZodError) {
-      return { ok: false, error: e.issues[0]?.message ?? "Validation échouée" };
+      const fieldErrors: PetitesAnnoncesFieldErrors = {};
+      for (const issue of e.issues) {
+        const key = issue.path[0];
+        if (typeof key === "string" && !fieldErrors[key]) {
+          fieldErrors[key] = issue.message;
+        }
+      }
+      return {
+        ok: false,
+        error: e.issues[0]?.message ?? "Validation échouée",
+        fieldErrors,
+      };
     }
-    return { ok: false, error: "Validation échouée" };
+    return { ok: false, error: "Validation échouée", fieldErrors: {} };
   }
 }
