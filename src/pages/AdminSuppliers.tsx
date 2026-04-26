@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Plus, Pencil, Trash2, Truck } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, Truck, RefreshCw, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 type SupplierType = "cj_dropshipping" | "aliexpress" | "alibaba" | "generic_api" | "csv_import" | "manual";
@@ -41,6 +41,9 @@ export default function AdminSuppliers() {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Supplier | null>(null);
+  const [syncingId, setSyncingId] = useState<string | null>(null);
+  const [csvDialog, setCsvDialog] = useState<Supplier | null>(null);
+  const [csvText, setCsvText] = useState("");
 
   const [form, setForm] = useState({
     name: "",
@@ -120,6 +123,41 @@ export default function AdminSuppliers() {
     const { error } = await supabase.from("suppliers").delete().eq("id", id);
     if (error) toast.error(error.message);
     else { toast.success("Supprimé"); load(); }
+  };
+
+  const syncApi = async (s: Supplier) => {
+    setSyncingId(s.id);
+    try {
+      const { data, error } = await supabase.functions.invoke("sync-supplier-products", {
+        body: { supplier_id: s.id, mode: "api" },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      toast.success(`${data.imported ?? 0} produits importés depuis ${s.name}`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erreur de synchronisation");
+    } finally {
+      setSyncingId(null);
+    }
+  };
+
+  const importCsv = async () => {
+    if (!csvDialog || !csvText.trim()) return;
+    setSyncingId(csvDialog.id);
+    try {
+      const { data, error } = await supabase.functions.invoke("sync-supplier-products", {
+        body: { supplier_id: csvDialog.id, mode: "csv", csv: csvText },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      toast.success(`${data.imported ?? 0} produits importés`);
+      setCsvDialog(null);
+      setCsvText("");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erreur d'import");
+    } finally {
+      setSyncingId(null);
+    }
   };
 
   return (
