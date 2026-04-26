@@ -13,6 +13,8 @@ import AdminContent from "./pages/AdminContent";
 import AdminUsers from "./pages/AdminUsers";
 import AdminTickets from "./pages/AdminTickets";
 import AdminAuditLog from "./pages/AdminAuditLog";
+import AdminTasks from "./pages/AdminTasks";
+import AdminFinances from "./pages/AdminFinances";
 import AdminSellerApplications from "./pages/AdminSellerApplications";
 import AdminSellerApplicationDetail from "./pages/AdminSellerApplicationDetail";
 import AdminVerifications from "./pages/AdminVerifications";
@@ -66,6 +68,8 @@ const App = () => (
             <Route path="/admin/utilisateurs" element={<AdminRoute><AdminUsers /></AdminRoute>} />
             <Route path="/admin/tickets" element={<AdminRoute><AdminTickets /></AdminRoute>} />
             <Route path="/admin/journal" element={<AdminRoute><AdminAuditLog /></AdminRoute>} />
+            <Route path="/admin/taches" element={<AdminRoute><AdminTasks /></AdminRoute>} />
+            <Route path="/admin/finances" element={<AdminRoute><AdminFinances /></AdminRoute>} />
             <Route path="/admin/demandes-vendeurs" element={<SellerNotesRoute><AdminSellerApplications /></SellerNotesRoute>} />
             <Route path="/admin/demandes-vendeurs/:id" element={<SellerNotesRoute><AdminSellerApplicationDetail /></SellerNotesRoute>} />
             <Route path="/admin/verifications" element={<AdminRoute><AdminVerifications /></AdminRoute>} />

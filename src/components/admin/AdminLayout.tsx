@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { LayoutDashboard, Sparkles, Users, Receipt, History, UserPlus, FileText, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Sparkles, Users, Receipt, History, UserPlus, FileText, ShieldCheck, KanbanSquare, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
@@ -9,6 +9,8 @@ const items = [
   { to: "/admin/vedette", label: "Sélection sponsorisée", icon: Sparkles },
   { to: "/admin/utilisateurs", label: "Utilisateurs & rôles", icon: Users },
   { to: "/admin/tickets", label: "Tickets & revenus", icon: Receipt },
+  { to: "/admin/finances", label: "Finances", icon: Wallet },
+  { to: "/admin/taches", label: "Tâches internes", icon: KanbanSquare },
   { to: "/admin/verifications", label: "Vérifications KYC", icon: ShieldCheck },
   { to: "/admin/demandes-vendeurs", label: "Demandes vendeurs", icon: UserPlus },
   { to: "/admin/journal", label: "Journal d'audit", icon: History },
