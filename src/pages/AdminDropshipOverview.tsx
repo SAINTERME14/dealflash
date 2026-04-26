@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card } from "@/components/ui/card";
-import { Loader2, Package, Truck, ShoppingCart, AlertTriangle, TrendingUp, Globe } from "lucide-react";
+import { Loader2, Package, Truck, ShoppingCart, AlertTriangle, TrendingUp, Globe, Zap, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface Stats {
   productsTotal: number;
