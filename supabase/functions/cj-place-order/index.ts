@@ -48,6 +48,7 @@ Deno.serve(async (req) => {
       }
     }
 
+    const admin = createClient(supabaseUrl, serviceKey);
     const body = await req.json();
     const orderId = body?.dropship_order_id;
     if (!orderId || typeof orderId !== "string") {
