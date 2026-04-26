@@ -212,6 +212,7 @@ export default function CreateListing() {
                 onValueChange={(v) => {
                   setForm({ ...form, subcategory_id: v });
                   setPaAttributes({});
+                  setPaErrors({});
                 }}
               >
                 <SelectTrigger><SelectValue placeholder="Auto, colocation, objet…" /></SelectTrigger>
