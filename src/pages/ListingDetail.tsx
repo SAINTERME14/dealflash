@@ -234,6 +234,12 @@ export default function ListingDetail() {
                       {listing.profiles.is_verified && <Badge variant="secondary" className="text-xs">✓ Vérifié</Badge>}
                     </p>
                     {listing.profiles.city && <p className="text-xs text-muted-foreground">{listing.profiles.city}</p>}
+                    {sellerStats && sellerStats.total > 0 && (
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <StarRating value={sellerStats.avg} size="sm" />
+                        <span className="text-xs text-muted-foreground">{sellerStats.avg.toFixed(1)} · {sellerStats.total} avis</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
