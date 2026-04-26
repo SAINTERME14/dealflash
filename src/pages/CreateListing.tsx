@@ -194,6 +194,7 @@ export default function CreateListing() {
               onValueChange={(v) => {
                 setForm({ ...form, category_id: v, subcategory_id: "" });
                 setPaAttributes({});
+                setPaErrors({});
               }}
             >
               <SelectTrigger><SelectValue placeholder="Choisir une catégorie" /></SelectTrigger>
