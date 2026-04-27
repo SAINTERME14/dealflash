@@ -10,8 +10,10 @@ const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
-    storage: localStorage,
+    storage: localStorage,          // localStorage requis pour PKCE (code_verifier doit survivre aux redirections d'onglets)
     persistSession: true,
     autoRefreshToken: true,
+    detectSessionInUrl: true,       // Détecte automatiquement le ?code= dans l'URL après confirmation email
+    flowType: 'pkce',               // Sécurise le flow OAuth/email confirmation contre les attaques CSRF
   }
 });

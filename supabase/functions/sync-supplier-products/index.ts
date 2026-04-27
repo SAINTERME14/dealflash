@@ -1,23 +1,47 @@
 // Supabase Edge Function : synchronisation fournisseurs dropshipping
-// Importe / met à jour les supplier_products depuis l'API d'un fournisseur.
-// Supporte : CJ Dropshipping (scaffolding), import CSV (POST body), generic_api.
 // Sécurisé : exige un JWT admin valide.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { listCJProducts, type CJProductListItem } from "../_shared/cj.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+// ── CORS sécurisé ───────────────────────────────────────────────────────────
+const ALLOWED_ORIGINS = [
+  "https://dealflash.ca",
+  "https://www.dealflash.ca",
+  "https://preview--dealflash.lovable.app",
+];
+function getCorsHeaders(req: Request): Record<string, string> {
+  const origin = req.headers.get("Origin") ?? "";
+  const allowed = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    "Access-Control-Allow-Origin": allowed,
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Vary": "Origin",
+  };
+}
+
+// ── Rate limiting ───────────────────────────────────────────────────────────
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + 60_000 });
+    return true;
+  }
+  if (entry.count >= 10) return false; // sync lourde — max 10/min
+  entry.count++;
+  return true;
+}
 
 interface SyncBody {
   supplier_id: string;
   mode?: "csv" | "api";
-  csv?: string; // contenu CSV brut (mode csv)
-  page?: number; // mode api CJ : page à synchroniser (par défaut 1)
-  pageSize?: number; // taille de page (max 200)
-  maxPages?: number; // nb max de pages à parcourir (par défaut 5)
+  csv?: string;
+  page?: number;
+  pageSize?: number;
+  maxPages?: number;
 }
 
 interface ParsedProduct {
@@ -59,7 +83,15 @@ function parseCsv(csv: string): ParsedProduct[] {
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
+  if (!checkRateLimit(ip)) {
+    return new Response(JSON.stringify({ error: "Too many requests" }), {
+      status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
 
   try {
     const authHeader = req.headers.get("Authorization");
@@ -73,7 +105,6 @@ Deno.serve(async (req) => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const anon = Deno.env.get("SUPABASE_ANON_KEY")!;
 
-    // Vérifier l'utilisateur admin
     const userClient = createClient(supabaseUrl, anon, {
       global: { headers: { Authorization: authHeader } },
     });
@@ -113,7 +144,6 @@ Deno.serve(async (req) => {
     if (body.mode === "csv" && body.csv) {
       products = parseCsv(body.csv);
     } else if (supplier.type === "cj_dropshipping") {
-      // Sync live via l'API CJ Dropshipping
       if (!Deno.env.get("CJ_EMAIL") || !Deno.env.get("CJ_API_KEY")) {
         return new Response(JSON.stringify({
           error: "Secrets CJ_EMAIL et CJ_API_KEY non configurés"
@@ -129,7 +159,6 @@ Deno.serve(async (req) => {
           if (!resp?.list?.length) break;
           collected.push(...resp.list);
           if (resp.list.length < pageSize) break;
-          // throttle ~1 req/s recommandé par CJ
           await new Promise((r) => setTimeout(r, 1100));
         }
       } catch (e) {
@@ -188,7 +217,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Upsert par (supplier_id, external_sku)
     const rows = products.map((p) => ({
       supplier_id: body.supplier_id,
       external_sku: p.external_sku,

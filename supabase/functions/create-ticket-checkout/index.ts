@@ -1,25 +1,67 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { type StripeEnv, createStripeClient } from "../_shared/stripe.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+// ── CORS sécurisé : domaines autorisés seulement ────────────────────────────
+const ALLOWED_ORIGINS = [
+  "https://dealflash.ca",
+  "https://www.dealflash.ca",
+  "https://preview--dealflash.lovable.app",
+];
 
+function getCorsHeaders(req: Request): Record<string, string> {
+  const origin = req.headers.get("Origin") ?? "";
+  const allowed = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    "Access-Control-Allow-Origin": allowed,
+    "Access-Control-Allow-Headers":
+      "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Vary": "Origin",
+  };
+}
+
+// ── Rate limiting simple par IP ─────────────────────────────────────────────
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT = 20;
+const WINDOW_MS = 60_000;
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + WINDOW_MS });
+    return true;
+  }
+  if (entry.count >= RATE_LIMIT) return false;
+  entry.count++;
+  return true;
+}
+
+// ── Client Supabase (service role) ─────────────────────────────────────────
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
 );
 
 Deno.serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") {
     return new Response("Method not allowed", { status: 405, headers: corsHeaders });
   }
 
+  // Rate limiting
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
+  if (!checkRateLimit(ip)) {
+    return new Response(JSON.stringify({ error: "Trop de requêtes. Réessayez dans une minute." }), {
+      status: 429,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   try {
+    // Vérification JWT
     const authHeader = req.headers.get("Authorization");
     const token = authHeader?.replace("Bearer ", "");
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
@@ -41,7 +83,7 @@ Deno.serve(async (req) => {
       buyer_email,
       return_url,
       environment,
-      kind, // "flash" | "appointment"
+      kind,
     } = body;
 
     if (!listing_id || !buyer_email || !return_url || !environment || !kind) {
@@ -51,14 +93,14 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Load listing + category to compute ticket fee
+    // Valider listing
     const { data: listing, error: lerr } = await supabase
       .from("listings")
-      .select("id, seller_id, price, category_id, subcategory_id")
+      .select("id, seller_id, price, category_id, subcategory_id, status")
       .eq("id", listing_id)
       .maybeSingle();
-    if (lerr || !listing) {
-      return new Response(JSON.stringify({ error: "Listing not found" }), {
+    if (lerr || !listing || listing.status !== "active") {
+      return new Response(JSON.stringify({ error: "Listing not found or inactive" }), {
         status: 404,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -87,7 +129,6 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Compute platform fee
     let feeAmount = 2.99;
     if (category) {
       if (category.ticket_fee_type === "percent") {
@@ -97,7 +138,7 @@ Deno.serve(async (req) => {
         feeAmount = Number(category.ticket_fee_value);
       }
     }
-    feeAmount = Math.max(feeAmount, 0.5); // Stripe min 50¢
+    feeAmount = Math.max(feeAmount, 0.5);
     const feeInCents = Math.round(feeAmount * 100);
 
     const stripe = createStripeClient(environment as StripeEnv);

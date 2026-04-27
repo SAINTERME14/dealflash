@@ -47,22 +47,23 @@ export default function Index() {
         .order("display_order");
       if (cats) setCategories(cats);
 
+      // La logique featured_until est maintenant gérée côté base de données
+      // par la fonction expire_featured_listings() et le cron pg_cron.
+      // On récupère is_featured tel quel depuis la DB — toujours à jour.
       const { data: listings } = await supabase
         .from("listings")
         .select("id, title, price, currency, city, images, allows_booking, is_featured, featured_until, original_price, discount_percent, categories(name)")
         .eq("status", "active")
         .order("created_at", { ascending: false })
         .limit(8);
+
       if (listings) {
-        const now = Date.now();
         setRecent(
           listings.map((l) => {
-            const { categories, featured_until, ...rest } = l as typeof l & { categories: { name: string } | null };
-            const expired = featured_until && new Date(featured_until).getTime() <= now;
+            const { categories, ...rest } = l as typeof l & { categories: { name: string } | null };
             return {
               ...rest,
-              is_featured: expired ? false : rest.is_featured,
-              category_name: categories?.name,
+              category_name: (categories as { name: string } | null)?.name,
             };
           })
         );
@@ -139,34 +140,19 @@ export default function Index() {
               </div>
               <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
                 <Button asChild size="sm" variant="default" className="gap-1.5">
-                  <Link to="/admin">
-                    <LayoutDashboard className="h-3.5 w-3.5" />
-                    Tableau de bord
-                  </Link>
+                  <Link to="/admin"><LayoutDashboard className="h-3.5 w-3.5" />Tableau de bord</Link>
                 </Button>
                 <Button asChild size="sm" variant="outline" className="gap-1.5">
-                  <Link to="/admin/users">
-                    <Users className="h-3.5 w-3.5" />
-                    Utilisateurs
-                  </Link>
+                  <Link to="/admin/utilisateurs"><Users className="h-3.5 w-3.5" />Utilisateurs</Link>
                 </Button>
                 <Button asChild size="sm" variant="outline" className="gap-1.5">
-                  <Link to="/admin/tickets">
-                    <Ticket className="h-3.5 w-3.5" />
-                    Tickets
-                  </Link>
+                  <Link to="/admin/tickets"><Ticket className="h-3.5 w-3.5" />Tickets</Link>
                 </Button>
                 <Button asChild size="sm" variant="outline" className="gap-1.5">
-                  <Link to="/admin/featured">
-                    <Sparkles className="h-3.5 w-3.5" />
-                    Vedettes
-                  </Link>
+                  <Link to="/admin/vedette"><Sparkles className="h-3.5 w-3.5" />Vedettes</Link>
                 </Button>
                 <Button asChild size="sm" variant="outline" className="gap-1.5 col-span-2 sm:col-span-1">
-                  <Link to="/admin/journal">
-                    <History className="h-3.5 w-3.5" />
-                    Journal
-                  </Link>
+                  <Link to="/admin/journal"><History className="h-3.5 w-3.5" />Journal</Link>
                 </Button>
               </div>
             </div>
@@ -174,7 +160,7 @@ export default function Index() {
         </section>
       )}
 
-      {/* SUMMARY — What is DealFlash */}
+      {/* SUMMARY */}
       <section className="container py-16">
         <div className="max-w-3xl mx-auto text-center">
           <Badge variant="secondary" className="mb-4">À propos</Badge>
@@ -196,9 +182,7 @@ export default function Index() {
           </div>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild variant="default" size="lg" className="gap-2">
-              <Link to="/recherche">
-                Explorer les annonces <ArrowRight className="h-4 w-4" />
-              </Link>
+              <Link to="/recherche">Explorer les annonces <ArrowRight className="h-4 w-4" /></Link>
             </Button>
             <Button asChild variant="outline" size="lg">
               <a href="#devenir-vendeur">Devenir vendeur</a>

@@ -1,14 +1,25 @@
 // Edge function : récupérer le tracking des commandes CJ en cours
 // Peut être appelée manuellement (admin) ou par cron (auth via service role)
-// Met à jour status + tracking_number + tracking_url + shipped_at/delivered_at
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { getCJTracking } from "../_shared/cj.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+// ── CORS sécurisé ───────────────────────────────────────────────────────────
+const ALLOWED_ORIGINS = [
+  "https://dealflash.ca",
+  "https://www.dealflash.ca",
+  "https://preview--dealflash.lovable.app",
+];
+function getCorsHeaders(req: Request): Record<string, string> {
+  const origin = req.headers.get("Origin") ?? "";
+  const allowed = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    "Access-Control-Allow-Origin": allowed,
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Vary": "Origin",
+  };
+}
 
 function mapCJStatus(status?: string): "ordered" | "shipped" | "delivered" | null {
   if (!status) return null;
@@ -20,6 +31,7 @@ function mapCJStatus(status?: string): "ordered" | "shipped" | "delivered" | nul
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
@@ -27,7 +39,6 @@ Deno.serve(async (req) => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 
-    // Auth: soit JWT admin, soit service_role (cron interne)
     const authHeader = req.headers.get("Authorization") ?? "";
     const token = authHeader.replace(/^Bearer\s+/i, "");
     const isServiceCall = token === serviceKey;
@@ -47,8 +58,8 @@ Deno.serve(async (req) => {
           status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const admin = createClient(supabaseUrl, serviceKey);
-      const { data: roleCheck } = await admin
+      const adminClient = createClient(supabaseUrl, serviceKey);
+      const { data: roleCheck } = await adminClient
         .from("user_roles").select("role").eq("user_id", userData.user.id).eq("role", "admin").maybeSingle();
       if (!roleCheck) {
         return new Response(JSON.stringify({ error: "Forbidden — admin only" }), {
@@ -58,8 +69,6 @@ Deno.serve(async (req) => {
     }
 
     const admin = createClient(supabaseUrl, serviceKey);
-
-    // Cible : commandes CJ "ordered" ou "shipped" avec external_order_id
     const { data: orders, error } = await admin
       .from("dropship_orders")
       .select("id, status, external_order_id, suppliers!inner(type)")
@@ -97,7 +106,6 @@ Deno.serve(async (req) => {
           await admin.from("dropship_orders").update(patch).eq("id", o.id);
           updated++;
         }
-        // throttle
         await new Promise((r) => setTimeout(r, 1100));
       } catch {
         failed++;

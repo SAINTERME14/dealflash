@@ -1,6 +1,20 @@
 import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
 import { type StripeEnv, verifyWebhook } from "../_shared/stripe.ts";
 
+// ── Rate limiting ───────────────────────────────────────────────────────────
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + 60_000 });
+    return true;
+  }
+  if (entry.count >= 100) return false;
+  entry.count++;
+  return true;
+}
+
 let _supabase: SupabaseClient | null = null;
 function getSupabase(): SupabaseClient {
   if (!_supabase) {
@@ -25,12 +39,23 @@ async function handleCheckoutCompleted(session: StripeSession) {
     return;
   }
 
+  const supabase = getSupabase();
+
+  // Valider que le listing existe avant d'insérer le ticket
+  const { data: listing } = await supabase
+    .from("listings")
+    .select("id, status")
+    .eq("id", m.listing_id)
+    .maybeSingle();
+  if (!listing) {
+    console.error("Listing introuvable pour listing_id:", m.listing_id);
+    return;
+  }
+
   const validityHours = parseInt(m.validity_hours || "48", 10);
   const expiresAt = new Date(Date.now() + validityHours * 3600 * 1000).toISOString();
   const flashPrice = Number(m.flash_price || 0);
   const platformFee = Number(m.platform_fee || 0);
-
-  const supabase = getSupabase();
 
   const { data: ticket, error } = await supabase
     .from("tickets")
@@ -61,7 +86,6 @@ async function handleCheckoutCompleted(session: StripeSession) {
     return;
   }
 
-  // Increment flash sale stock_sold
   if (m.flash_sale_id) {
     const { data: fs } = await supabase
       .from("flash_sales")
@@ -76,7 +100,6 @@ async function handleCheckoutCompleted(session: StripeSession) {
     }
   }
 
-  // Link ticket to appointment if applicable
   if (m.appointment_id) {
     await supabase
       .from("appointments")
@@ -97,32 +120,42 @@ async function handleRefund(charge: { payment_intent?: string | null }) {
     .eq("stripe_payment_intent", pi);
 }
 
-async function handleWebhook(req: Request, env: StripeEnv) {
-  const event = await verifyWebhook(req, env);
-
-  switch (event.type) {
-    case "checkout.session.completed":
-      await handleCheckoutCompleted(event.data.object as unknown as StripeSession);
-      break;
-    case "charge.refunded":
-      await handleRefund(event.data.object as { payment_intent?: string | null });
-      break;
-    default:
-      console.log("Unhandled event:", event.type);
-  }
+// Détermine l'environnement Stripe depuis le paramètre ?env= (sandbox ou live)
+// La signature est vérifiée dans verifyWebhook avec le bon secret selon l'env
+function getEnvParam(req: Request): StripeEnv | null {
+  const rawEnv = new URL(req.url).searchParams.get("env");
+  if (rawEnv === "sandbox" || rawEnv === "live") return rawEnv;
+  return null;
 }
 
 Deno.serve(async (req) => {
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405 });
-  const rawEnv = new URL(req.url).searchParams.get("env");
-  if (rawEnv !== "sandbox" && rawEnv !== "live") {
+
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
+  if (!checkRateLimit(ip)) return new Response("Too Many Requests", { status: 429 });
+
+  const env = getEnvParam(req);
+  if (!env) {
     return new Response(JSON.stringify({ received: true, ignored: "invalid env" }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
   }
+
   try {
-    await handleWebhook(req, rawEnv);
+    const event = await verifyWebhook(req, env);
+
+    switch (event.type) {
+      case "checkout.session.completed":
+        await handleCheckoutCompleted(event.data.object as unknown as StripeSession);
+        break;
+      case "charge.refunded":
+        await handleRefund(event.data.object as { payment_intent?: string | null });
+        break;
+      default:
+        console.log("Unhandled event:", event.type);
+    }
+
     return new Response(JSON.stringify({ received: true }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
