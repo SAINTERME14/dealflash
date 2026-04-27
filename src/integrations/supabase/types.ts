@@ -1684,7 +1684,6 @@ export type Database = {
           display_name: string | null
           id: string | null
           is_verified: boolean | null
-          phone: string | null
           updated_at: string | null
           user_id: string | null
         }
@@ -1696,7 +1695,6 @@ export type Database = {
           display_name?: string | null
           id?: string | null
           is_verified?: boolean | null
-          phone?: never
           updated_at?: string | null
           user_id?: string | null
         }
@@ -1708,7 +1706,6 @@ export type Database = {
           display_name?: string | null
           id?: string | null
           is_verified?: boolean | null
-          phone?: never
           updated_at?: string | null
           user_id?: string | null
         }
