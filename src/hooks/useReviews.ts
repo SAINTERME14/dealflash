@@ -39,10 +39,16 @@ export function useListingRatingStats(listingId: string | undefined) {
     queryKey: ["reviews", "stats", "listing", listingId],
     enabled: !!listingId,
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_listing_rating_stats", { _listing_id: listingId! });
+      const { data, error } = await supabase
+        .from("reviews")
+        .select("rating")
+        .eq("listing_id", listingId!)
+        .eq("is_hidden", false);
       if (error) throw error;
-      const row = (data ?? [])[0];
-      return { avg: Number(row?.avg_rating ?? 0), total: Number(row?.total_reviews ?? 0) };
+      const ratings = (data ?? []).map((row) => Number(row.rating)).filter((rating) => Number.isFinite(rating));
+      const total = ratings.length;
+      const avg = total ? ratings.reduce((sum, rating) => sum + rating, 0) / total : 0;
+      return { avg, total };
     },
   });
 }
@@ -52,10 +58,16 @@ export function useSellerRatingStats(sellerId: string | undefined) {
     queryKey: ["reviews", "stats", "seller", sellerId],
     enabled: !!sellerId,
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_seller_rating_stats", { _seller_id: sellerId! });
+      const { data, error } = await supabase
+        .from("reviews")
+        .select("rating")
+        .eq("seller_id", sellerId!)
+        .eq("is_hidden", false);
       if (error) throw error;
-      const row = (data ?? [])[0];
-      return { avg: Number(row?.avg_rating ?? 0), total: Number(row?.total_reviews ?? 0) };
+      const ratings = (data ?? []).map((row) => Number(row.rating)).filter((rating) => Number.isFinite(rating));
+      const total = ratings.length;
+      const avg = total ? ratings.reduce((sum, rating) => sum + rating, 0) / total : 0;
+      return { avg, total };
     },
   });
 }
