@@ -77,7 +77,7 @@ export default function Messages() {
     // fetch profile names
     const ids = [...new Set(list.map((t) => t.other_id))];
     if (ids.length) {
-      const { data: profs } = await supabase.from("profiles").select("user_id, display_name").in("user_id", ids);
+      const { data: profs } = await supabase.from("public_profiles").select("user_id, display_name").in("user_id", ids);
       const nameMap = new Map((profs ?? []).map((p) => [p.user_id, p.display_name ?? "Utilisateur"]));
       list.forEach((t) => { t.other_name = nameMap.get(t.other_id) ?? "Utilisateur"; });
     }
@@ -100,7 +100,7 @@ export default function Messages() {
   useEffect(() => {
     if (!active || !user) return;
     (async () => {
-      const { data: prof } = await supabase.from("profiles").select("display_name").eq("user_id", active.otherId).maybeSingle();
+      const { data: prof } = await supabase.from("public_profiles").select("display_name").eq("user_id", active.otherId).maybeSingle();
       setOtherName(prof?.display_name ?? "Utilisateur");
 
       let q = supabase.from("messages").select("id, content, sender_id, created_at")
