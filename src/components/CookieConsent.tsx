@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import { X } from "lucide-react";
 
 const STORAGE_KEY = "dealflash_cookie_consent_v1";
