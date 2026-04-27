@@ -68,8 +68,8 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <CookieConsent />
       <BrowserRouter>
+        <CookieConsent />
         <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route path="/auth" element={<Auth />} />
