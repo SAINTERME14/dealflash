@@ -35,11 +35,14 @@ export default function AdminLogin() {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const { data } = await supabase.rpc("has_role", {
-        _user_id: user.id,
-        _role: "admin",
-      });
-      if (data === true) {
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+
+      if (!error && data) {
         navigate("/admin", { replace: true });
       } else {
         toast.error("Ce compte ne possède pas les droits administrateur.");
@@ -70,13 +73,15 @@ export default function AdminLogin() {
     }
 
     // Vérifier le rôle admin
-    const { data: hasAdmin } = await supabase.rpc("has_role", {
-      _user_id: signIn.user.id,
-      _role: "admin",
-    });
+    const { data: hasAdmin, error: adminCheckError } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", signIn.user.id)
+      .eq("role", "admin")
+      .maybeSingle();
 
     setLoading(false);
-    if (hasAdmin === true) {
+    if (!adminCheckError && hasAdmin) {
       toast.success("Bienvenue, administrateur");
       navigate("/admin", { replace: true });
     } else {
