@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import { X } from "lucide-react";
 
 const STORAGE_KEY = "dealflash_cookie_consent_v1";
@@ -37,9 +36,9 @@ export function CookieConsent() {
           <p className="text-sm text-muted-foreground mb-3">
             Nous utilisons uniquement des témoins essentiels pour le fonctionnement du site
             (session, sécurité). Aucun suivi publicitaire.{" "}
-            <Link to="/politique-confidentialite" className="text-accent underline">
+            <a href="/politique-confidentialite" className="text-accent underline">
               En savoir plus
-            </Link>
+            </a>
           </p>
           <div className="flex gap-2">
             <Button size="sm" variant="hero" onClick={accept}>
