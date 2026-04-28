@@ -1,54 +1,33 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
-type AuthState = {
-  user: User | null;
-  session: Session | null;
-  loading: boolean;
-};
-
-let globalState: AuthState = {
-  user: null,
-  session: null,
-  loading: true,
-};
-
-let initialized = false;
-const listeners = new Set<(state: AuthState) => void>();
-
-function notify(state: AuthState) {
-  globalState = state;
-  listeners.forEach((l) => l(state));
-}
-
-function init() {
-  if (initialized) return;
-  initialized = true;
-
-  supabase.auth.getSession().then(({ data: { session } }) => {
-    notify({ user: session?.user ?? null, session, loading: false });
-  });
-
-  supabase.auth.onAuthStateChange((_event, session) => {
-    notify({ user: session?.user ?? null, session, loading: false });
-  });
-}
-
 export function useAuth() {
-  const [state, setState] = useState<AuthState>(globalState);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    listeners.add(setState);
-    init();
-    return () => {
-      listeners.delete(setState);
-    };
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const signOut = useCallback(async () => {
+  const signOut = async () => {
     await supabase.auth.signOut();
-  }, []);
+  };
 
-  return { ...state, signOut };
+  return { user, session, loading, signOut };
 }
