@@ -32,7 +32,9 @@ export default function Auth() {
   const [unconfirmedEmail, setUnconfirmedEmail] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user) navigate("/");
+    if (user) {
+      navigate("/", { replace: true });
+    }
   }, [user, navigate]);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -51,10 +53,8 @@ export default function Auth() {
         setUnconfirmedEmail(email);
       }
       toast.error(getErrorMessage(error.message));
-    } else {
-      toast.success("Connecté avec succès !");
-      navigate("/");
     }
+    // Ne pas naviguer ici — useEffect va détecter user et naviguer
   };
 
   const handleResendConfirmation = async () => {
@@ -69,7 +69,7 @@ export default function Auth() {
     if (error) {
       toast.error(getErrorMessage(error.message));
     } else {
-      toast.success("Courriel de confirmation renvoyé ! Vérifiez votre boîte de réception.");
+      toast.success("Courriel de confirmation renvoyé !");
     }
   };
 
@@ -93,14 +93,11 @@ export default function Auth() {
     if (error) {
       toast.error(getErrorMessage(error.message));
     } else if (data.user && !data.session) {
-      // Email confirmation required — user is NOT yet logged in
-      toast.success("Compte créé ! Vérifiez votre courriel pour confirmer votre adresse avant de vous connecter.");
+      toast.success("Compte créé ! Vérifiez votre courriel pour confirmer votre adresse.");
       setUnconfirmedEmail(email);
       setTab("login");
-    } else {
-      toast.success("Compte créé et connecté !");
-      navigate("/");
     }
+    // Si data.session existe, useEffect va naviguer automatiquement
   };
 
   const handlePasswordReset = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -115,7 +112,7 @@ export default function Auth() {
     if (error) {
       toast.error(getErrorMessage(error.message));
     } else {
-      toast.success("Courriel de réinitialisation envoyé ! Vérifiez votre boîte de réception.");
+      toast.success("Courriel de réinitialisation envoyé !");
       setResetMode(false);
     }
   };
@@ -132,9 +129,7 @@ export default function Auth() {
               Deal<span className="text-accent">Flash</span>
             </span>
           </Link>
-          <h1 className="text-2xl font-bold">
-            {resetMode ? "Réinitialiser le mot de passe" : "Bienvenue"}
-          </h1>
+          <h1 className="text-2xl font-bold">{resetMode ? "Réinitialiser le mot de passe" : "Bienvenue"}</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {resetMode
               ? "Entrez votre courriel pour recevoir un lien de réinitialisation"
@@ -163,7 +158,13 @@ export default function Auth() {
               </button>
             </form>
           ) : (
-            <Tabs value={tab} onValueChange={(v) => { setTab(v); setUnconfirmedEmail(null); }}>
+            <Tabs
+              value={tab}
+              onValueChange={(v) => {
+                setTab(v);
+                setUnconfirmedEmail(null);
+              }}
+            >
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="login">Se connecter</TabsTrigger>
                 <TabsTrigger value="signup">S'inscrire</TabsTrigger>
@@ -177,7 +178,13 @@ export default function Auth() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="login-password">Mot de passe</Label>
-                    <Input id="login-password" name="password" type="password" required autoComplete="current-password" />
+                    <Input
+                      id="login-password"
+                      name="password"
+                      type="password"
+                      required
+                      autoComplete="current-password"
+                    />
                   </div>
                   <Button type="submit" variant="hero" size="lg" className="w-full" disabled={loading}>
                     {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
@@ -199,7 +206,7 @@ export default function Auth() {
                       <div>
                         <p className="font-medium text-amber-800">Courriel non confirmé</p>
                         <p className="text-amber-700 mt-1">
-                          Vérifiez votre boîte de réception pour <strong>{unconfirmedEmail}</strong> et cliquez sur le lien de confirmation.
+                          Vérifiez votre boîte pour <strong>{unconfirmedEmail}</strong>.
                         </p>
                         <Button
                           type="button"
@@ -210,7 +217,7 @@ export default function Auth() {
                           disabled={loading}
                         >
                           {loading && <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" />}
-                          Renvoyer le courriel de confirmation
+                          Renvoyer le courriel
                         </Button>
                       </div>
                     </div>
@@ -230,7 +237,14 @@ export default function Auth() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-password">Mot de passe</Label>
-                    <Input id="signup-password" name="password" type="password" required minLength={6} autoComplete="new-password" />
+                    <Input
+                      id="signup-password"
+                      name="password"
+                      type="password"
+                      required
+                      minLength={6}
+                      autoComplete="new-password"
+                    />
                     <p className="text-xs text-muted-foreground">Minimum 6 caractères</p>
                   </div>
                   <Button type="submit" variant="hero" size="lg" className="w-full" disabled={loading}>
