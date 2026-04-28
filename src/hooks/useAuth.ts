@@ -16,7 +16,6 @@ let authSnapshot: AuthSnapshot = {
 
 let authInitialized = false;
 let authInitPromise: Promise<void> | null = null;
-let authUnsubscribe: (() => void) | null = null;
 const listeners = new Set<() => void>();
 
 function emitAuthChange() {
@@ -34,7 +33,6 @@ function setAuthSnapshot(session: Session | null, loading: boolean) {
 
 function ensureAuthInitialized() {
   if (authInitialized) return authInitPromise;
-
   authInitialized = true;
 
   const {
@@ -42,8 +40,6 @@ function ensureAuthInitialized() {
   } = supabase.auth.onAuthStateChange((_event, newSession) => {
     setAuthSnapshot(newSession, false);
   });
-
-  authUnsubscribe = () => subscription.unsubscribe();
 
   authInitPromise = supabase.auth
     .getSession()
@@ -60,7 +56,6 @@ function ensureAuthInitialized() {
 function subscribe(listener: () => void) {
   listeners.add(listener);
   ensureAuthInitialized();
-
   return () => {
     listeners.delete(listener);
   };
