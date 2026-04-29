@@ -10,6 +10,7 @@ import {
   Search, Home, Hotel, Car, Bike, ShoppingBasket, PawPrint,
   Shirt, Smartphone, Sofa, Wrench, MapPin, ShieldCheck, Zap, Calendar,
   LayoutDashboard, Users, Ticket, Sparkles, History, ArrowRight,
+  User, Store, Briefcase, BadgeCheck, QrCode, MessageSquare, CalendarCheck, AlertTriangle,
 } from "lucide-react";
 import heroImage from "@/assets/hero-marketplace.jpg";
 import { SellerApplicationForm } from "@/components/home/SellerApplicationForm";
