@@ -4,7 +4,7 @@ import { useSiteText } from "@/hooks/useSiteContent";
 export function Footer() {
   const tagline = useSiteText(
     "footer.tagline",
-    "Le marketplace québécois pour acheter, vendre et réserver près de chez vous."
+    "La plateforme québécoise qui met en relation acheteurs sérieux et vendeurs vérifiés."
   );
   return (
     <footer className="border-t border-border bg-secondary/30 mt-20">
