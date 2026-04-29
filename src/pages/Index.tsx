@@ -93,10 +93,10 @@ export default function Index() {
         </div>
         <div className="relative container py-20 md:py-28 text-center">
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-primary-foreground animate-fade-in">
-            Les meilleurs deals, en un éclair.
+            Trouvez les bons deals, avec les bonnes personnes
           </h1>
           <p className="mt-4 text-lg md:text-xl text-primary-foreground/90 max-w-2xl mx-auto animate-fade-in">
-            Achetez, vendez, et réservez des visites pour des voitures, des logements, des services et bien plus encore, tout ça près de chez vous.
+            Une plateforme vérifiée pour acheter, vendre, louer et réserver auprès de vendeurs et professionnels de confiance. Connectez-vous en quelques clics, payez votre ticket, et rencontrez en personne.
           </p>
 
           <form onSubmit={handleSearch} className="mt-8 max-w-xl mx-auto flex gap-2 animate-scale-in">
