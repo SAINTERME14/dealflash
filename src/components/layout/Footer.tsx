@@ -4,7 +4,7 @@ import { useSiteText } from "@/hooks/useSiteContent";
 export function Footer() {
   const tagline = useSiteText(
     "footer.tagline",
-    "Le marketplace québécois pour acheter, vendre et réserver près de chez vous."
+    "La plateforme québécoise qui met en relation acheteurs sérieux et vendeurs vérifiés."
   );
   return (
     <footer className="border-t border-border bg-secondary/30 mt-20">
@@ -45,6 +45,15 @@ export function Footer() {
             <li><Link to="/a-propos" className="hover:text-foreground transition-smooth">À propos</Link></li>
             <li><Link to="/installer" className="hover:text-foreground transition-smooth">Installer l'app</Link></li>
           </ul>
+        </div>
+      </div>
+      <div className="border-t border-border bg-accent/5">
+        <div className="container py-4">
+          <p className="text-xs text-foreground/80 text-center">
+            ⚠️ <strong>DealFlash est une plateforme de connexion.</strong> Les transactions (vente,
+            location, prestations de services) se complètent entre l'acheteur et le vendeur. Les
+            acheteurs paient un ticket pour entrer en contact.
+          </p>
         </div>
       </div>
       <div className="border-t border-border">

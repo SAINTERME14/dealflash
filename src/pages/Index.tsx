@@ -10,6 +10,7 @@ import {
   Search, Home, Hotel, Car, Bike, ShoppingBasket, PawPrint,
   Shirt, Smartphone, Sofa, Wrench, MapPin, ShieldCheck, Zap, Calendar,
   LayoutDashboard, Users, Ticket, Sparkles, History, ArrowRight,
+  User, Store, Briefcase, BadgeCheck, QrCode, MessageSquare, CalendarCheck, AlertTriangle,
 } from "lucide-react";
 import heroImage from "@/assets/hero-marketplace.jpg";
 import { SellerApplicationForm } from "@/components/home/SellerApplicationForm";
@@ -92,10 +93,10 @@ export default function Index() {
         </div>
         <div className="relative container py-20 md:py-28 text-center">
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-primary-foreground animate-fade-in">
-            Les meilleurs deals, en un éclair.
+            Trouvez les bons deals, avec les bonnes personnes
           </h1>
           <p className="mt-4 text-lg md:text-xl text-primary-foreground/90 max-w-2xl mx-auto animate-fade-in">
-            Achetez, vendez, et réservez des visites pour des voitures, des logements, des services et bien plus encore, tout ça près de chez vous.
+            Une plateforme vérifiée pour acheter, vendre, louer et réserver auprès de vendeurs et professionnels de confiance. Connectez-vous en quelques clics, payez votre ticket, et rencontrez en personne.
           </p>
 
           <form onSubmit={handleSearch} className="mt-8 max-w-xl mx-auto flex gap-2 animate-scale-in">
@@ -165,20 +166,21 @@ export default function Index() {
         <div className="max-w-3xl mx-auto text-center">
           <Badge variant="secondary" className="mb-4">À propos</Badge>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            DealFlash, la marketplace locale du Québec
+            DealFlash — Connectez-vous avec les bons acheteurs ou vendeurs
           </h2>
           <p className="text-muted-foreground text-lg leading-relaxed">
-            DealFlash réunit particuliers et commerçants autour d'une plateforme unique pour
-            <strong className="text-foreground"> acheter, vendre, louer et réserver</strong> près de chez vous.
-            Des autos aux logements en passant par les services et les ventes flash, tout se passe
-            en quelques clics avec paiements sécurisés et messagerie intégrée.
+            DealFlash est la plateforme locale du Québec qui met en relation des
+            <strong className="text-foreground"> acheteurs sérieux</strong> avec des
+            <strong className="text-foreground"> vendeurs et professionnels vérifiés</strong>.
+            Payez un ticket d'entrée en contact, recevez votre billet QR avec rendez-vous,
+            puis rencontrez votre interlocuteur en personne.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-2 text-xs">
-            <Badge variant="outline">5 types d'annonces</Badge>
-            <Badge variant="outline">Paiement Stripe</Badge>
-            <Badge variant="outline">Réservation de visites</Badge>
-            <Badge variant="outline">Ventes flash</Badge>
-            <Badge variant="outline">Tickets QR</Badge>
+            <Badge variant="outline">Tickets sécurisés via Stripe</Badge>
+            <Badge variant="outline">Messagerie sécurisée acheteur/vendeur</Badge>
+            <Badge variant="outline">Calendrier synchronisé pour rendez-vous</Badge>
+            <Badge variant="outline">Articles FLASH (rabais min. 10%)</Badge>
+            <Badge variant="outline">Billets QR à scanner</Badge>
           </div>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild variant="default" size="lg" className="gap-2">
@@ -188,6 +190,115 @@ export default function Index() {
               <a href="#devenir-vendeur">Devenir vendeur</a>
             </Button>
           </div>
+        </div>
+      </section>
+
+      {/* 4 TYPES D'ANNONCEURS */}
+      <section className="bg-secondary/30 py-16 border-y border-border">
+        <div className="container">
+          <div className="text-center mb-10 max-w-2xl mx-auto">
+            <Badge variant="secondary" className="mb-3">4 profils</Badge>
+            <h2 className="text-3xl font-bold">4 types d'annonceurs sur DealFlash</h2>
+            <p className="text-muted-foreground mt-2">Chaque profil a ses exigences de vérification pour garantir la confiance.</p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="rounded-xl bg-card border border-border p-6 shadow-card">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary mb-4">
+                <User className="h-6 w-6" />
+              </div>
+              <div className="text-xs font-bold text-primary mb-1">1️⃣ PARTICULIERS</div>
+              <h3 className="font-bold mb-2">Vendez vos articles, meubles, autos, services ou locations</h3>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li>📋 3-8 photos, description détaillée</li>
+                <li>📋 Révéler les défauts</li>
+                <li>✓ Vérification d'identité requise</li>
+              </ul>
+            </div>
+            <div className="rounded-xl bg-card border border-border p-6 shadow-card">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary mb-4">
+                <Briefcase className="h-6 w-6" />
+              </div>
+              <div className="text-xs font-bold text-primary mb-1">2️⃣ VENDEURS PROFESSIONNELS (Occasionnels)</div>
+              <h3 className="font-bold mb-2">Un seul article à vendre ? Même format que les particuliers</h3>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li>📋 Révélez votre identité professionnelle</li>
+                <li>✓ Vérification de statut professionnel requise</li>
+              </ul>
+            </div>
+            <div className="rounded-xl bg-card border border-border p-6 shadow-card">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 text-accent mb-4">
+                <Store className="h-6 w-6" />
+              </div>
+              <div className="text-xs font-bold text-accent mb-1">3️⃣ COMMERCES & SERVICES</div>
+              <h3 className="font-bold mb-2">Lancez des campagnes d'articles multiples</h3>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li>🔥 Articles FLASH : rabais min. 10%</li>
+                <li>📅 Calendrier de disponibilités synchronisé</li>
+                <li>✓ Vérification d'entreprise requise</li>
+              </ul>
+            </div>
+            <div className="rounded-xl bg-card border border-border p-6 shadow-card">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-success/10 text-success mb-4">
+                <BadgeCheck className="h-6 w-6" />
+              </div>
+              <div className="text-xs font-bold text-success mb-1">4️⃣ PROFESSIONNELS RÉGLEMENTÉS</div>
+              <h3 className="font-bold mb-2">Médecins, avocats, plombiers, électriciens, etc.</h3>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li>✅ Certifié conforme à votre autorité de tutelle</li>
+                <li>💰 Prix du marché + prix promotionnel affichés</li>
+                <li>✓ Vérification de licence professionnelle requise</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* COMMENT ACHETER / COMMENT VENDRE */}
+      <section className="container py-16">
+        <div className="grid lg:grid-cols-2 gap-8">
+          <div className="rounded-2xl border border-border bg-card p-8 shadow-card">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg gradient-accent text-accent-foreground">
+                <Ticket className="h-6 w-6" />
+              </div>
+              <h3 className="text-2xl font-bold">Comment acheter</h3>
+            </div>
+            <ol className="space-y-3 text-sm">
+              <li className="flex gap-3"><span className="font-bold text-accent">1.</span><span>Trouvez l'annonce ou le service qui vous intéresse</span></li>
+              <li className="flex gap-3"><span className="font-bold text-accent">2.</span><span>Cliquez sur <strong>« Entrer en contact »</strong></span></li>
+              <li className="flex gap-3"><span className="font-bold text-accent">3.</span><span>Payez votre ticket d'accès (Stripe ou Interac QR)</span></li>
+              <li className="flex gap-3"><span className="font-bold text-accent">4.</span><span>Recevez votre billet avec rendez-vous</span></li>
+              <li className="flex gap-3"><span className="font-bold text-accent">5.</span><span>Discutez et planifiez la rencontre</span></li>
+              <li className="flex gap-3"><span className="font-bold text-accent">6.</span><span>Complétez votre transaction <strong>en personne</strong></span></li>
+            </ol>
+          </div>
+          <div className="rounded-2xl border border-border bg-card p-8 shadow-card">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg gradient-primary text-primary-foreground">
+                <Store className="h-6 w-6" />
+              </div>
+              <h3 className="text-2xl font-bold">Comment vendre</h3>
+            </div>
+            <ol className="space-y-3 text-sm">
+              <li className="flex gap-3"><span className="font-bold text-primary">1.</span><span>Choisissez votre catégorie (particulier, commerce, professionnel, etc.)</span></li>
+              <li className="flex gap-3"><span className="font-bold text-primary">2.</span><span>Vérifiez votre identité ou licence professionnelle</span></li>
+              <li className="flex gap-3"><span className="font-bold text-primary">3.</span><span>Publiez votre annonce avec photos et description détaillée</span></li>
+              <li className="flex gap-3"><span className="font-bold text-primary">4.</span><span>Définissez vos conditions (prix, rabais, horaires)</span></li>
+              <li className="flex gap-3"><span className="font-bold text-primary">5.</span><span>Recevez les demandes de contact des acheteurs sérieux</span></li>
+              <li className="flex gap-3"><span className="font-bold text-primary">6.</span><span>Synchronisez votre calendrier et confirmez les rendez-vous</span></li>
+              <li className="flex gap-3"><span className="font-bold text-primary">7.</span><span>Rencontrez vos acheteurs qualifiés</span></li>
+            </ol>
+          </div>
+        </div>
+
+        {/* DISCLAIMER */}
+        <div className="mt-8 rounded-xl border border-accent/30 bg-accent/5 p-5 flex items-start gap-3">
+          <AlertTriangle className="h-5 w-5 text-accent shrink-0 mt-0.5" />
+          <p className="text-sm text-foreground">
+            <strong>DealFlash est une plateforme de connexion.</strong> Les transactions
+            (vente, location, prestations de services) se complètent entre l'acheteur et le vendeur.
+            Les acheteurs paient un ticket pour entrer en contact.
+          </p>
         </div>
       </section>
 
