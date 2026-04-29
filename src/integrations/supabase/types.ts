@@ -1079,34 +1079,70 @@ export type Database = {
       }
       seller_applications: {
         Row: {
+          advertiser_profile:
+            | Database["public"]["Enums"]["advertiser_profile"]
+            | null
+          business_name: string | null
+          city: string | null
           created_at: string
           email: string
           id: string
+          license_number: string | null
           listing_type: Database["public"]["Enums"]["listing_type"]
+          main_category: string | null
+          message: string | null
           name: string
+          neq_number: string | null
           notes: string | null
+          phone: string | null
+          profession: string | null
           status: Database["public"]["Enums"]["seller_application_status"]
           updated_at: string
+          user_id: string | null
         }
         Insert: {
+          advertiser_profile?:
+            | Database["public"]["Enums"]["advertiser_profile"]
+            | null
+          business_name?: string | null
+          city?: string | null
           created_at?: string
           email: string
           id?: string
+          license_number?: string | null
           listing_type: Database["public"]["Enums"]["listing_type"]
+          main_category?: string | null
+          message?: string | null
           name: string
+          neq_number?: string | null
           notes?: string | null
+          phone?: string | null
+          profession?: string | null
           status?: Database["public"]["Enums"]["seller_application_status"]
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
+          advertiser_profile?:
+            | Database["public"]["Enums"]["advertiser_profile"]
+            | null
+          business_name?: string | null
+          city?: string | null
           created_at?: string
           email?: string
           id?: string
+          license_number?: string | null
           listing_type?: Database["public"]["Enums"]["listing_type"]
+          main_category?: string | null
+          message?: string | null
           name?: string
+          neq_number?: string | null
           notes?: string | null
+          phone?: string | null
+          profession?: string | null
           status?: Database["public"]["Enums"]["seller_application_status"]
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -1747,6 +1783,11 @@ export type Database = {
     Enums: {
       admin_task_priority: "low" | "normal" | "high" | "urgent"
       admin_task_status: "todo" | "in_progress" | "done" | "archived"
+      advertiser_profile:
+        | "particulier"
+        | "pro_occasionnel"
+        | "commerce"
+        | "pro_reglemente"
       app_role: "admin" | "vendeur_b2c" | "vendeur_c2c" | "acheteur"
       appointment_status:
         | "requested"
@@ -1976,6 +2017,12 @@ export const Constants = {
     Enums: {
       admin_task_priority: ["low", "normal", "high", "urgent"],
       admin_task_status: ["todo", "in_progress", "done", "archived"],
+      advertiser_profile: [
+        "particulier",
+        "pro_occasionnel",
+        "commerce",
+        "pro_reglemente",
+      ],
       app_role: ["admin", "vendeur_b2c", "vendeur_c2c", "acheteur"],
       appointment_status: [
         "requested",
