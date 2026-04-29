@@ -202,8 +202,8 @@ export default function Index() {
             <p className="text-muted-foreground mt-2">Chaque profil a ses exigences de vérification pour garantir la confiance.</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="rounded-xl bg-card border border-border p-6 shadow-card">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary mb-4">
+            <Link to="/devenir-annonceur/particulier" className="group text-left rounded-xl bg-card border border-border p-6 shadow-card hover:shadow-elevated hover:-translate-y-1 transition-smooth">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary mb-4 group-hover:scale-110 transition-transform">
                 <User className="h-6 w-6" />
               </div>
               <div className="text-xs font-bold text-primary mb-1">1️⃣ PARTICULIERS</div>
@@ -213,9 +213,12 @@ export default function Index() {
                 <li>📋 Révéler les défauts</li>
                 <li>✓ Vérification d'identité requise</li>
               </ul>
-            </div>
-            <div className="rounded-xl bg-card border border-border p-6 shadow-card">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary mb-4">
+              <div className="mt-4 text-xs font-semibold text-primary inline-flex items-center gap-1">
+                Devenir particulier <ArrowRight className="h-3 w-3" />
+              </div>
+            </Link>
+            <Link to="/devenir-annonceur/pro-occasionnel" className="group text-left rounded-xl bg-card border border-border p-6 shadow-card hover:shadow-elevated hover:-translate-y-1 transition-smooth">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary mb-4 group-hover:scale-110 transition-transform">
                 <Briefcase className="h-6 w-6" />
               </div>
               <div className="text-xs font-bold text-primary mb-1">2️⃣ VENDEURS PROFESSIONNELS (Occasionnels)</div>
@@ -224,9 +227,12 @@ export default function Index() {
                 <li>📋 Révélez votre identité professionnelle</li>
                 <li>✓ Vérification de statut professionnel requise</li>
               </ul>
-            </div>
-            <div className="rounded-xl bg-card border border-border p-6 shadow-card">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 text-accent mb-4">
+              <div className="mt-4 text-xs font-semibold text-primary inline-flex items-center gap-1">
+                Devenir pro occasionnel <ArrowRight className="h-3 w-3" />
+              </div>
+            </Link>
+            <Link to="/devenir-annonceur/commerce" className="group text-left rounded-xl bg-card border border-border p-6 shadow-card hover:shadow-elevated hover:-translate-y-1 transition-smooth">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 text-accent mb-4 group-hover:scale-110 transition-transform">
                 <Store className="h-6 w-6" />
               </div>
               <div className="text-xs font-bold text-accent mb-1">3️⃣ COMMERCES & SERVICES</div>
@@ -236,9 +242,12 @@ export default function Index() {
                 <li>📅 Calendrier de disponibilités synchronisé</li>
                 <li>✓ Vérification d'entreprise requise</li>
               </ul>
-            </div>
-            <div className="rounded-xl bg-card border border-border p-6 shadow-card">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-success/10 text-success mb-4">
+              <div className="mt-4 text-xs font-semibold text-accent inline-flex items-center gap-1">
+                Devenir commerce <ArrowRight className="h-3 w-3" />
+              </div>
+            </Link>
+            <Link to="/devenir-annonceur/pro-reglemente" className="group text-left rounded-xl bg-card border border-border p-6 shadow-card hover:shadow-elevated hover:-translate-y-1 transition-smooth">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-success/10 text-success mb-4 group-hover:scale-110 transition-transform">
                 <BadgeCheck className="h-6 w-6" />
               </div>
               <div className="text-xs font-bold text-success mb-1">4️⃣ PROFESSIONNELS RÉGLEMENTÉS</div>
@@ -248,7 +257,10 @@ export default function Index() {
                 <li>💰 Prix du marché + prix promotionnel affichés</li>
                 <li>✓ Vérification de licence professionnelle requise</li>
               </ul>
-            </div>
+              <div className="mt-4 text-xs font-semibold text-success inline-flex items-center gap-1">
+                Devenir pro réglementé <ArrowRight className="h-3 w-3" />
+              </div>
+            </Link>
           </div>
         </div>
       </section>

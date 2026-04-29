@@ -33,9 +33,10 @@ export default function Auth() {
 
   useEffect(() => {
     if (user) {
-      navigate("/", { replace: true });
+      const redirect = searchParams.get("redirect");
+      navigate(redirect && redirect.startsWith("/") ? redirect : "/", { replace: true });
     }
-  }, [user, navigate]);
+  }, [user, navigate, searchParams]);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
