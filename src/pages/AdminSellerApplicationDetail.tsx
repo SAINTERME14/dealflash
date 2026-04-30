@@ -150,6 +150,11 @@ export default function AdminSellerApplicationDetail() {
   const [savingStatus, setSavingStatus] = useState<ApplicationStatus | null>(null);
   const [notes, setNotes] = useState("");
   const [savingNotes, setSavingNotes] = useState(false);
+  const [adminResponse, setAdminResponse] = useState("");
+  const [savingResponse, setSavingResponse] = useState(false);
+  const [photoUrls, setPhotoUrls] = useState<{ path: string; url: string }[]>([]);
+  const [docUrls, setDocUrls] = useState<{ path: string; url: string; name: string }[]>([]);
+  const [runningAi, setRunningAi] = useState(false);
 
   useEffect(() => {
     document.title = "Admin · Détail candidature | DealFlash";
