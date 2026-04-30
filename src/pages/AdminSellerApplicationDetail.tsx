@@ -176,11 +176,52 @@ export default function AdminSellerApplicationDetail() {
       navigate("/admin/demandes-vendeurs");
       return;
     }
-    setApp(appRes.data as Application);
-    setNotes(appRes.data.notes ?? "");
+    const data = appRes.data as Application;
+    setApp(data);
+    setNotes(data.notes ?? "");
+    setAdminResponse(data.admin_response ?? "");
     setAudit((auditRes.data ?? []) as AuditEntry[]);
+
+    // Signed URLs for photos & documents (private bucket)
+    const allPaths = [...(data.photos ?? []), ...(data.documents ?? [])];
+    if (allPaths.length > 0) {
+      const { data: signed } = await supabase.storage
+        .from("advertiser-uploads")
+        .createSignedUrls(allPaths, 60 * 60);
+      const map = new Map((signed ?? []).map((s) => [s.path, s.signedUrl]));
+      setPhotoUrls(
+        (data.photos ?? []).map((p) => ({ path: p, url: map.get(p) ?? "" })).filter((x) => x.url)
+      );
+      setDocUrls(
+        (data.documents ?? []).map((p) => ({
+          path: p,
+          url: map.get(p) ?? "",
+          name: p.split("/").pop() ?? p,
+        })).filter((x) => x.url)
+      );
+    } else {
+      setPhotoUrls([]);
+      setDocUrls([]);
+    }
     setLoading(false);
   };
+
+  // Realtime: refresh when application changes
+  useEffect(() => {
+    if (!id) return;
+    const channel = supabase
+      .channel(`admin-app-${id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "seller_applications", filter: `id=eq.${id}` },
+        () => load()
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   useEffect(() => {
     load();
