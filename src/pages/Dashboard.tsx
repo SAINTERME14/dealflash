@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Package, Calendar, Heart, MessageCircle, Plus, TrendingUp, Star, BarChart3 } from "lucide-react";
+import { MyAdvertiserApplications } from "@/components/dashboard/MyAdvertiserApplications";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -61,6 +62,8 @@ export default function Dashboard() {
           </Link>
         ))}
       </div>
+
+      <MyAdvertiserApplications />
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         <Card className="p-6">

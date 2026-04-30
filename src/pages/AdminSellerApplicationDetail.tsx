@@ -32,17 +32,45 @@ import { toast } from "sonner";
 import { useCanManageSellerNotes } from "@/hooks/useCanManageSellerNotes";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 
-type ApplicationStatus = "new" | "contacted" | "approved" | "rejected";
+type ApplicationStatus = "new" | "contacted" | "approved" | "rejected" | "suspended";
 type ListingType = "product" | "vehicle" | "rental" | "hotel" | "service";
-type AppRole = "admin" | "vendeur_b2c" | "vendeur_c2c" | "acheteur";
+type AppRole = "admin" | "vendeur_b2c" | "vendeur_c2c" | "acheteur" | "moderateur";
+
+interface AiReview {
+  decision?: "accept" | "needs_more" | "reject";
+  summary?: string;
+  description_score?: number;
+  description_rewrite?: string;
+  photo_issues?: string[];
+  document_issues?: string[];
+  missing_items?: string[];
+  action_items?: string[];
+}
 
 interface Application {
   id: string;
+  user_id: string | null;
   name: string;
   email: string;
   listing_type: ListingType;
   status: ApplicationStatus;
   notes: string | null;
+  admin_response: string | null;
+  admin_response_at: string | null;
+  ai_review: AiReview | null;
+  ai_attempts: number;
+  ai_last_run_at: string | null;
+  photos: string[];
+  documents: string[];
+  message: string | null;
+  advertiser_profile: string | null;
+  business_name: string | null;
+  neq_number: string | null;
+  profession: string | null;
+  license_number: string | null;
+  city: string | null;
+  phone: string | null;
+  main_category: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -72,6 +100,7 @@ const STATUS_LABELS: Record<ApplicationStatus, string> = {
   contacted: "Contacté",
   approved: "Approuvé",
   rejected: "Rejeté",
+  suspended: "En suspens (revue manuelle)",
 };
 
 const STATUS_VARIANTS: Record<ApplicationStatus, "default" | "secondary" | "outline" | "destructive"> = {
@@ -79,10 +108,12 @@ const STATUS_VARIANTS: Record<ApplicationStatus, "default" | "secondary" | "outl
   contacted: "secondary",
   approved: "outline",
   rejected: "destructive",
+  suspended: "outline",
 };
 
 const ROLE_LABELS: Record<AppRole, string> = {
   admin: "Administrateur",
+  moderateur: "Modérateur",
   vendeur_b2c: "Vendeur pro",
   vendeur_c2c: "Vendeur particulier",
   acheteur: "Acheteur",
@@ -95,9 +126,9 @@ const ACTION_LABELS: Record<string, string> = {
 };
 
 const STATUS_ACTIONS: { value: ApplicationStatus; label: string; icon: typeof CheckCircle2; variant: "default" | "secondary" | "outline" | "destructive" }[] = [
-  { value: "contacted", label: "Marquer contacté", icon: Mail, variant: "secondary" },
-  { value: "approved", label: "Approuver", icon: CheckCircle2, variant: "default" },
-  { value: "rejected", label: "Rejeter", icon: XCircle, variant: "destructive" },
+  { value: "approved", label: "Valider l'annonce", icon: CheckCircle2, variant: "default" },
+  { value: "suspended", label: "Mettre en suspens", icon: Mail, variant: "secondary" },
+  { value: "rejected", label: "Rejeter (non-conforme)", icon: XCircle, variant: "destructive" },
 ];
 
 export default function AdminSellerApplicationDetail() {

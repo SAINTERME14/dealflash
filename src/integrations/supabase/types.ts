@@ -1079,12 +1079,18 @@ export type Database = {
       }
       seller_applications: {
         Row: {
+          admin_response: string | null
+          admin_response_at: string | null
           advertiser_profile:
             | Database["public"]["Enums"]["advertiser_profile"]
             | null
+          ai_attempts: number
+          ai_last_run_at: string | null
+          ai_review: Json | null
           business_name: string | null
           city: string | null
           created_at: string
+          documents: string[]
           email: string
           id: string
           license_number: string | null
@@ -1095,18 +1101,25 @@ export type Database = {
           neq_number: string | null
           notes: string | null
           phone: string | null
+          photos: string[]
           profession: string | null
           status: Database["public"]["Enums"]["seller_application_status"]
           updated_at: string
           user_id: string | null
         }
         Insert: {
+          admin_response?: string | null
+          admin_response_at?: string | null
           advertiser_profile?:
             | Database["public"]["Enums"]["advertiser_profile"]
             | null
+          ai_attempts?: number
+          ai_last_run_at?: string | null
+          ai_review?: Json | null
           business_name?: string | null
           city?: string | null
           created_at?: string
+          documents?: string[]
           email: string
           id?: string
           license_number?: string | null
@@ -1117,18 +1130,25 @@ export type Database = {
           neq_number?: string | null
           notes?: string | null
           phone?: string | null
+          photos?: string[]
           profession?: string | null
           status?: Database["public"]["Enums"]["seller_application_status"]
           updated_at?: string
           user_id?: string | null
         }
         Update: {
+          admin_response?: string | null
+          admin_response_at?: string | null
           advertiser_profile?:
             | Database["public"]["Enums"]["advertiser_profile"]
             | null
+          ai_attempts?: number
+          ai_last_run_at?: string | null
+          ai_review?: Json | null
           business_name?: string | null
           city?: string | null
           created_at?: string
+          documents?: string[]
           email?: string
           id?: string
           license_number?: string | null
@@ -1139,6 +1159,7 @@ export type Database = {
           neq_number?: string | null
           notes?: string | null
           phone?: string | null
+          photos?: string[]
           profession?: string | null
           status?: Database["public"]["Enums"]["seller_application_status"]
           updated_at?: string
@@ -1788,7 +1809,12 @@ export type Database = {
         | "pro_occasionnel"
         | "commerce"
         | "pro_reglemente"
-      app_role: "admin" | "vendeur_b2c" | "vendeur_c2c" | "acheteur"
+      app_role:
+        | "admin"
+        | "vendeur_b2c"
+        | "vendeur_c2c"
+        | "acheteur"
+        | "moderateur"
       appointment_status:
         | "requested"
         | "accepted"
@@ -1850,7 +1876,12 @@ export type Database = {
         | "walmart"
         | "shopify"
         | "custom"
-      seller_application_status: "new" | "contacted" | "approved" | "rejected"
+      seller_application_status:
+        | "new"
+        | "contacted"
+        | "approved"
+        | "rejected"
+        | "suspended"
       seller_profile_type: "individual" | "self_employed" | "corporation"
       seller_verification_status:
         | "draft"
@@ -2023,7 +2054,13 @@ export const Constants = {
         "commerce",
         "pro_reglemente",
       ],
-      app_role: ["admin", "vendeur_b2c", "vendeur_c2c", "acheteur"],
+      app_role: [
+        "admin",
+        "vendeur_b2c",
+        "vendeur_c2c",
+        "acheteur",
+        "moderateur",
+      ],
       appointment_status: [
         "requested",
         "accepted",
@@ -2092,7 +2129,13 @@ export const Constants = {
         "shopify",
         "custom",
       ],
-      seller_application_status: ["new", "contacted", "approved", "rejected"],
+      seller_application_status: [
+        "new",
+        "contacted",
+        "approved",
+        "rejected",
+        "suspended",
+      ],
       seller_profile_type: ["individual", "self_employed", "corporation"],
       seller_verification_status: [
         "draft",
