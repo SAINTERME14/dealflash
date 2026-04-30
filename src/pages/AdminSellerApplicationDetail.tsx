@@ -372,10 +372,187 @@ export default function AdminSellerApplicationDetail() {
                     {app.email}
                   </a>
                 </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Phone className="h-4 w-4" />
-                  Non renseigné dans le formulaire
-                </div>
+                {app.phone ? (
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <a href={`tel:${app.phone}`} className="hover:underline">{app.phone}</a>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Phone className="h-4 w-4" /> Non renseigné
+                  </div>
+                )}
+                {app.city && (
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    {app.city}
+                  </div>
+                )}
+                {app.advertiser_profile && (
+                  <div className="pt-2 border-t grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    <div><span className="text-muted-foreground">Profil :</span> <strong>{app.advertiser_profile}</strong></div>
+                    {app.main_category && <div><span className="text-muted-foreground">Catégorie :</span> {app.main_category}</div>}
+                    {app.business_name && <div><span className="text-muted-foreground">Entreprise :</span> {app.business_name}</div>}
+                    {app.neq_number && <div><span className="text-muted-foreground">NEQ :</span> {app.neq_number}</div>}
+                    {app.profession && <div><span className="text-muted-foreground">Profession :</span> {app.profession}</div>}
+                    {app.license_number && <div><span className="text-muted-foreground">Licence :</span> {app.license_number}</div>}
+                  </div>
+                )}
+                {app.message && (
+                  <div className="pt-2 border-t">
+                    <div className="text-xs text-muted-foreground mb-1">Description fournie</div>
+                    <div className="rounded-md bg-muted/50 p-3 whitespace-pre-wrap">{app.message}</div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Photos */}
+            {photoUrls.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <ImageIcon className="h-4 w-4" /> Photos ({photoUrls.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {photoUrls.map((p) => (
+                      <a key={p.path} href={p.url} target="_blank" rel="noreferrer" className="block aspect-square rounded-md overflow-hidden border hover:opacity-80">
+                        <img src={p.url} alt="Photo annonce" className="w-full h-full object-cover" loading="lazy" />
+                      </a>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Documents */}
+            {docUrls.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <FileText className="h-4 w-4" /> Documents ({docUrls.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {docUrls.map((d) => (
+                    <a key={d.path} href={d.url} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-primary hover:underline">
+                      <FileText className="h-4 w-4" /> {d.name}
+                    </a>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* AI Review */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Bot className="h-4 w-4" /> Rapport IA
+                  {app.ai_attempts > 0 && (
+                    <Badge variant="secondary" className="text-[10px]">Tentatives : {app.ai_attempts}</Badge>
+                  )}
+                </CardTitle>
+                {canManage && (
+                  <Button size="sm" variant="outline" onClick={runAi} disabled={runningAi} className="gap-1.5">
+                    {runningAi ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+                    {app.ai_review ? "Relancer l'analyse" : "Lancer l'analyse"}
+                  </Button>
+                )}
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                {!app.ai_review ? (
+                  <p className="text-muted-foreground italic">Aucune analyse IA effectuée pour le moment.</p>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Badge variant={app.ai_review.decision === "accept" ? "default" : app.ai_review.decision === "reject" ? "destructive" : "secondary"}>
+                        Décision : {app.ai_review.decision ?? "—"}
+                      </Badge>
+                      {typeof app.ai_review.description_score === "number" && (
+                        <Badge variant="outline">Score description : {app.ai_review.description_score}/100</Badge>
+                      )}
+                      {app.ai_last_run_at && (
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(app.ai_last_run_at).toLocaleString("fr-CA")}
+                        </span>
+                      )}
+                    </div>
+                    {app.ai_review.summary && (
+                      <div className="rounded-md bg-muted/50 p-3 whitespace-pre-wrap">{app.ai_review.summary}</div>
+                    )}
+                    {app.ai_review.description_rewrite && (
+                      <div>
+                        <div className="text-xs font-medium mb-1">Reformulation suggérée</div>
+                        <div className="rounded-md bg-muted/50 p-3 whitespace-pre-wrap text-xs">{app.ai_review.description_rewrite}</div>
+                      </div>
+                    )}
+                    {app.ai_review.photo_issues && app.ai_review.photo_issues.length > 0 && (
+                      <div>
+                        <div className="text-xs font-medium mb-1">Problèmes photos</div>
+                        <ul className="list-disc list-inside text-xs space-y-0.5">{app.ai_review.photo_issues.map((x, i) => <li key={i}>{x}</li>)}</ul>
+                      </div>
+                    )}
+                    {app.ai_review.document_issues && app.ai_review.document_issues.length > 0 && (
+                      <div>
+                        <div className="text-xs font-medium mb-1">Problèmes documents</div>
+                        <ul className="list-disc list-inside text-xs space-y-0.5">{app.ai_review.document_issues.map((x, i) => <li key={i}>{x}</li>)}</ul>
+                      </div>
+                    )}
+                    {app.ai_review.missing_items && app.ai_review.missing_items.length > 0 && (
+                      <div>
+                        <div className="text-xs font-medium mb-1">Éléments manquants</div>
+                        <ul className="list-disc list-inside text-xs space-y-0.5">{app.ai_review.missing_items.map((x, i) => <li key={i}>{x}</li>)}</ul>
+                      </div>
+                    )}
+                    {app.ai_review.action_items && app.ai_review.action_items.length > 0 && (
+                      <div>
+                        <div className="text-xs font-medium mb-1">Actions à demander</div>
+                        <ul className="list-disc list-inside text-xs space-y-0.5">{app.ai_review.action_items.map((x, i) => <li key={i}>{x}</li>)}</ul>
+                      </div>
+                    )}
+                  </>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Admin response to advertiser */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <MessageSquare className="h-4 w-4" /> Message à l'annonceur
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {!canManage ? (
+                  <div className="rounded-md border bg-muted/50 p-3 text-sm whitespace-pre-wrap min-h-[80px]">
+                    {app.admin_response ?? <span className="text-muted-foreground italic">Aucune réponse envoyée.</span>}
+                  </div>
+                ) : (
+                  <>
+                    <Textarea
+                      value={adminResponse}
+                      onChange={(e) => setAdminResponse(e.target.value)}
+                      rows={5}
+                      maxLength={2000}
+                      placeholder="Ex. : Merci, vos photos manquent de luminosité. Veuillez en soumettre de meilleures…"
+                      disabled={savingResponse}
+                    />
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">{adminResponse.length} / 2000</span>
+                      <Button size="sm" onClick={saveResponse} disabled={savingResponse || (adminResponse ?? "") === (app.admin_response ?? "")} className="gap-1.5">
+                        {savingResponse ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                        Envoyer à l'annonceur
+                      </Button>
+                    </div>
+                    {app.admin_response_at && (
+                      <p className="text-xs text-muted-foreground">
+                        Dernière réponse envoyée le {new Date(app.admin_response_at).toLocaleString("fr-CA")}
+                      </p>
+                    )}
+                  </>
+                )}
               </CardContent>
             </Card>
 
