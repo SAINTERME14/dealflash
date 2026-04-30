@@ -263,6 +263,39 @@ export default function AdminSellerApplicationDetail() {
     await load();
   };
 
+  const saveResponse = async () => {
+    if (!app || !canManage) return;
+    setSavingResponse(true);
+    const trimmed = adminResponse.trim();
+    const value = trimmed.length === 0 ? null : trimmed.slice(0, 2000);
+    const { error } = await supabase
+      .from("seller_applications")
+      .update({ admin_response: value, admin_response_at: value ? new Date().toISOString() : null })
+      .eq("id", app.id);
+    setSavingResponse(false);
+    if (error) {
+      toast.error("Envoi impossible");
+      return;
+    }
+    toast.success("Réponse envoyée à l'annonceur");
+    await load();
+  };
+
+  const runAi = async () => {
+    if (!app || !canManage) return;
+    setRunningAi(true);
+    const { error } = await supabase.functions.invoke("review-application", {
+      body: { application_id: app.id },
+    });
+    setRunningAi(false);
+    if (error) {
+      toast.error("Analyse IA impossible");
+      return;
+    }
+    toast.success("Analyse IA terminée");
+    await load();
+  };
+
   const remove = async () => {
     if (!app || !isAdmin) return;
     if (!confirm("Supprimer définitivement cette candidature ?")) return;
