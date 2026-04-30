@@ -1788,7 +1788,12 @@ export type Database = {
         | "pro_occasionnel"
         | "commerce"
         | "pro_reglemente"
-      app_role: "admin" | "vendeur_b2c" | "vendeur_c2c" | "acheteur"
+      app_role:
+        | "admin"
+        | "vendeur_b2c"
+        | "vendeur_c2c"
+        | "acheteur"
+        | "moderateur"
       appointment_status:
         | "requested"
         | "accepted"
@@ -1850,7 +1855,12 @@ export type Database = {
         | "walmart"
         | "shopify"
         | "custom"
-      seller_application_status: "new" | "contacted" | "approved" | "rejected"
+      seller_application_status:
+        | "new"
+        | "contacted"
+        | "approved"
+        | "rejected"
+        | "suspended"
       seller_profile_type: "individual" | "self_employed" | "corporation"
       seller_verification_status:
         | "draft"
@@ -2023,7 +2033,13 @@ export const Constants = {
         "commerce",
         "pro_reglemente",
       ],
-      app_role: ["admin", "vendeur_b2c", "vendeur_c2c", "acheteur"],
+      app_role: [
+        "admin",
+        "vendeur_b2c",
+        "vendeur_c2c",
+        "acheteur",
+        "moderateur",
+      ],
       appointment_status: [
         "requested",
         "accepted",
@@ -2092,7 +2108,13 @@ export const Constants = {
         "shopify",
         "custom",
       ],
-      seller_application_status: ["new", "contacted", "approved", "rejected"],
+      seller_application_status: [
+        "new",
+        "contacted",
+        "approved",
+        "rejected",
+        "suspended",
+      ],
       seller_profile_type: ["individual", "self_employed", "corporation"],
       seller_verification_status: [
         "draft",
