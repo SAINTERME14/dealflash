@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/customClient";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card } from "@/components/ui/card";
 import { Loader2, Package, Truck, ShoppingCart, AlertTriangle, TrendingUp, Globe, Zap, CheckCircle2 } from "lucide-react";

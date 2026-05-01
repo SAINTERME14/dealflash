@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/customClient";
 import { useAuth } from "@/hooks/useAuth";
 import { showLocalNotification } from "@/lib/pwa";
 import { toast } from "sonner";

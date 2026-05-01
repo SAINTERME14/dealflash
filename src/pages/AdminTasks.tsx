@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type DragEvent } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/customClient";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
