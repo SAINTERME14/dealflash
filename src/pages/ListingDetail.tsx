@@ -5,13 +5,17 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, MapPin, Calendar, Heart, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { Loader2, MapPin, Calendar, Heart, MessageCircle, ChevronLeft, ChevronRight, Info, FileText } from "lucide-react";
 import { BookingDialog } from "@/components/booking/BookingDialog";
 import { ListingsMap } from "@/components/map/ListingsMap";
 import { ReviewList } from "@/components/reviews/ReviewList";
 import { StarRating } from "@/components/reviews/StarRating";
 import { useListingRatingStats, useSellerRatingStats } from "@/hooks/useReviews";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { BonDeCommande, type BonDeCommandeData } from "@/components/booking/BonDeCommande";
+import { SocialShareButtons } from "@/components/listing/SocialShareButtons";
+import { LoyaltyPointsPanel } from "@/components/listing/LoyaltyPointsPanel";
 
 interface Listing {
   id: string;
@@ -28,6 +32,8 @@ interface Listing {
   allows_booking: boolean;
   seller_id: string;
   attributes: Record<string, unknown>;
+  deal_type: string | null;
+  accepts_loyalty_points: boolean | null;
   categories: { name: string; slug: string } | null;
   profiles: { display_name: string | null; city: string | null; is_verified: boolean } | null;
 }
@@ -41,6 +47,10 @@ export default function ListingDetail() {
   const [imgIdx, setImgIdx] = useState(0);
   const [isFav, setIsFav] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
+  const [activeTicket, setActiveTicket] = useState<{ id: string; confirmed: boolean } | null>(null);
+  const [bonOpen, setBonOpen] = useState(false);
+  const [bon, setBon] = useState<BonDeCommandeData | null>(null);
+  const [confirmingOrder, setConfirmingOrder] = useState(false);
   const { data: listingStats } = useListingRatingStats(listing?.id);
   const { data: sellerStats } = useSellerRatingStats(listing?.seller_id);
 
@@ -55,7 +65,6 @@ export default function ListingDetail() {
       if (data) {
         setListing(data as unknown as Listing);
         document.title = `${data.title} — DealFlash`;
-        // increment view count (fire and forget)
         supabase.from("listings").update({ view_count: (data.view_count ?? 0) + 1 }).eq("id", id).then();
       }
       setLoading(false);
@@ -66,6 +75,19 @@ export default function ListingDetail() {
     if (!user || !id) return;
     supabase.from("favorites").select("id").eq("user_id", user.id).eq("listing_id", id).maybeSingle()
       .then(({ data }) => setIsFav(!!data));
+    // Vérifie si l'acheteur a déjà un ticket actif sur cette annonce
+    supabase
+      .from("tickets")
+      .select("id, order_confirmed_at")
+      .eq("buyer_id", user.id)
+      .eq("listing_id", id)
+      .in("status", ["paid", "validated"])
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data: t }) => {
+        if (t) setActiveTicket({ id: t.id, confirmed: !!t.order_confirmed_at });
+      });
   }, [user, id]);
 
   const toggleFav = async () => {
@@ -89,6 +111,25 @@ export default function ListingDetail() {
   const handleBook = () => {
     if (!user) { navigate("/auth"); return; }
     setBookingOpen(true);
+  };
+
+  const handleConfirmOrder = async () => {
+    if (!activeTicket) return;
+    setConfirmingOrder(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("confirm-order", {
+        body: { ticket_id: activeTicket.id },
+      });
+      if (error || data?.error) {
+        toast.error(data?.error ?? error?.message ?? "Erreur");
+        return;
+      }
+      setBon(data.bon as BonDeCommandeData);
+      setBonOpen(true);
+      setActiveTicket((prev) => prev ? { ...prev, confirmed: true } : prev);
+    } finally {
+      setConfirmingOrder(false);
+    }
   };
 
   if (loading) return <div className="container py-20 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
@@ -206,9 +247,47 @@ export default function ListingDetail() {
               </a>
             )}
 
-            <div className="mt-6 space-y-2">
+            {/* Bandeau facilitateur */}
+            <div className="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-3 flex gap-2 text-xs text-amber-800">
+              <Info className="h-3.5 w-3.5 shrink-0 mt-0.5 text-amber-600" />
+              <span>
+                <strong>DealFlash est facilitateur.</strong> Seul le ticket de réservation est encaissé par DealFlash. Le paiement du produit se fait directement au vendeur.
+              </span>
+            </div>
+
+            <div className="mt-4 space-y-2">
+              {/* Si ticket actif : bouton confirmer commande */}
+              {activeTicket && !activeTicket.confirmed && (
+                <Button
+                  onClick={handleConfirmOrder}
+                  variant="hero"
+                  size="lg"
+                  className="w-full gap-2"
+                  disabled={confirmingOrder}
+                >
+                  {confirmingOrder
+                    ? <Loader2 className="h-4 w-4 animate-spin" />
+                    : <FileText className="h-4 w-4" />}
+                  Confirmer ma commande
+                </Button>
+              )}
+              {activeTicket && activeTicket.confirmed && (
+                <Button
+                  onClick={handleConfirmOrder}
+                  variant="outline"
+                  size="lg"
+                  className="w-full gap-2"
+                  disabled={confirmingOrder}
+                >
+                  {confirmingOrder
+                    ? <Loader2 className="h-4 w-4 animate-spin" />
+                    : <FileText className="h-4 w-4" />}
+                  Voir mon bon de commande
+                </Button>
+              )}
+
               {listing.allows_booking && (
-                <Button onClick={handleBook} variant="hero" size="lg" className="w-full gap-2">
+                <Button onClick={handleBook} variant={activeTicket ? "outline" : "hero"} size="lg" className="w-full gap-2">
                   <Calendar className="h-4 w-4" /> Réserver une visite
                 </Button>
               )}
@@ -220,6 +299,28 @@ export default function ListingDetail() {
                 {isFav ? 'Dans vos favoris' : 'Ajouter aux favoris'}
               </Button>
             </div>
+
+            {/* Partage social (Point 3 — earn points) */}
+            <div className="mt-6 pt-6 border-t border-border">
+              <SocialShareButtons
+                listingId={listing.id}
+                listingTitle={listing.title}
+                dealType={listing.deal_type ?? "standard"}
+                listingUrl={window.location.href}
+              />
+            </div>
+
+            {/* Points de fidélité (Point 3 — spend, uniquement prix_regulier) */}
+            {listing.accepts_loyalty_points && (
+              <div className="mt-4">
+                <LoyaltyPointsPanel
+                  listingId={listing.id}
+                  vendorId={listing.seller_id}
+                  regularPrice={listing.price}
+                  currency={listing.currency}
+                />
+              </div>
+            )}
 
             {listing.profiles && (
               <div className="mt-6 pt-6 border-t border-border">
@@ -255,6 +356,15 @@ export default function ListingDetail() {
           listing={listing}
         />
       )}
+
+      <Dialog open={bonOpen} onOpenChange={setBonOpen}>
+        <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Bon de commande DealFlash</DialogTitle>
+          </DialogHeader>
+          {bon && <BonDeCommande bon={bon} />}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

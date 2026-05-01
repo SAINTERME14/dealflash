@@ -52,8 +52,20 @@ async function handleCheckoutCompleted(session: StripeSession) {
     return;
   }
 
-  const validityHours = parseInt(m.validity_hours || "48", 10);
-  const expiresAt = new Date(Date.now() + validityHours * 3600 * 1000).toISOString();
+  // expires_at = fin de la flash_sale (toute la durée de l'annonce).
+  // Fallback sur validity_hours seulement si pas de flash_sale.
+  let expiresAt: string;
+  if (m.flash_sale_id) {
+    const { data: fsMeta } = await supabase
+      .from("flash_sales")
+      .select("ends_at")
+      .eq("id", m.flash_sale_id)
+      .maybeSingle();
+    expiresAt = fsMeta?.ends_at ?? new Date(Date.now() + 720 * 3600 * 1000).toISOString();
+  } else {
+    const validityHours = parseInt(m.validity_hours || "720", 10);
+    expiresAt = new Date(Date.now() + validityHours * 3600 * 1000).toISOString();
+  }
   const flashPrice = Number(m.flash_price || 0);
   const platformFee = Number(m.platform_fee || 0);
 

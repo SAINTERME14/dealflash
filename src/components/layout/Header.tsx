@@ -70,6 +70,7 @@ export function Header() {
                 <DropdownMenuContent align="end" className="w-56 bg-popover">
                   <DropdownMenuItem asChild><Link to="/tableau-de-bord">Tableau de bord</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link to="/mes-annonces">Mes annonces</Link></DropdownMenuItem>
+                  <DropdownMenuItem asChild><Link to="/mes-tickets">Mes tickets</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link to="/mes-reservations">Mes réservations</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link to="/profil">Mon profil</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link to="/support">Support & aide</Link></DropdownMenuItem>

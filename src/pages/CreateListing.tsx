@@ -5,13 +5,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { useSellerVerification } from "@/hooks/useSellerVerification";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { ShieldCheck, Loader2 as Loader2Icon } from "lucide-react";
+import { ShieldCheck, Loader2 as Loader2Icon, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, LocateFixed, MapPin } from "lucide-react";
 import { toast } from "sonner";
@@ -110,6 +111,17 @@ export default function CreateListing() {
     region: "QC",
     address: "",
     allows_booking: false,
+    // Deal type (Point 2)
+    deal_type: "standard" as "standard" | "flash" | "group_flash" | "prix_regulier",
+    base_discount_percent: "",
+    discount_cap_percent: "",
+    ends_at: "",
+    // Contact vendeur pour bon de commande (Point 1)
+    seller_phone: "",
+    seller_email: "",
+    payment_methods: [] as string[],
+    pickup_info: "",
+    delivery_info: "",
   });
 
   useEffect(() => {
@@ -233,6 +245,9 @@ export default function CreateListing() {
       attributes = result.data;
     }
 
+    const isRabais = form.deal_type !== "prix_regulier";
+    const paymentMethodsArr = form.payment_methods.filter(Boolean);
+
     setLoading(true);
     const { data, error } = await supabase.from("listings").insert({
       seller_id: user.id,
@@ -251,6 +266,17 @@ export default function CreateListing() {
       attributes: attributes as Record<string, string>,
       listing_type: listingType as "product" | "vehicle" | "rental" | "hotel" | "service",
       status,
+      // Champs deal type (Point 2)
+      deal_type: form.deal_type,
+      base_discount_percent: isRabais && form.base_discount_percent ? parseFloat(form.base_discount_percent) : null,
+      discount_cap_percent: isRabais && form.discount_cap_percent ? parseFloat(form.discount_cap_percent) : null,
+      ends_at: form.ends_at ? new Date(form.ends_at).toISOString() : null,
+      // Infos contact vendeur pour bon de commande (Point 1)
+      seller_phone: form.seller_phone || null,
+      seller_email: form.seller_email || null,
+      payment_methods: paymentMethodsArr,
+      pickup_info: form.pickup_info || null,
+      delivery_info: form.delivery_info || null,
     }).select("id").single();
     setLoading(false);
 
@@ -424,6 +450,181 @@ export default function CreateListing() {
           <p className="text-xs text-muted-foreground">
             Ajouter votre position GPS permet aux acheteurs de vous trouver sur la carte et de filtrer à proximité.
           </p>
+        </Card>
+
+        {/* ── Section : Type d'annonce (Point 2) ── */}
+        <Card className="p-6 space-y-4">
+          <div>
+            <h2 className="font-semibold mb-1">Type d'annonce</h2>
+            <p className="text-xs text-muted-foreground mb-3">
+              Définit la structure de prix. Les points de fidélité ne s'appliquent
+              <strong> jamais</strong> sur les annonces en rabais (anti-double-dipping).
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {(
+                [
+                  { value: "standard", label: "Standard", desc: "Rabais fixe" },
+                  { value: "flash", label: "Flash Deal", desc: "Durée & stock limités" },
+                  { value: "group_flash", label: "Group-Flash", desc: "Rabais croissant" },
+                  { value: "prix_regulier", label: "Prix régulier", desc: "Accepte les points" },
+                ] as const
+              ).map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setForm({ ...form, deal_type: opt.value })}
+                  className={`rounded-lg border-2 p-3 text-left transition-all ${
+                    form.deal_type === opt.value
+                      ? "border-primary bg-primary/5"
+                      : "border-border hover:border-primary/40"
+                  }`}
+                >
+                  <p className="font-medium text-sm">{opt.label}</p>
+                  <p className="text-xs text-muted-foreground">{opt.desc}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {form.deal_type === "prix_regulier" && (
+            <div className="flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-800">
+              <Info className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+              <span>
+                Cette annonce accepte les <strong>points de fidélité DealFlash</strong> du vendeur.
+                Aucun ticket de réservation requis. Les acheteurs paient directement au vendeur.
+              </span>
+            </div>
+          )}
+
+          {form.deal_type !== "prix_regulier" && (
+            <>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="base_discount">Rabais de base (%)</Label>
+                  <Input
+                    id="base_discount"
+                    type="number"
+                    min="1"
+                    max="99"
+                    step="0.5"
+                    placeholder="Ex : 20"
+                    value={form.base_discount_percent}
+                    onChange={(e) => setForm({ ...form, base_discount_percent: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="discount_cap">Plafond cumulé (%)</Label>
+                  <Input
+                    id="discount_cap"
+                    type="number"
+                    min="1"
+                    max="99"
+                    step="0.5"
+                    placeholder="Ex : 35"
+                    value={form.discount_cap_percent}
+                    onChange={(e) => setForm({ ...form, discount_cap_percent: e.target.value })}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Rabais max après bonus social + groupe
+                  </p>
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="ends_at">Date de fin de l'annonce *</Label>
+                <Input
+                  id="ends_at"
+                  type="datetime-local"
+                  value={form.ends_at}
+                  onChange={(e) => setForm({ ...form, ends_at: e.target.value })}
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Le ticket de réservation (2$) reste valide jusqu'à cette date.
+                </p>
+              </div>
+            </>
+          )}
+        </Card>
+
+        {/* ── Section : Contact vendeur (Point 1 — bon de commande) ── */}
+        <Card className="p-6 space-y-4">
+          <div>
+            <h2 className="font-semibold mb-1">Coordonnées de contact</h2>
+            <p className="text-xs text-muted-foreground">
+              Apparaissent sur le bon de commande signé remis à l'acheteur.
+              Le paiement du produit se fait <strong>directement entre l'acheteur et vous</strong> —
+              DealFlash est facilitateur et n'encaisse que le ticket (2$).
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label htmlFor="seller_phone">Téléphone</Label>
+              <Input
+                id="seller_phone"
+                type="tel"
+                placeholder="514-XXX-XXXX"
+                value={form.seller_phone}
+                onChange={(e) => setForm({ ...form, seller_phone: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label htmlFor="seller_email">Courriel</Label>
+              <Input
+                id="seller_email"
+                type="email"
+                placeholder="vendeur@exemple.com"
+                value={form.seller_email}
+                onChange={(e) => setForm({ ...form, seller_email: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label className="mb-2 block">Modes de paiement acceptés</Label>
+            <div className="flex flex-wrap gap-2">
+              {["Interac", "Virement", "Terminal", "Comptant", "PayPal", "Crypto"].map((m) => {
+                const key = m.toLowerCase();
+                const active = form.payment_methods.includes(key);
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() =>
+                      setForm({
+                        ...form,
+                        payment_methods: active
+                          ? form.payment_methods.filter((x) => x !== key)
+                          : [...form.payment_methods, key],
+                      })
+                    }
+                    className={`rounded-full px-3 py-1 text-sm border transition-all ${
+                      active ? "bg-primary text-primary-foreground border-primary" : "border-border hover:border-primary/40"
+                    }`}
+                  >
+                    {m}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="pickup_info">Modalités de retrait (optionnel)</Label>
+            <Input
+              id="pickup_info"
+              placeholder="Ex : sur rendez-vous du lundi au vendredi"
+              value={form.pickup_info}
+              onChange={(e) => setForm({ ...form, pickup_info: e.target.value })}
+            />
+          </div>
+          <div>
+            <Label htmlFor="delivery_info">Modalités de livraison (optionnel)</Label>
+            <Input
+              id="delivery_info"
+              placeholder="Ex : livraison locale 10$, Purolator disponible"
+              value={form.delivery_info}
+              onChange={(e) => setForm({ ...form, delivery_info: e.target.value })}
+            />
+          </div>
         </Card>
 
         <Card className="p-6 space-y-4">

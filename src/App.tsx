@@ -25,6 +25,7 @@ const SellerVerification = lazy(() => import("./pages/SellerVerification"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const MyListings = lazy(() => import("./pages/MyListings"));
 const MyBookings = lazy(() => import("./pages/MyBookings"));
+const MyTickets = lazy(() => import("./pages/MyTickets"));
 const Favorites = lazy(() => import("./pages/Favorites"));
 const Messages = lazy(() => import("./pages/Messages"));
 const Profile = lazy(() => import("./pages/Profile"));
@@ -88,6 +89,7 @@ const App = () => (
               <Route path="/tableau-de-bord" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/mes-annonces" element={<ProtectedRoute><MyListings /></ProtectedRoute>} />
               <Route path="/mes-reservations" element={<ProtectedRoute><MyBookings /></ProtectedRoute>} />
+              <Route path="/mes-tickets" element={<ProtectedRoute><MyTickets /></ProtectedRoute>} />
               <Route path="/favoris" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
               <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
               <Route path="/profil" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
