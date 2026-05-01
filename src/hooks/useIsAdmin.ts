@@ -1,4 +1,3 @@
-typescript;
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/customClient";
 import { useAuth } from "@/hooks/useAuth";
