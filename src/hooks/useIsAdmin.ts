@@ -1,3 +1,4 @@
+typescript;
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/customClient";
 import { useAuth } from "@/hooks/useAuth";
@@ -18,18 +19,31 @@ export function useIsAdmin() {
         return;
       }
 
-      const { data, error } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id)
-        .eq("role", "admin")
-        .maybeSingle();
+      try {
+        const { data, error } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", user.id)
+          .eq("role", "admin")
+          .maybeSingle();
 
-      if (!cancelled) {
-        setIsAdmin(!error && !!data);
-        setLoading(false);
+        if (!cancelled) {
+          if (error) {
+            console.error("useIsAdmin error:", error);
+            setIsAdmin(false);
+          } else {
+            setIsAdmin(!!data);
+          }
+          setLoading(false);
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setIsAdmin(false);
+          setLoading(false);
+        }
       }
     }
+
     if (!authLoading) {
       setLoading(true);
       check();
@@ -37,7 +51,7 @@ export function useIsAdmin() {
     return () => {
       cancelled = true;
     };
-  }, [user, authLoading]);
+  }, [user?.id, authLoading]);
 
   return { isAdmin, loading: authLoading || loading };
 }
