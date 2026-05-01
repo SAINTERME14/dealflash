@@ -45,11 +45,12 @@ export function useIsAdmin() {
 
     if (!authLoading) {
       setLoading(true);
-      check();
+      void check();
     }
     return () => {
       cancelled = true;
     };
+    // Depend on user id (stable) instead of user object (new ref on every token refresh).
   }, [user?.id, authLoading]);
 
   return { isAdmin, loading: authLoading || loading };
