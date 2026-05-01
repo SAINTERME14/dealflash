@@ -13,6 +13,7 @@ import { Loader2, Save, FileText } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const CATEGORY_LABELS: Record<string, string> = {
+  announcement: "Bande défilante (annonce)",
   hero: "Bannière d'accueil",
   home: "Page d'accueil",
   footer: "Pied de page",
@@ -81,7 +82,7 @@ export default function AdminContent() {
 
   const rows = data ?? [];
   const categories = Array.from(new Set(rows.map((r) => r.category)));
-  const orderedCategories = ["hero", "home", "footer", "cta", "general"].filter((c) =>
+  const orderedCategories = ["announcement", "hero", "home", "footer", "cta", "general"].filter((c) =>
     categories.includes(c)
   );
   // ajoute toute catégorie inattendue à la fin

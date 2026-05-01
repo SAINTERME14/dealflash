@@ -97,6 +97,10 @@ export default {
           "20%": { boxShadow: "0 0 0 4px hsl(var(--destructive) / 0.45)" },
           "60%": { boxShadow: "0 0 0 6px hsl(var(--destructive) / 0.15)" },
         },
+        marquee: {
+          "0%": { transform: "translateX(0%)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -104,6 +108,7 @@ export default {
         "fade-in": "fade-in 0.4s ease-out",
         "scale-in": "scale-in 0.25s ease-out",
         "field-flash": "field-flash 1.2s ease-out",
+        marquee: "marquee 30s linear infinite",
       },
     },
   },
