@@ -15,29 +15,38 @@ jobs:
     name: Migrations + Edge Functions
     runs-on: ubuntu-latest
 
-    env:
-      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
+      - name: Install Supabase CLI
+        run: |
+          curl -fsSL https://github.com/supabase/cli/releases/download/v2.22.6/supabase_linux_amd64.tar.gz \
+            | tar -xz -C /usr/local/bin supabase
+          supabase --version
 
       - name: Link project
-        run: supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_REF }} --password ${{ secrets.SUPABASE_DB_PASSWORD }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: |
+          supabase link \
+            --project-ref ${{ secrets.SUPABASE_PROJECT_REF }} \
+            --password "$SUPABASE_DB_PASSWORD"
 
       - name: Apply pending migrations
-        run: supabase db push --password ${{ secrets.SUPABASE_DB_PASSWORD }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: |
+          supabase db push \
+            --password "$SUPABASE_DB_PASSWORD" \
+            --include-all
 
-      - name: Deploy confirm-order
-        run: supabase functions deploy confirm-order
-
-      - name: Deploy resolve-video-embed
-        run: supabase functions deploy resolve-video-embed
-
-      - name: Deploy payments-webhook
-        run: supabase functions deploy payments-webhook
+      - name: Deploy edge functions
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase functions deploy confirm-order
+          supabase functions deploy resolve-video-embed
+          supabase functions deploy payments-webhook
