@@ -15,6 +15,9 @@ jobs:
     name: Migrations + Edge Functions
     runs-on: ubuntu-latest
 
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,27 +28,16 @@ jobs:
           version: latest
 
       - name: Link project
-        run: supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_REF }} --password ${{ secrets.SUPABASE_DB_PASSWORD }}
 
       - name: Apply pending migrations
-        run: supabase db push
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: supabase db push --password ${{ secrets.SUPABASE_DB_PASSWORD }}
 
       - name: Deploy confirm-order
-        run: supabase functions deploy confirm-order --no-verify-jwt=false
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: supabase functions deploy confirm-order
 
       - name: Deploy resolve-video-embed
-        run: supabase functions deploy resolve-video-embed --no-verify-jwt
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: supabase functions deploy resolve-video-embed
 
       - name: Deploy payments-webhook
-        run: supabase functions deploy payments-webhook --no-verify-jwt
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: supabase functions deploy payments-webhook
