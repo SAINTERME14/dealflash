@@ -1,4 +1,4 @@
-# deploy v5
+# deploy v6
 name: Deploy Supabase
 
 on:
@@ -20,24 +20,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Supabase CLI
-        run: npm install -g supabase && supabase --version
-
-      - name: Verify secrets are set
-        run: |
-          if [ -z "${{ secrets.SUPABASE_ACCESS_TOKEN }}" ]; then
-            echo "ERROR: SUPABASE_ACCESS_TOKEN secret is not set"
-            exit 1
-          fi
-          if [ -z "${{ secrets.SUPABASE_PROJECT_REF }}" ]; then
-            echo "ERROR: SUPABASE_PROJECT_REF secret is not set"
-            exit 1
-          fi
-          if [ -z "${{ secrets.SUPABASE_DB_PASSWORD }}" ]; then
-            echo "ERROR: SUPABASE_DB_PASSWORD secret is not set"
-            exit 1
-          fi
-          echo "All secrets are set."
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.22.6
 
       - name: Link project
         env:
