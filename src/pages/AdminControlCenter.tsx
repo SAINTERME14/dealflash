@@ -670,7 +670,7 @@ function UsersSection() {
 // ──────────────────────────────────────────────────────────────────────────────
 // Section 9 : Rendez-vous
 // ──────────────────────────────────────────────────────────────────────────────
-const APPT_STATUSES = ["requested", "confirmed", "rejected", "cancelled", "completed"] as const;
+const APPT_STATUSES = ["requested", "accepted", "rejected", "cancelled", "completed"] as const;
 
 function AppointmentsSection() {
   const [rows, setRows] = useState<any[]>([]);
@@ -768,7 +768,7 @@ function AppointmentsSection() {
                 </TableCell>
                 <TableCell className="text-sm max-w-[200px] truncate">{r.listings?.title || "—"}</TableCell>
                 <TableCell>
-                  <Badge variant={r.status === "confirmed" ? "default" : r.status === "requested" ? "secondary" : "outline"}>
+                  <Badge variant={r.status === "accepted" ? "default" : r.status === "requested" ? "secondary" : "outline"}>
                     {r.status}
                   </Badge>
                 </TableCell>
@@ -776,7 +776,7 @@ function AppointmentsSection() {
                   <div className="flex justify-end gap-1">
                     {r.status === "requested" && (
                       <>
-                        <Button size="sm" variant="ghost" disabled={busy === r.id} onClick={() => updateStatus(r.id, "confirmed")} title="Confirmer">
+                        <Button size="sm" variant="ghost" disabled={busy === r.id} onClick={() => updateStatus(r.id, "accepted")} title="Confirmer">
                           <Check className="h-4 w-4 text-green-600" />
                         </Button>
                         <Button size="sm" variant="ghost" disabled={busy === r.id} onClick={() => updateStatus(r.id, "rejected")} title="Refuser">
@@ -784,7 +784,7 @@ function AppointmentsSection() {
                         </Button>
                       </>
                     )}
-                    {r.status === "confirmed" && (
+                    {r.status === "accepted" && (
                       <Button size="sm" variant="ghost" disabled={busy === r.id} onClick={() => updateStatus(r.id, "completed")} title="Marquer terminé">
                         <Check className="h-4 w-4" />
                       </Button>
