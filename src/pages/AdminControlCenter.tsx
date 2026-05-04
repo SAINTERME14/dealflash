@@ -1324,3 +1324,115 @@ export default function AdminControlCenter() {
     </AdminLayout>
   );
 }
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Bugs & Erreurs — détection automatique côté client
+// ──────────────────────────────────────────────────────────────────────────────
+function BugsSection() {
+  const [logs, setLogs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<"open" | "all" | "resolved">("open");
+  const [busy, setBusy] = useState<string | null>(null);
+
+  const load = async () => {
+    setLoading(true);
+    let q = supabase.from("client_error_logs").select("*").order("created_at", { ascending: false }).limit(200);
+    if (filter === "open") q = q.eq("resolved", false);
+    if (filter === "resolved") q = q.eq("resolved", true);
+    const { data, error } = await q;
+    if (error) toast.error(error.message);
+    setLogs(data || []);
+    setLoading(false);
+  };
+  useEffect(() => { load(); }, [filter]);
+
+  const toggleResolved = async (id: string, resolved: boolean) => {
+    setBusy(id);
+    const { error } = await supabase.from("client_error_logs").update({
+      resolved: !resolved,
+      resolved_at: !resolved ? new Date().toISOString() : null,
+    }).eq("id", id);
+    if (error) toast.error(error.message); else toast.success(!resolved ? "Marqué résolu" : "Réouvert");
+    setBusy(null); load();
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("Supprimer ce log ?")) return;
+    setBusy(id);
+    const { error } = await supabase.from("client_error_logs").delete().eq("id", id);
+    if (error) toast.error(error.message); else toast.success("Supprimé");
+    setBusy(null); load();
+  };
+
+  const clearResolved = async () => {
+    if (!confirm("Supprimer tous les logs résolus ?")) return;
+    const { error } = await supabase.from("client_error_logs").delete().eq("resolved", true);
+    if (error) toast.error(error.message); else toast.success("Logs résolus supprimés");
+    load();
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2"><Bug className="h-6 w-6" /> Bugs & Erreurs</h1>
+          <p className="text-sm text-muted-foreground">Détection automatique des erreurs JavaScript côté client.</p>
+        </div>
+        <div className="flex gap-2">
+          <Select value={filter} onValueChange={(v: any) => setFilter(v)}>
+            <SelectTrigger className="w-40 h-8"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="open">Non résolus</SelectItem>
+              <SelectItem value="resolved">Résolus</SelectItem>
+              <SelectItem value="all">Tous</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button variant="outline" size="sm" onClick={load}><RefreshCw className="h-3 w-3" /></Button>
+          <Button variant="outline" size="sm" onClick={clearResolved}>Vider résolus</Button>
+        </div>
+      </div>
+
+      <Card>
+        {loading ? (
+          <div className="py-12 text-center"><Loader2 className="h-5 w-5 animate-spin inline" /></div>
+        ) : logs.length === 0 ? (
+          <div className="py-12 text-center text-sm text-muted-foreground">
+            Aucune erreur 🎉
+          </div>
+        ) : (
+          <div className="divide-y">
+            {logs.map((l) => (
+              <div key={l.id} className="p-3 flex items-start gap-3">
+                <Badge variant={l.resolved ? "secondary" : "destructive"} className="text-[10px] mt-0.5 shrink-0">
+                  {l.severity || "error"}
+                </Badge>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium break-words">{l.message}</div>
+                  <div className="text-[11px] text-muted-foreground mt-0.5">
+                    {new Date(l.created_at).toLocaleString("fr-CA")} · {l.source} · {l.url || "—"}
+                  </div>
+                  {l.stack && (
+                    <details className="mt-1">
+                      <summary className="text-[11px] cursor-pointer text-primary">Stack</summary>
+                      <pre className="text-[10px] bg-muted p-2 rounded mt-1 overflow-x-auto whitespace-pre-wrap">{l.stack}</pre>
+                    </details>
+                  )}
+                </div>
+                <div className="flex gap-1 shrink-0">
+                  <Button size="sm" variant="outline" className="h-7 text-[10px]" disabled={busy === l.id}
+                    onClick={() => toggleResolved(l.id, l.resolved)}>
+                    {l.resolved ? "Rouvrir" : "Résoudre"}
+                  </Button>
+                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0" disabled={busy === l.id}
+                    onClick={() => remove(l.id)}>
+                    <Trash2 className="h-3 w-3 text-destructive" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
+    </div>
+  );
+}
