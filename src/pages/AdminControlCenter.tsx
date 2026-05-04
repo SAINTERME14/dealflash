@@ -706,6 +706,7 @@ function UsersSection() {
                       {p.display_name || "(sans nom)"}
                       {isSup && <Badge className="text-[10px] bg-amber-500"><ShieldCheck className="h-3 w-3 mr-0.5" />Super</Badge>}
                       {p.is_verified && <Badge className="text-[10px] bg-green-600">✓</Badge>}
+                      {p.is_blocked && <Badge variant="destructive" className="text-[10px]">Bloqué</Badge>}
                     </div>
                     <div className="text-[10px] text-muted-foreground font-mono">{p.user_id.slice(0, 8)}…</div>
                   </TableCell>
