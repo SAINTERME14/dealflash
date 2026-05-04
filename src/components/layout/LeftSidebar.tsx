@@ -142,8 +142,8 @@ export function LeftSidebar() {
         <nav className="flex flex-col py-2">
           <Item to="/" icon="🏠" label="Accueil" />
           <Item to="/a-propos" icon="ℹ️" label="À propos" />
-          <Accordion icon="📂" label="Catégories" items={CATEGORIES} />
-          <Accordion icon="🏷️" label="Typologie des annonceurs" items={ANNONCEURS} />
+          <Accordion icon="📂" label="Catégories" items={CATEGORIES} basePath="/categorie" />
+          <Accordion icon="🏷️" label="Typologie des annonceurs" items={ANNONCEURS} basePath="/annonceurs" />
           <Item to="/boutiques" icon="🏪" label="Nos boutiques" />
           <Item to="/comment-acheter" icon="🎟️" label="Comment acheter" />
           <Item to="/comment-vendre" icon="🏬" label="Comment vendre" />
