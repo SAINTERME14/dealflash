@@ -1,77 +1,99 @@
-import { Store, Star } from "lucide-react";
+interface Boutique {
+  name: string;
+  emoji: string;
+  bgColor: string;
+  official: boolean;
+  desc: string;
+  tags: string[];
+  rating: number;
+  reviews: number;
+}
 
-const BOUTIQUES = [
-  { name: "TechDeal Store", official: true, desc: "Électronique reconditionnée à prix imbattables.", tags: ["Électronique"], rating: 4.9, reviews: 312 },
-  { name: "MeubleFlash", official: true, desc: "Meubles et décoration pour tous les styles.", tags: ["Meubles", "Déco"], rating: 4.7, reviews: 248 },
-  { name: "ModaPlus", official: false, desc: "Vêtements et accessoires tendance.", tags: ["Mode"], rating: 4.6, reviews: 189 },
-  { name: "CuisineXpress", official: false, desc: "Électroménagers livrés rapidement.", tags: ["Électroménagers"], rating: 4.8, reviews: 421 },
-  { name: "SportDeal", official: true, desc: "Articles de sport pour tous niveaux.", tags: ["Sport"], rating: 4.5, reviews: 156 },
-  { name: "BébéFlash", official: false, desc: "Puériculture et jouets pour enfants.", tags: ["Puériculture", "Jouets"], rating: 4.9, reviews: 367 },
+const BOUTIQUES: Boutique[] = [
+  { name: "TechDeal Store", emoji: "🖥️", bgColor: "#1e3a8a", official: true, desc: "Électronique reconditionnée & remis à neuf", tags: ["Électronique", "Informatique"], rating: 4.9, reviews: 847 },
+  { name: "MeubleFlash Montréal", emoji: "🛋️", bgColor: "#7c2d12", official: true, desc: "Meubles neufs et en liquidation", tags: ["Meubles", "Déco", "Maison"], rating: 4.7, reviews: 523 },
+  { name: "ModaPlus Québec", emoji: "👗", bgColor: "#9d174d", official: false, desc: "Vêtements, chaussures et accessoires", tags: ["Mode", "Femme", "Homme"], rating: 4.6, reviews: 312 },
+  { name: "CuisineXpress", emoji: "🍳", bgColor: "#854d0e", official: false, desc: "Électroménagers neufs & reconditionnés", tags: ["Cuisine", "Électroménager"], rating: 4.8, reviews: 634 },
+  { name: "SportDeal Laval", emoji: "🏋️", bgColor: "#166534", official: true, desc: "Équipements sportifs à prix cassés", tags: ["Sport", "Plein air", "Fitness"], rating: 4.5, reviews: 289 },
+  { name: "BébéFlash", emoji: "🍼", bgColor: "#0e7490", official: false, desc: "Puériculture, jouets et vêtements enfants", tags: ["Bébé", "Enfants", "Jouets"], rating: 4.9, reviews: 412 },
 ];
+
+function Stars({ rating }: { rating: number }) {
+  const full = Math.floor(rating);
+  return (
+    <span style={{ color: "#FFD000", letterSpacing: 1 }}>
+      {"★".repeat(full)}{"☆".repeat(5 - full)}
+    </span>
+  );
+}
 
 export function BoutiquesSection() {
   return (
-    <section className="py-16 px-4" style={{ background: "#111111" }}>
+    <section className="py-16 px-4" style={{ background: "#0d0d0d", fontFamily: "Inter, system-ui, sans-serif" }}>
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-10">
-          <h2 className="text-3xl md:text-4xl font-bold text-white">
-            ⚡ Boutiques DealFlash
-          </h2>
-          <p className="text-white/70 mt-2">
-            Achetez directement auprès de nos boutiques officielles et affiliées
-          </p>
+          <h2 className="text-3xl md:text-4xl font-bold text-white">🏪 Boutiques DealFlash</h2>
+          <p className="text-white/70 mt-2">Achetez directement auprès de nos marchands officiels et affiliés</p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {BOUTIQUES.map((b) => (
             <div
               key={b.name}
-              className="rounded-xl p-5 transition-all hover:-translate-y-1"
+              className="rounded-xl transition-all"
               style={{
                 background: "#1a1a1a",
                 border: "1px solid #2a2a2a",
-                boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+                padding: 20,
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 12px 32px rgba(255,208,0,0.15)")}
-              onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.3)")}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "#FFD000";
+                e.currentTarget.style.boxShadow = "0 12px 32px rgba(255,208,0,0.18)";
+                e.currentTarget.style.transform = "translateY(-4px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "#2a2a2a";
+                e.currentTarget.style.boxShadow = "none";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
             >
               <div className="mb-3">
                 {b.official ? (
-                  <span className="inline-block text-xs font-bold px-3 py-1 rounded-full" style={{ background: "#FFD000", color: "#111" }}>
-                    🏆 Officielle DealFlash
+                  <span style={{ background: "#FFD000", color: "#111", padding: "4px 12px", borderRadius: 20, fontWeight: 700, fontSize: 12 }}>
+                    ✅ Officielle DealFlash
                   </span>
                 ) : (
-                  <span className="inline-block text-xs font-bold px-3 py-1 rounded-full" style={{ background: "#3b82f6", color: "#fff" }}>
+                  <span style={{ background: "#003087", color: "#fff", padding: "4px 12px", borderRadius: 20, fontWeight: 700, fontSize: 12 }}>
                     🤝 Affiliée
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-3 mb-3">
+              <div className="flex justify-center mb-3">
                 <div
-                  className="flex items-center justify-center rounded-lg shrink-0"
-                  style={{ width: 80, height: 80, background: "#2a2a2a" }}
+                  className="flex items-center justify-center rounded-full"
+                  style={{
+                    width: 64, height: 64, background: b.bgColor,
+                    border: "2px solid #FFD000", fontSize: 28, color: "#fff",
+                  }}
                 >
-                  <Store className="h-8 w-8 text-white/40" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg text-white">{b.name}</h3>
-                  <div className="flex items-center gap-1 text-sm text-white/80">
-                    <Star className="h-4 w-4 fill-[#FFD000] text-[#FFD000]" />
-                    <span className="font-semibold">{b.rating}</span>
-                    <span className="text-white/50">— {b.reviews} avis</span>
-                  </div>
+                  {b.emoji}
                 </div>
               </div>
-              <p className="text-sm text-white/70 mb-3 line-clamp-2">{b.desc}</p>
-              <div className="flex flex-wrap gap-2 mb-4">
+              <h3 className="font-bold text-white text-center mb-2" style={{ fontSize: 18 }}>{b.name}</h3>
+              <div className="flex flex-wrap justify-center gap-2 mb-3">
                 {b.tags.map((t) => (
-                  <span key={t} className="text-xs px-2 py-1 rounded" style={{ background: "#2a2a2a", color: "#FFD000" }}>
+                  <span key={t} style={{ background: "#2a2a2a", color: "#FFD000", fontSize: 11, padding: "3px 10px", borderRadius: 20 }}>
                     {t}
                   </span>
                 ))}
               </div>
+              <p className="text-center mb-3 line-clamp-2" style={{ color: "#aaa", fontSize: 13 }}>{b.desc}</p>
+              <div className="flex items-center justify-center gap-2 mb-4 text-sm">
+                <Stars rating={b.rating} />
+                <span style={{ color: "#aaa" }}>{b.rating} ({b.reviews} avis)</span>
+              </div>
               <button
-                className="w-full rounded-lg py-2.5 font-bold text-sm transition-colors"
-                style={{ background: "#FFD000", color: "#111" }}
+                className="w-full font-bold transition-colors"
+                style={{ background: "#FFD000", color: "#111", borderRadius: 8, padding: "10px 0", fontSize: 14 }}
                 onMouseEnter={(e) => (e.currentTarget.style.background = "#e6bc00")}
                 onMouseLeave={(e) => (e.currentTarget.style.background = "#FFD000")}
               >
