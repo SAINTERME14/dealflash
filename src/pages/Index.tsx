@@ -14,6 +14,9 @@ import {
 } from "lucide-react";
 import heroImage from "@/assets/hero-marketplace.jpg";
 import { SellerApplicationForm } from "@/components/home/SellerApplicationForm";
+import { SponsorTicker } from "@/components/home/SponsorTicker";
+import { BoutiquesSection } from "@/components/home/BoutiquesSection";
+import { FlashSalesSection } from "@/components/home/FlashSalesSection";
 
 const ICONS: Record<string, typeof Home> = {
   Home, Hotel, Car, Bike, ShoppingBasket, PawPrint, Shirt, Smartphone, Sofa, Wrench,
@@ -161,109 +164,11 @@ export default function Index() {
         </section>
       )}
 
-      {/* SUMMARY */}
-      <section className="container py-16">
-        <div className="max-w-3xl mx-auto text-center">
-          <Badge variant="secondary" className="mb-4">À propos</Badge>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            DealFlash — Connectez-vous avec les bons acheteurs ou vendeurs
-          </h2>
-          <p className="text-muted-foreground text-lg leading-relaxed">
-            DealFlash est la plateforme locale du Québec qui met en relation des
-            <strong className="text-foreground"> acheteurs sérieux</strong> avec des
-            <strong className="text-foreground"> vendeurs et professionnels vérifiés</strong>.
-            Payez un ticket d'entrée en contact, recevez votre billet QR avec rendez-vous,
-            puis rencontrez votre interlocuteur en personne.
-          </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-2 text-xs">
-            <Badge variant="outline">Tickets sécurisés via Stripe</Badge>
-            <Badge variant="outline">Messagerie sécurisée acheteur/vendeur</Badge>
-            <Badge variant="outline">Calendrier synchronisé pour rendez-vous</Badge>
-            <Badge variant="outline">Articles FLASH (rabais min. 10%)</Badge>
-            <Badge variant="outline">Billets QR à scanner</Badge>
-          </div>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Button asChild variant="default" size="lg" className="gap-2">
-              <Link to="/recherche">Explorer les annonces <ArrowRight className="h-4 w-4" /></Link>
-            </Button>
-            <Button asChild variant="outline" size="lg">
-              <a href="#devenir-vendeur">Devenir vendeur</a>
-            </Button>
-          </div>
-        </div>
-      </section>
+      {/* SPONSOR TICKER (replaces À propos) */}
+      <SponsorTicker />
 
-      {/* 4 TYPES D'ANNONCEURS */}
-      <section className="bg-secondary/30 py-16 border-y border-border">
-        <div className="container">
-          <div className="text-center mb-10 max-w-2xl mx-auto">
-            <Badge variant="secondary" className="mb-3">4 profils</Badge>
-            <h2 className="text-3xl font-bold">4 types d'annonceurs sur DealFlash</h2>
-            <p className="text-muted-foreground mt-2">Chaque profil a ses exigences de vérification pour garantir la confiance.</p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Link to="/devenir-annonceur/particulier" className="group text-left rounded-xl bg-card border border-border p-6 shadow-card hover:shadow-elevated hover:-translate-y-1 transition-smooth">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary mb-4 group-hover:scale-110 transition-transform">
-                <User className="h-6 w-6" />
-              </div>
-              <div className="text-xs font-bold text-primary mb-1">1️⃣ PARTICULIERS</div>
-              <h3 className="font-bold mb-2">Vendez vos articles, meubles, autos, services ou locations</h3>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>📋 3-8 photos, description détaillée</li>
-                <li>📋 Révéler les défauts</li>
-                <li>✓ Vérification d'identité requise</li>
-              </ul>
-              <div className="mt-4 text-xs font-semibold text-primary inline-flex items-center gap-1">
-                Devenir particulier <ArrowRight className="h-3 w-3" />
-              </div>
-            </Link>
-            <Link to="/devenir-annonceur/pro-occasionnel" className="group text-left rounded-xl bg-card border border-border p-6 shadow-card hover:shadow-elevated hover:-translate-y-1 transition-smooth">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary mb-4 group-hover:scale-110 transition-transform">
-                <Briefcase className="h-6 w-6" />
-              </div>
-              <div className="text-xs font-bold text-primary mb-1">2️⃣ VENDEURS PROFESSIONNELS (Occasionnels)</div>
-              <h3 className="font-bold mb-2">Un seul article à vendre ? Même format que les particuliers</h3>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>📋 Révélez votre identité professionnelle</li>
-                <li>✓ Vérification de statut professionnel requise</li>
-              </ul>
-              <div className="mt-4 text-xs font-semibold text-primary inline-flex items-center gap-1">
-                Devenir pro occasionnel <ArrowRight className="h-3 w-3" />
-              </div>
-            </Link>
-            <Link to="/devenir-annonceur/commerce" className="group text-left rounded-xl bg-card border border-border p-6 shadow-card hover:shadow-elevated hover:-translate-y-1 transition-smooth">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 text-accent mb-4 group-hover:scale-110 transition-transform">
-                <Store className="h-6 w-6" />
-              </div>
-              <div className="text-xs font-bold text-accent mb-1">3️⃣ COMMERCES & SERVICES</div>
-              <h3 className="font-bold mb-2">Lancez des campagnes d'articles multiples</h3>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>🔥 Articles FLASH : rabais min. 10%</li>
-                <li>📅 Calendrier de disponibilités synchronisé</li>
-                <li>✓ Vérification d'entreprise requise</li>
-              </ul>
-              <div className="mt-4 text-xs font-semibold text-accent inline-flex items-center gap-1">
-                Devenir commerce <ArrowRight className="h-3 w-3" />
-              </div>
-            </Link>
-            <Link to="/devenir-annonceur/pro-reglemente" className="group text-left rounded-xl bg-card border border-border p-6 shadow-card hover:shadow-elevated hover:-translate-y-1 transition-smooth">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-success/10 text-success mb-4 group-hover:scale-110 transition-transform">
-                <BadgeCheck className="h-6 w-6" />
-              </div>
-              <div className="text-xs font-bold text-success mb-1">4️⃣ PROFESSIONNELS RÉGLEMENTÉS</div>
-              <h3 className="font-bold mb-2">Médecins, avocats, plombiers, électriciens, etc.</h3>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>✅ Certifié conforme à votre autorité de tutelle</li>
-                <li>💰 Prix du marché + prix promotionnel affichés</li>
-                <li>✓ Vérification de licence professionnelle requise</li>
-              </ul>
-              <div className="mt-4 text-xs font-semibold text-success inline-flex items-center gap-1">
-                Devenir pro réglementé <ArrowRight className="h-3 w-3" />
-              </div>
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* BOUTIQUES DEALFLASH (replaces 4 profils) */}
+      <BoutiquesSection />
 
       {/* COMMENT ACHETER / COMMENT VENDRE */}
       <section className="container py-16">
@@ -314,30 +219,8 @@ export default function Index() {
         </div>
       </section>
 
-      {/* CATEGORIES */}
-      <section className="container pb-16">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold">Explorer par catégorie</h2>
-          <p className="text-muted-foreground mt-2">10 verticales pour trouver exactement ce qu'il vous faut</p>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-          {categories.map((cat) => {
-            const Icon = ICONS[cat.icon] || Home;
-            return (
-              <Link
-                key={cat.id}
-                to={`/categorie/${cat.slug}`}
-                className="group flex flex-col items-center gap-3 p-6 rounded-xl bg-card border border-border shadow-card hover:shadow-elevated hover:-translate-y-1 transition-smooth"
-              >
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-secondary group-hover:gradient-accent group-hover:text-accent-foreground transition-smooth">
-                  <Icon className="h-7 w-7" />
-                </div>
-                <span className="font-medium text-sm text-center">{cat.name}</span>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
+      {/* VENTES FLASH (replaces catégories) */}
+      <FlashSalesSection />
 
       {/* WHY DEALFLASH */}
       <section className="bg-secondary/40 py-16">
