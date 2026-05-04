@@ -249,7 +249,7 @@ export default function CreateListing() {
     const paymentMethodsArr = form.payment_methods.filter(Boolean);
 
     setLoading(true);
-    const { data, error } = await supabase.from("listings").insert({
+    const { data, error } = await (supabase.from("listings") as any).insert({
       seller_id: user.id,
       category_id: form.category_id,
       subcategory_id: form.subcategory_id || null,
@@ -266,12 +266,10 @@ export default function CreateListing() {
       attributes: attributes as Record<string, string>,
       listing_type: listingType as "product" | "vehicle" | "rental" | "hotel" | "service",
       status,
-      // Champs deal type (Point 2)
       deal_type: form.deal_type,
       base_discount_percent: isRabais && form.base_discount_percent ? parseFloat(form.base_discount_percent) : null,
       discount_cap_percent: isRabais && form.discount_cap_percent ? parseFloat(form.discount_cap_percent) : null,
       ends_at: form.ends_at ? new Date(form.ends_at).toISOString() : null,
-      // Infos contact vendeur pour bon de commande (Point 1)
       seller_phone: form.seller_phone || null,
       seller_email: form.seller_email || null,
       payment_methods: paymentMethodsArr,
