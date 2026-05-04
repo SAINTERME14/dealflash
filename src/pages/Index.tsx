@@ -219,30 +219,8 @@ export default function Index() {
         </div>
       </section>
 
-      {/* CATEGORIES */}
-      <section className="container pb-16">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold">Explorer par catégorie</h2>
-          <p className="text-muted-foreground mt-2">10 verticales pour trouver exactement ce qu'il vous faut</p>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-          {categories.map((cat) => {
-            const Icon = ICONS[cat.icon] || Home;
-            return (
-              <Link
-                key={cat.id}
-                to={`/categorie/${cat.slug}`}
-                className="group flex flex-col items-center gap-3 p-6 rounded-xl bg-card border border-border shadow-card hover:shadow-elevated hover:-translate-y-1 transition-smooth"
-              >
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-secondary group-hover:gradient-accent group-hover:text-accent-foreground transition-smooth">
-                  <Icon className="h-7 w-7" />
-                </div>
-                <span className="font-medium text-sm text-center">{cat.name}</span>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
+      {/* VENTES FLASH (replaces catégories) */}
+      <FlashSalesSection />
 
       {/* WHY DEALFLASH */}
       <section className="bg-secondary/40 py-16">
