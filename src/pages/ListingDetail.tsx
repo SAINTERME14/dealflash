@@ -85,7 +85,7 @@ export default function ListingDetail() {
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle()
-      .then(({ data: t }) => {
+      .then(({ data: t }: any) => {
         if (t) setActiveTicket({ id: t.id, confirmed: !!t.order_confirmed_at });
       });
   }, [user, id]);
