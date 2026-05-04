@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Seo } from "@/components/seo/Seo";
-import { BadgeCheck, Briefcase, ShieldCheck, Store, Ticket, User, AlertTriangle } from "lucide-react";
+import { Link } from "react-router-dom";
+import { BadgeCheck, Briefcase, ShieldCheck, Store, Ticket, User, AlertTriangle, ArrowRight } from "lucide-react";
 
 export default function About() {
   return (
@@ -18,6 +19,17 @@ export default function About() {
           et professionnels vérifiés.
         </p>
       </header>
+
+      <div className="grid sm:grid-cols-2 gap-3 mb-6">
+        <Link to="/comment-acheter" className="rounded-xl border border-border bg-card p-4 hover:border-accent transition-colors flex items-center justify-between">
+          <span className="flex items-center gap-2 font-semibold"><Ticket className="h-4 w-4 text-accent" /> Comment acheter</span>
+          <ArrowRight className="h-4 w-4" />
+        </Link>
+        <Link to="/comment-vendre" className="rounded-xl border border-border bg-card p-4 hover:border-primary transition-colors flex items-center justify-between">
+          <span className="flex items-center gap-2 font-semibold"><Store className="h-4 w-4 text-primary" /> Comment vendre</span>
+          <ArrowRight className="h-4 w-4" />
+        </Link>
+      </div>
 
       <Card className="p-6 mb-6">
         <h2 className="text-xl font-semibold mb-3 flex items-center gap-2">

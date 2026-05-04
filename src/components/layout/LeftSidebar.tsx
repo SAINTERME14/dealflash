@@ -145,8 +145,6 @@ export function LeftSidebar() {
           <Accordion icon="📂" label="Catégories" items={CATEGORIES} basePath="/categorie" />
           <Accordion icon="🏷️" label="Typologie des annonceurs" items={ANNONCEURS} basePath="/annonceurs" />
           <Item to="/boutiques" icon="🏪" label="Nos boutiques" />
-          <Item to="/comment-acheter" icon="🎟️" label="Comment acheter" />
-          <Item to="/comment-vendre" icon="🏬" label="Comment vendre" />
           <Item to="/support" icon="📞" label="Contactez-nous" />
           <Item to="/auth" icon="🔐" label="Connexion / Mon compte" />
         </nav>
