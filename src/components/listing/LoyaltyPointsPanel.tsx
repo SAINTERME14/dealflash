@@ -48,11 +48,11 @@ export function LoyaltyPointsPanel({ listingId, vendorId, regularPrice, currency
     setApplied(false);
     if (pts === 0) { setDiscountPct(0); return; }
     setLoading(true);
-    const { data } = await supabase.rpc("get_loyalty_discount", {
+    const { data } = await (supabase.rpc as any)("get_loyalty_discount", {
       p_listing_id: listingId,
       p_points_to_use: pts,
     });
-    setDiscountPct(data?.discount_percent ?? 0);
+    setDiscountPct((data as any)?.discount_percent ?? 0);
     setLoading(false);
   };
 
