@@ -49,6 +49,9 @@ const AdminSuppliers = lazy(() => import("./pages/AdminSuppliers"));
 const AdminSalesChannels = lazy(() => import("./pages/AdminSalesChannels"));
 const AdminDropshipOverview = lazy(() => import("./pages/AdminDropshipOverview"));
 const AdminDropshipOrders = lazy(() => import("./pages/AdminDropshipOrders"));
+const AdminFlashSales = lazy(() => import("./pages/AdminFlashSales"));
+const AdminBoutiques = lazy(() => import("./pages/AdminBoutiques"));
+const AdminPartners = lazy(() => import("./pages/AdminPartners"));
 const About = lazy(() => import("./pages/About"));
 const MyReviews = lazy(() => import("./pages/MyReviews"));
 const SellerStats = lazy(() => import("./pages/SellerStats"));
@@ -115,6 +118,9 @@ const App = () => (
               <Route path="/admin/dropship-orders" element={<AdminRoute><AdminDropshipOrders /></AdminRoute>} />
               <Route path="/admin/fournisseurs" element={<AdminRoute><AdminSuppliers /></AdminRoute>} />
               <Route path="/admin/canaux" element={<AdminRoute><AdminSalesChannels /></AdminRoute>} />
+              <Route path="/admin/ventes-flash" element={<AdminRoute><AdminFlashSales /></AdminRoute>} />
+              <Route path="/admin/boutiques" element={<AdminRoute><AdminBoutiques /></AdminRoute>} />
+              <Route path="/admin/partenaires" element={<AdminRoute><AdminPartners /></AdminRoute>} />
               <Route path="/devenir-annonceur/:profile" element={<BecomeAdvertiser />} />
               <Route path="/a-propos" element={<About />} />
               <Route path="/politique-confidentialite" element={<PrivacyPolicy />} />

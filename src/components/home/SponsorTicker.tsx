@@ -1,20 +1,31 @@
-const SPONSORS: { name: string; color: string; textColor?: string }[] = [
-  { name: "RONA", color: "#E31837" },
-  { name: "Canadian Tire", color: "#cc0000" },
-  { name: "Dollarama", color: "#FFD100" },
-  { name: "Bureau en Gros", color: "#cc0000" },
-  { name: "Brault & Martineau", color: "#003087" },
-  { name: "Structube", color: "#FFD000", textColor: "#FFD000" },
-  { name: "Corbeil", color: "#005baa" },
-  { name: "Surplus RD", color: "#e8890c" },
-  { name: "Déco Découverte", color: "#6ab04c" },
-  { name: "The Brick", color: "#003087" },
-  { name: "Sports Experts", color: "#d62b2b" },
-  { name: "Simons", color: "#FFD000", textColor: "#FFD000" },
-];
+import { useEffect, useState } from "react";
+import { getPartners, type Partner } from "@/data/partnersData";
 
 export function SponsorTicker() {
-  const list = [...SPONSORS, ...SPONSORS];
+  const [partners, setPartners] = useState<Partner[]>(() =>
+    getPartners()
+      .filter((p) => p.visible)
+      .sort((a, b) => a.order - b.order)
+  );
+
+  useEffect(() => {
+    const refresh = () => {
+      setPartners(
+        getPartners()
+          .filter((p) => p.visible)
+          .sort((a, b) => a.order - b.order)
+      );
+    };
+    window.addEventListener("df_partners_updated", refresh);
+    window.addEventListener("storage", refresh);
+    return () => {
+      window.removeEventListener("df_partners_updated", refresh);
+      window.removeEventListener("storage", refresh);
+    };
+  }, []);
+
+  const list = [...partners, ...partners];
+
   return (
     <section
       className="relative w-full overflow-hidden flex items-center"
@@ -48,30 +59,27 @@ export function SponsorTicker() {
           className="flex items-center whitespace-nowrap"
           style={{ animation: "scrollTicker 35s linear infinite" }}
         >
-          {list.map((s, i) => {
-            const txt = s.textColor ?? s.color;
-            return (
-              <div
-                key={i}
-                style={{
-                  background: "#1a1a1a",
-                  border: `1px solid ${s.color}`,
-                  borderRadius: 8,
-                  padding: "8px 20px",
-                  margin: "0 20px",
-                  color: txt,
-                  fontWeight: 700,
-                  fontSize: 15,
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8,
-                }}
-              >
-                <span style={{ color: txt }}>●</span>
-                {s.name}
-              </div>
-            );
-          })}
+          {list.map((s, i) => (
+            <div
+              key={`${s.id}-${i}`}
+              style={{
+                background: "#1a1a1a",
+                border: `1px solid ${s.color}`,
+                borderRadius: 8,
+                padding: "8px 20px",
+                margin: "0 20px",
+                color: s.color,
+                fontWeight: 700,
+                fontSize: 15,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
+              <span style={{ color: s.color }}>●</span>
+              {s.name}
+            </div>
+          ))}
         </div>
       </div>
       <style>{`

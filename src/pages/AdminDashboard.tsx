@@ -6,6 +6,9 @@ import { AdminAlertsPanel } from "@/components/admin/AdminAlertsPanel";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { getAdminFlashItems } from "@/data/flashItems";
+import { getAdminBoutiques } from "@/data/boutiquesData";
+import { getPartners } from "@/data/partnersData";
 import {
   Users,
   Package,
@@ -257,6 +260,9 @@ export default function AdminDashboard() {
   return (
     <AdminLayout>
       <div className="space-y-6">
+        {/* Flash / Boutiques / Partners KPI row */}
+        <FlashBoutiqueKpiRow />
+
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div>
             <h1 className="text-2xl font-bold">Vue d'ensemble</h1>
@@ -590,5 +596,42 @@ function KpiCard({
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+function FlashBoutiqueKpiRow() {
+  const flashItems = getAdminFlashItems();
+  const boutiques = getAdminBoutiques();
+  const partners = getPartners();
+
+  const activeFlash = flashItems.filter((i) => i.status === "active").length;
+  const activeBoutiques = boutiques.filter((b) => b.status === "active").length;
+  const visiblePartners = partners.filter((p) => p.visible).length;
+
+  const kpis = [
+    { icon: "⚡", label: "Ventes Flash actives", value: activeFlash.toLocaleString("fr-CA"), trend: "↑ +12% ce mois", trendUp: true, link: "/admin/ventes-flash" },
+    { icon: "🏪", label: "Boutiques actives", value: activeBoutiques.toLocaleString("fr-CA"), trend: "↑ +8% ce mois", trendUp: true, link: "/admin/boutiques" },
+    { icon: "🤝", label: "Partenaires affichés", value: visiblePartners.toLocaleString("fr-CA"), trend: "↓ -2% ce mois", trendUp: false, link: "/admin/partenaires" },
+    { icon: "👁", label: "Visiteurs aujourd'hui", value: "3 847", trend: "↑ +18% ce mois", trendUp: true, link: null },
+    { icon: "💰", label: "Chiffre estimé (30j)", value: "124 500 $", trend: "↑ +9% ce mois", trendUp: true, link: "/admin/finances" },
+  ];
+
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 14, fontFamily: "Inter, system-ui, sans-serif" }}>
+      {kpis.map((kpi) => (
+        <Link key={kpi.label} to={kpi.link ?? "#"} style={{ textDecoration: "none" }} onClick={(e) => { if (!kpi.link) e.preventDefault(); }}>
+          <div
+            style={{ background: "#1a1a1a", borderTop: "3px solid #FFD000", borderRadius: 10, padding: "16px 18px", cursor: kpi.link ? "pointer" : "default", transition: "box-shadow 0.2s" }}
+            onMouseEnter={(e) => { if (kpi.link) (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 20px rgba(255,208,0,0.15)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}
+          >
+            <div style={{ fontSize: 22, marginBottom: 6 }}>{kpi.icon}</div>
+            <p style={{ color: "#888", fontSize: 12, margin: 0, marginBottom: 4 }}>{kpi.label}</p>
+            <p style={{ color: "white", fontSize: 28, fontWeight: 700, margin: 0, lineHeight: 1 }}>{kpi.value}</p>
+            <p style={{ color: kpi.trendUp ? "#22c55e" : "#ef4444", fontSize: 12, margin: 0, marginTop: 6 }}>{kpi.trend}</p>
+          </div>
+        </Link>
+      ))}
+    </div>
   );
 }

@@ -1,45 +1,53 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { ALL_FLASH_ITEMS } from "@/data/flashItems";
+import { Pagination } from "./Pagination";
 
-interface FlashItem {
-  name: string;
-  image: string;
-  regular: number;
-  flash: number;
-  discount: number;
-  seconds: number;
-  stock: number;
-}
-
-const ITEMS: FlashItem[] = [
-  { name: "Samsung 55\" QLED 4K UHD", image: "https://images.unsplash.com/photo-1593359677879-a4bb92f4bce4?w=400&q=80", regular: 1299, flash: 699, discount: 46, seconds: 4*3600+32*60+17, stock: 2 },
-  { name: "Instant Pot Duo 7-en-1 8L", image: "https://images.unsplash.com/photo-1585515320310-259814833e62?w=400&q=80", regular: 249, flash: 89, discount: 64, seconds: 11*3600+5*60+42, stock: 7 },
-  { name: "Vélo électrique pliant 250W", image: "https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=400&q=80", regular: 1899, flash: 949, discount: 50, seconds: 47*60+33, stock: 1 },
-  { name: "AirPods Pro 2e génération", image: "https://images.unsplash.com/photo-1588423771073-b8903fead85b?w=400&q=80", regular: 329, flash: 199, discount: 39, seconds: 23*3600+15*60+8, stock: 12 },
-  { name: "Canapé 3 places en velours", image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=80", regular: 1499, flash: 749, discount: 50, seconds: 7*3600+20*60+55, stock: 3 },
-  { name: "Machine à expresso 19 bars", image: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=400&q=80", regular: 599, flash: 279, discount: 53, seconds: 2*3600+10*60+22, stock: 5 },
-  { name: "Trottinette électrique 500W", image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80", regular: 899, flash: 449, discount: 50, seconds: 16*3600+44*60+10, stock: 4 },
-  { name: "Apple iPad 10e génération", image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&q=80", regular: 679, flash: 429, discount: 37, seconds: 9*3600+58*60+1, stock: 9 },
-];
+const ITEMS_PER_PAGE = 8;
+const TOTAL_PAGES = Math.ceil(ALL_FLASH_ITEMS.length / ITEMS_PER_PAGE);
 
 function fmt(s: number) {
   const h = Math.floor(s / 3600);
   const m = Math.floor((s % 3600) / 60);
   const sec = s % 60;
-  return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(sec).padStart(2,"0")}`;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
 }
 
 export function FlashSalesSection() {
-  const [times, setTimes] = useState<number[]>(ITEMS.map(i => i.seconds));
+  const sectionRef = useRef<HTMLElement>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
+  const getPageItems = useCallback(
+    (page: number) => ALL_FLASH_ITEMS.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE),
+    []
+  );
+
+  const [timers, setTimers] = useState(() => getPageItems(1).map((i) => i.timerSeconds));
+
+  // Restart timers on page change
+  useEffect(() => {
+    setTimers(getPageItems(currentPage).map((i) => i.timerSeconds));
+  }, [currentPage, getPageItems]);
+
+  // Countdown
   useEffect(() => {
     const id = setInterval(() => {
-      setTimes(prev => prev.map(t => (t > 0 ? t - 1 : 0)));
+      setTimers((prev) => prev.map((t) => (t > 0 ? t - 1 : 0)));
     }, 1000);
     return () => clearInterval(id);
-  }, []);
+  }, [currentPage]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    setTimeout(() => {
+      sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 50);
+  };
+
+  const pageItems = getPageItems(currentPage);
 
   return (
     <section
+      ref={sectionRef}
       className="py-16 px-4"
       style={{ background: "#0a0a0a", borderTop: "3px solid #FFD000", fontFamily: "Inter, system-ui, sans-serif" }}
     >
@@ -50,12 +58,12 @@ export function FlashSalesSection() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {ITEMS.map((item, i) => {
-            const t = times[i];
+          {pageItems.map((item, i) => {
+            const t = timers[i] ?? 0;
             const expired = t <= 0;
             return (
               <div
-                key={item.name}
+                key={item.id}
                 className="rounded-xl overflow-hidden transition-all flex flex-col"
                 style={{
                   background: "#1a1a1a",
@@ -63,35 +71,58 @@ export function FlashSalesSection() {
                   opacity: expired ? 0.5 : 1,
                   filter: expired ? "grayscale(1)" : "none",
                 }}
-                onMouseEnter={(e) => { if (!expired) e.currentTarget.style.borderColor = "#FFD000"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#2a2a2a"; }}
+                onMouseEnter={(e) => {
+                  if (!expired) e.currentTarget.style.borderColor = "#FFD000";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "#2a2a2a";
+                }}
               >
                 <div className="relative" style={{ width: "100%", height: 180 }}>
                   <img
-                    src={item.image}
+                    src={item.imageUrl}
                     alt={item.name}
                     loading="lazy"
                     style={{ width: "100%", height: "100%", objectFit: "cover" }}
                   />
                   <span
                     className="absolute"
-                    style={{ top: 8, right: 8, background: "#e74c3c", color: "#fff", fontWeight: 700, padding: "4px 10px", borderRadius: 20, fontSize: 12 }}
+                    style={{
+                      top: 8,
+                      right: 8,
+                      background: "#e74c3c",
+                      color: "#fff",
+                      fontWeight: 700,
+                      padding: "4px 10px",
+                      borderRadius: 20,
+                      fontSize: 12,
+                    }}
                   >
                     -{item.discount}%
                   </span>
                   {expired && (
-                    <div className="absolute inset-0 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.7)" }}>
-                      <span style={{ color: "#FFD000", fontWeight: 800, fontSize: 24, letterSpacing: 2 }}>EXPIRÉ</span>
+                    <div
+                      className="absolute inset-0 flex items-center justify-center"
+                      style={{ background: "rgba(0,0,0,0.7)" }}
+                    >
+                      <span style={{ color: "#FFD000", fontWeight: 800, fontSize: 24, letterSpacing: 2 }}>
+                        EXPIRÉ
+                      </span>
                     </div>
                   )}
                 </div>
 
                 <div className="flex-1 flex flex-col" style={{ padding: 14 }}>
-                  <h3 className="text-white font-bold line-clamp-2 mb-2" style={{ fontSize: 14, minHeight: 38 }}>{item.name}</h3>
+                  <h3
+                    className="text-white font-bold line-clamp-2 mb-2"
+                    style={{ fontSize: 14, minHeight: 38 }}
+                  >
+                    {item.name}
+                  </h3>
 
                   <div className="flex items-baseline gap-2 mb-1">
                     <span style={{ fontSize: 13, color: "#888", textDecoration: "line-through" }}>
-                      {item.regular.toLocaleString("fr-CA")} $
+                      {item.regularPrice.toLocaleString("fr-CA")} $
                     </span>
                   </div>
                   <div
@@ -103,7 +134,7 @@ export function FlashSalesSection() {
                       animation: expired ? "none" : "flashPrice 1.2s ease-in-out infinite",
                     }}
                   >
-                    {item.flash.toLocaleString("fr-CA")} $
+                    {item.flashPrice.toLocaleString("fr-CA")} $
                   </div>
 
                   <div className="mt-3" style={{ fontSize: 11, color: "#888" }}>⏱ Expire dans :</div>
@@ -137,9 +168,21 @@ export function FlashSalesSection() {
                       padding: "10px 0",
                       fontSize: 14,
                       cursor: expired ? "not-allowed" : "pointer",
+                      border: "none",
+                      fontFamily: "inherit",
                     }}
-                    onMouseEnter={(e) => { if (!expired) { e.currentTarget.style.background = "#e6bc00"; e.currentTarget.style.transform = "scale(1.02)"; } }}
-                    onMouseLeave={(e) => { if (!expired) { e.currentTarget.style.background = "#FFD000"; e.currentTarget.style.transform = "scale(1)"; } }}
+                    onMouseEnter={(e) => {
+                      if (!expired) {
+                        e.currentTarget.style.background = "#e6bc00";
+                        e.currentTarget.style.transform = "scale(1.02)";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!expired) {
+                        e.currentTarget.style.background = "#FFD000";
+                        e.currentTarget.style.transform = "scale(1)";
+                      }
+                    }}
                   >
                     🛒 Acheter maintenant
                   </button>
@@ -148,6 +191,14 @@ export function FlashSalesSection() {
             );
           })}
         </div>
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={TOTAL_PAGES}
+          totalItems={ALL_FLASH_ITEMS.length}
+          itemsPerPage={ITEMS_PER_PAGE}
+          onPageChange={handlePageChange}
+        />
       </div>
 
       <style>{`

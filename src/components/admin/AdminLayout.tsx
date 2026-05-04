@@ -17,6 +17,9 @@ import {
   Globe,
   ShoppingCart,
   Boxes,
+  Zap,
+  Store,
+  Handshake,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -38,6 +41,9 @@ const sections: Array<{ title: string; items: Item[] }> = [
       { to: "/admin/vedette", label: "Sélection sponsorisée", icon: Sparkles },
       { to: "/admin/tickets", label: "Tickets & revenus", icon: Receipt },
       { to: "/admin/finances", label: "Finances", icon: Wallet },
+      { to: "/admin/ventes-flash", label: "Ventes Flash", icon: Zap },
+      { to: "/admin/boutiques", label: "Boutiques", icon: Store },
+      { to: "/admin/partenaires", label: "Partenaires / Sponsors", icon: Handshake },
     ],
   },
   {
