@@ -21,14 +21,14 @@ async function logError(payload: {
     const { data: { user } } = await supabase.auth.getUser();
     await supabase.from("client_error_logs").insert({
       user_id: user?.id ?? undefined,
-      url: typeof window !== "undefined" ? window.location.href : null,
-      user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+      url: typeof window !== "undefined" ? window.location.href : undefined,
+      user_agent: typeof navigator !== "undefined" ? navigator.userAgent : undefined,
       message: payload.message?.slice(0, 2000) || "(no message)",
-      stack: payload.stack?.slice(0, 8000) ?? null,
+      stack: payload.stack?.slice(0, 8000) ?? undefined,
       source: payload.source ?? "window",
       severity: payload.severity ?? "error",
-      context: payload.context ?? null,
-    });
+      context: (payload.context ?? null) as any,
+    } as any);
   } catch {
     /* swallow */
   }
