@@ -58,6 +58,14 @@ const BecomeAdvertiser = lazy(() => import("./pages/BecomeAdvertiser"));
 const CommentAcheter = lazy(() => import("./pages/CommentAcheter"));
 const CommentVendre = lazy(() => import("./pages/CommentVendre"));
 const PrototypeHub = lazy(() => import("./pages/PrototypeHub"));
+const AdminV2Layout = lazy(() => import("./components/admin-v2/AdminV2Layout").then(m => ({ default: m.AdminV2Layout })));
+const AdminV2Dashboard = lazy(() => import("./pages/admin-v2/AdminV2Dashboard"));
+const AdminV2ControlCenter = lazy(() => import("./pages/admin-v2/AdminV2ControlCenter"));
+const AdminV2Team = lazy(() => import("./pages/admin-v2/AdminV2Team"));
+const AdminV2Audit = lazy(() => import("./pages/admin-v2/AdminV2Audit"));
+const AdminV2Security = lazy(() => import("./pages/admin-v2/AdminV2Security"));
+const AdminV2TwoFASetup = lazy(() => import("./pages/admin-v2/AdminV2TwoFASetup"));
+import { AdminV2Route } from "@/components/admin-v2/AdminV2Route";
 
 import { CookieConsent } from "@/components/CookieConsent";
 
@@ -80,6 +88,14 @@ const App = () => (
           <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin/connexion" element={<AdminLogin />} />
+            <Route path="/admin/v2" element={<AdminV2Route><AdminV2Layout /></AdminV2Route>}>
+              <Route index element={<AdminV2Dashboard />} />
+              <Route path="centre-controle" element={<AdminV2ControlCenter />} />
+              <Route path="equipe" element={<AdminV2Team />} />
+              <Route path="journal" element={<AdminV2Audit />} />
+              <Route path="securite" element={<AdminV2Security />} />
+              <Route path="securite/2fa" element={<AdminV2TwoFASetup />} />
+            </Route>
             <Route element={<MainLayout />}>
               <Route path="/" element={<Index />} />
               <Route path="/recherche" element={<Search />} />
