@@ -18,6 +18,7 @@ import { SponsorTicker } from "@/components/home/SponsorTicker";
 import { BoutiquesSection } from "@/components/home/BoutiquesSection";
 import { FlashSalesSection } from "@/components/home/FlashSalesSection";
 import { ListingsShowcase } from "@/components/home/ListingsShowcase";
+import { ServicesSection } from "@/components/home/ServicesSection";
 
 const ICONS: Record<string, typeof Home> = {
   Home, Hotel, Car, Bike, ShoppingBasket, PawPrint, Shirt, Smartphone, Sofa, Wrench,
