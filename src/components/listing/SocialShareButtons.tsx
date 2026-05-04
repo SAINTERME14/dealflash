@@ -65,14 +65,15 @@ export function SocialShareButtons({ listingId, listingTitle, dealType, listingU
 
     // Enregistrer le partage côté DealFlash (si connecté)
     if (user) {
-      const { data, error } = await supabase.rpc("register_listing_share", {
+      const { data, error } = await (supabase.rpc as any)("register_listing_share", {
         p_listing_id: listingId,
         p_platform: platform,
       });
-      if (!error && data?.success) {
+      const d = data as any;
+      if (!error && d?.success) {
         setShared((prev) => new Set([...prev, platform]));
-        if (data.points_awarded > 0) {
-          toast.success(`+${data.points_awarded} point${data.points_awarded > 1 ? "s" : ""} DealFlash gagnés !`);
+        if (d.points_awarded > 0) {
+          toast.success(`+${d.points_awarded} point${d.points_awarded > 1 ? "s" : ""} DealFlash gagnés !`);
         }
       }
     }

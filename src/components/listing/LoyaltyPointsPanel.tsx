@@ -33,13 +33,13 @@ export function LoyaltyPointsPanel({ listingId, vendorId, regularPrice, currency
 
   useEffect(() => {
     if (!user || !vendorId) return;
-    supabase
+    (supabase as any)
       .from("loyalty_points")
       .select("points")
       .eq("user_id", user.id)
       .eq("vendor_id", vendorId)
       .maybeSingle()
-      .then(({ data }) => setBalance(data?.points ?? 0));
+      .then(({ data }: any) => setBalance(data?.points ?? 0));
   }, [user, vendorId]);
 
   const handleSlider = async (value: number[]) => {
@@ -48,11 +48,11 @@ export function LoyaltyPointsPanel({ listingId, vendorId, regularPrice, currency
     setApplied(false);
     if (pts === 0) { setDiscountPct(0); return; }
     setLoading(true);
-    const { data } = await supabase.rpc("get_loyalty_discount", {
+    const { data } = await (supabase.rpc as any)("get_loyalty_discount", {
       p_listing_id: listingId,
       p_points_to_use: pts,
     });
-    setDiscountPct(data?.discount_percent ?? 0);
+    setDiscountPct((data as any)?.discount_percent ?? 0);
     setLoading(false);
   };
 
