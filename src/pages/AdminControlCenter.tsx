@@ -13,7 +13,6 @@ import {
   Palette, Compass, Settings, Loader2, Search, RefreshCw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useEffect as useDocTitle } from "react";
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Sections — ordre demandé : 1, 5, 6 → 7, 8, 9 → 2, 3, 12
@@ -413,8 +412,6 @@ export default function AdminControlCenter() {
 
   return (
     <AdminLayout>
-      <Helmet><title>Centre de contrôle — Admin DealFlash</title></Helmet>
-
       <div className="grid gap-6 lg:grid-cols-[220px_1fr]">
         <aside className="space-y-4">
           {groups.map(([group, items]) => (
