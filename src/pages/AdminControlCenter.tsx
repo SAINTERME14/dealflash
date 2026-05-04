@@ -814,35 +814,359 @@ function AppointmentsSection() {
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-// Placeholder générique (sections restantes : 2, 3, 12)
+// site_content helpers (sections 2, 3, 12)
 // ──────────────────────────────────────────────────────────────────────────────
-function PlaceholderSection({ id, label }: { id: SectionId; label: string }) {
-  const plans: Record<SectionId, string[]> = {
-    dashboard: [], flash: [], boutiques: [], listings: [], users: [], appointments: [],
-    theme: ["Palette de couleurs (primaire, fond, cartes, accent)", "Typographie (police, taille, poids)", "Logo, favicon, slogan", "Aperçu en direct"],
-    navigation: ["Réorganisation drag & drop du menu", "Édition catégories et typologies annonceurs", "Largeur, couleurs, hover du menu"],
-    settings: ["Infos site (nom, contact, adresse, devise)", "Réseaux sociaux", "Footer (colonnes, liens, copyright)", "SEO global, mode maintenance"],
+async function loadSettings(category: string): Promise<Record<string, any>> {
+  const { data, error } = await supabase
+    .from("site_content")
+    .select("key, value")
+    .eq("category", category);
+  if (error) throw error;
+  const out: Record<string, any> = {};
+  (data || []).forEach((r: any) => {
+    out[r.key] = typeof r.value === "string" ? r.value : r.value;
+  });
+  return out;
+}
+
+async function upsertSetting(category: string, key: string, value: any, description?: string) {
+  // try update first
+  const { data: existing } = await supabase
+    .from("site_content").select("id").eq("key", key).maybeSingle();
+  if (existing) {
+    const { error } = await supabase.from("site_content")
+      .update({ value, category, description: description ?? null, updated_at: new Date().toISOString() })
+      .eq("id", existing.id);
+    if (error) throw error;
+  } else {
+    const { error } = await supabase.from("site_content")
+      .insert({ key, value, category, description: description ?? null });
+    if (error) throw error;
+  }
+}
+
+function useSettings(category: string) {
+  const [values, setValues] = useState<Record<string, any>>({});
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const reload = async () => {
+    setLoading(true);
+    try { setValues(await loadSettings(category)); } catch (e: any) { toast.error(e.message); }
+    setLoading(false);
   };
+  useEffect(() => { reload(); /* eslint-disable-next-line */ }, [category]);
+  const save = async (entries: Record<string, any>) => {
+    setSaving(true);
+    try {
+      for (const [k, v] of Object.entries(entries)) await upsertSetting(category, k, v);
+      toast.success("Paramètres enregistrés");
+      await reload();
+    } catch (e: any) { toast.error(e.message); }
+    setSaving(false);
+  };
+  return { values, setValues, loading, saving, save };
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Section 2 : Apparence & Thème
+// ──────────────────────────────────────────────────────────────────────────────
+function ThemeSection() {
+  const { values, loading, saving, save } = useSettings("theme");
+  const [local, setLocal] = useState<Record<string, string>>({});
+  useEffect(() => {
+    setLocal({
+      "theme.primary": String(values["theme.primary"] ?? "#FFD000"),
+      "theme.background": String(values["theme.background"] ?? "#111111"),
+      "theme.surface": String(values["theme.surface"] ?? "#1a1a1a"),
+      "theme.text": String(values["theme.text"] ?? "#FFFFFF"),
+      "theme.font": String(values["theme.font"] ?? "Inter"),
+      "theme.logo_url": String(values["theme.logo_url"] ?? ""),
+      "theme.favicon_url": String(values["theme.favicon_url"] ?? ""),
+      "theme.tagline": String(values["theme.tagline"] ?? "La marketplace des bons plans"),
+    });
+  }, [values]);
+
+  const set = (k: string, v: string) => setLocal((p) => ({ ...p, [k]: v }));
+
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold">{label}</h1>
-        <p className="text-sm text-muted-foreground">Section en cours de développement</p>
+        <h1 className="text-2xl font-bold">Apparence &amp; Thème</h1>
+        <p className="text-sm text-muted-foreground">Couleurs, typographie, logo &amp; identité visuelle</p>
       </div>
-      <Card>
-        <CardHeader><CardTitle className="text-base">📋 Fonctionnalités prévues</CardTitle></CardHeader>
-        <CardContent>
-          <ul className="space-y-2 text-sm">
-            {plans[id].map((p, i) => (
-              <li key={i} className="flex gap-2"><span className="text-primary">•</span><span>{p}</span></li>
-            ))}
-          </ul>
-          <div className="mt-4 p-3 rounded-md bg-muted/40 text-xs text-muted-foreground">
-            Cette section sera finalisée dans le prochain cycle de développement.
-            La structure de données <code>STORE</code> sera persistée via la table <code>site_content</code> existante (catégorie spécifique par section).
+
+      {loading ? (
+        <div className="py-8 text-center"><Loader2 className="h-5 w-5 animate-spin inline" /></div>
+      ) : (
+        <>
+          <Card>
+            <CardHeader><CardTitle className="text-base">Palette de couleurs</CardTitle></CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                ["theme.primary", "Couleur primaire (or)"],
+                ["theme.background", "Fond principal"],
+                ["theme.surface", "Cartes / surfaces"],
+                ["theme.text", "Texte principal"],
+              ].map(([k, label]) => (
+                <div key={k} className="space-y-1">
+                  <Label>{label}</Label>
+                  <div className="flex gap-2">
+                    <input type="color" value={local[k] || "#000000"} onChange={(e) => set(k, e.target.value)}
+                      className="h-10 w-14 rounded border border-input cursor-pointer bg-transparent" />
+                    <Input value={local[k] || ""} onChange={(e) => set(k, e.target.value)} className="font-mono" />
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader><CardTitle className="text-base">Typographie &amp; Identité</CardTitle></CardHeader>
+            <CardContent className="space-y-3">
+              <div className="space-y-1">
+                <Label>Police principale</Label>
+                <Select value={local["theme.font"]} onValueChange={(v) => set("theme.font", v)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["Inter", "Roboto", "Poppins", "Montserrat", "system-ui"].map((f) =>
+                      <SelectItem key={f} value={f}>{f}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label>URL du logo</Label>
+                <Input value={local["theme.logo_url"] || ""} onChange={(e) => set("theme.logo_url", e.target.value)} placeholder="https://…" />
+              </div>
+              <div className="space-y-1">
+                <Label>URL du favicon</Label>
+                <Input value={local["theme.favicon_url"] || ""} onChange={(e) => set("theme.favicon_url", e.target.value)} placeholder="https://…/favicon.ico" />
+              </div>
+              <div className="space-y-1">
+                <Label>Slogan</Label>
+                <Input value={local["theme.tagline"] || ""} onChange={(e) => set("theme.tagline", e.target.value)} />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader><CardTitle className="text-base">Aperçu</CardTitle></CardHeader>
+            <CardContent>
+              <div className="rounded-lg p-6" style={{ background: local["theme.background"], color: local["theme.text"], fontFamily: local["theme.font"] }}>
+                <div className="text-2xl font-bold" style={{ color: local["theme.primary"] }}>DealFlash</div>
+                <p className="text-sm opacity-80 mt-1">{local["theme.tagline"]}</p>
+                <button className="mt-3 px-4 py-2 rounded font-semibold text-black" style={{ background: local["theme.primary"] }}>
+                  Action
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-end">
+            <Button disabled={saving} onClick={() => save(local)}>
+              {saving && <Loader2 className="h-4 w-4 animate-spin mr-2" />} Enregistrer le thème
+            </Button>
           </div>
-        </CardContent>
-      </Card>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Section 3 : Navigation & Menu
+// ──────────────────────────────────────────────────────────────────────────────
+type NavItem = { label: string; url: string; icon?: string };
+
+function NavigationSection() {
+  const { values, loading, saving, save } = useSettings("navigation");
+  const [items, setItems] = useState<NavItem[]>([]);
+  const [newItem, setNewItem] = useState<NavItem>({ label: "", url: "", icon: "" });
+
+  useEffect(() => {
+    const v = values["navigation.menu"];
+    if (Array.isArray(v)) setItems(v as NavItem[]);
+    else setItems([
+      { label: "Accueil", url: "/", icon: "🏠" },
+      { label: "À propos", url: "/about", icon: "ℹ️" },
+      { label: "Catégories", url: "/categories", icon: "📂" },
+      { label: "Vedettes", url: "/featured", icon: "⭐" },
+      { label: "Support", url: "/support", icon: "💬" },
+    ]);
+  }, [values]);
+
+  const move = (i: number, dir: -1 | 1) => {
+    const j = i + dir;
+    if (j < 0 || j >= items.length) return;
+    const next = [...items];
+    [next[i], next[j]] = [next[j], next[i]];
+    setItems(next);
+  };
+  const remove = (i: number) => setItems(items.filter((_, idx) => idx !== i));
+  const add = () => {
+    if (!newItem.label || !newItem.url) { toast.error("Label et URL requis"); return; }
+    setItems([...items, newItem]);
+    setNewItem({ label: "", url: "", icon: "" });
+  };
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h1 className="text-2xl font-bold">Navigation &amp; Menu</h1>
+        <p className="text-sm text-muted-foreground">Réorganiser les entrées du menu principal</p>
+      </div>
+
+      {loading ? (
+        <div className="py-8 text-center"><Loader2 className="h-5 w-5 animate-spin inline" /></div>
+      ) : (
+        <>
+          <Card>
+            <CardHeader><CardTitle className="text-base">Entrées du menu</CardTitle></CardHeader>
+            <CardContent className="space-y-2">
+              {items.map((it, i) => (
+                <div key={i} className="flex items-center gap-2 p-2 rounded border bg-muted/30">
+                  <span className="text-lg w-8 text-center">{it.icon || "•"}</span>
+                  <Input className="flex-1" value={it.label} onChange={(e) => {
+                    const n = [...items]; n[i] = { ...n[i], label: e.target.value }; setItems(n);
+                  }} placeholder="Libellé" />
+                  <Input className="flex-1 font-mono text-xs" value={it.url} onChange={(e) => {
+                    const n = [...items]; n[i] = { ...n[i], url: e.target.value }; setItems(n);
+                  }} placeholder="/path" />
+                  <Input className="w-16" value={it.icon || ""} onChange={(e) => {
+                    const n = [...items]; n[i] = { ...n[i], icon: e.target.value }; setItems(n);
+                  }} placeholder="🏠" />
+                  <Button size="sm" variant="ghost" onClick={() => move(i, -1)} disabled={i === 0}>↑</Button>
+                  <Button size="sm" variant="ghost" onClick={() => move(i, 1)} disabled={i === items.length - 1}>↓</Button>
+                  <Button size="sm" variant="ghost" onClick={() => remove(i)}><X className="h-4 w-4 text-destructive" /></Button>
+                </div>
+              ))}
+              {items.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">Aucune entrée</p>}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader><CardTitle className="text-base">Ajouter une entrée</CardTitle></CardHeader>
+            <CardContent className="flex gap-2">
+              <Input placeholder="Libellé" value={newItem.label} onChange={(e) => setNewItem({ ...newItem, label: e.target.value })} />
+              <Input placeholder="/path" value={newItem.url} onChange={(e) => setNewItem({ ...newItem, url: e.target.value })} />
+              <Input placeholder="Icône" className="w-20" value={newItem.icon} onChange={(e) => setNewItem({ ...newItem, icon: e.target.value })} />
+              <Button onClick={add}>Ajouter</Button>
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-end">
+            <Button disabled={saving} onClick={() => save({ "navigation.menu": items })}>
+              {saving && <Loader2 className="h-4 w-4 animate-spin mr-2" />} Enregistrer le menu
+            </Button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Section 12 : Réglages généraux
+// ──────────────────────────────────────────────────────────────────────────────
+function SettingsSection() {
+  const { values, loading, saving, save } = useSettings("settings");
+  const [local, setLocal] = useState<Record<string, any>>({});
+  useEffect(() => {
+    setLocal({
+      "site.name": String(values["site.name"] ?? "DealFlash"),
+      "site.email": String(values["site.email"] ?? "contact@dealflash.ca"),
+      "site.phone": String(values["site.phone"] ?? ""),
+      "site.address": String(values["site.address"] ?? ""),
+      "site.currency": String(values["site.currency"] ?? "CAD"),
+      "site.facebook": String(values["site.facebook"] ?? ""),
+      "site.instagram": String(values["site.instagram"] ?? ""),
+      "site.tiktok": String(values["site.tiktok"] ?? ""),
+      "site.footer_copyright": String(values["site.footer_copyright"] ?? "© DealFlash 2026"),
+      "site.footer_text": String(values["site.footer_text"] ?? ""),
+      "seo.title": String(values["seo.title"] ?? "DealFlash — Marketplace de bons plans"),
+      "seo.description": String(values["seo.description"] ?? ""),
+      "seo.keywords": String(values["seo.keywords"] ?? ""),
+      "site.maintenance": Boolean(values["site.maintenance"] ?? false),
+    });
+  }, [values]);
+
+  const set = (k: string, v: any) => setLocal((p) => ({ ...p, [k]: v }));
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h1 className="text-2xl font-bold">Réglages généraux</h1>
+        <p className="text-sm text-muted-foreground">Identité, contact, réseaux, SEO &amp; maintenance</p>
+      </div>
+
+      {loading ? (
+        <div className="py-8 text-center"><Loader2 className="h-5 w-5 animate-spin inline" /></div>
+      ) : (
+        <>
+          <Card>
+            <CardHeader><CardTitle className="text-base">Informations du site</CardTitle></CardHeader>
+            <CardContent className="grid md:grid-cols-2 gap-3">
+              <div className="space-y-1"><Label>Nom du site</Label><Input value={local["site.name"]} onChange={(e) => set("site.name", e.target.value)} /></div>
+              <div className="space-y-1"><Label>Email contact</Label><Input type="email" value={local["site.email"]} onChange={(e) => set("site.email", e.target.value)} /></div>
+              <div className="space-y-1"><Label>Téléphone</Label><Input value={local["site.phone"]} onChange={(e) => set("site.phone", e.target.value)} /></div>
+              <div className="space-y-1"><Label>Devise</Label>
+                <Select value={local["site.currency"]} onValueChange={(v) => set("site.currency", v)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>{["CAD", "USD", "EUR"].map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              <div className="md:col-span-2 space-y-1"><Label>Adresse</Label><Input value={local["site.address"]} onChange={(e) => set("site.address", e.target.value)} /></div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader><CardTitle className="text-base">Réseaux sociaux</CardTitle></CardHeader>
+            <CardContent className="grid md:grid-cols-3 gap-3">
+              <div className="space-y-1"><Label>Facebook</Label><Input value={local["site.facebook"]} onChange={(e) => set("site.facebook", e.target.value)} placeholder="https://facebook.com/…" /></div>
+              <div className="space-y-1"><Label>Instagram</Label><Input value={local["site.instagram"]} onChange={(e) => set("site.instagram", e.target.value)} placeholder="https://instagram.com/…" /></div>
+              <div className="space-y-1"><Label>TikTok</Label><Input value={local["site.tiktok"]} onChange={(e) => set("site.tiktok", e.target.value)} placeholder="https://tiktok.com/@…" /></div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader><CardTitle className="text-base">Pied de page</CardTitle></CardHeader>
+            <CardContent className="space-y-3">
+              <div className="space-y-1"><Label>Copyright</Label><Input value={local["site.footer_copyright"]} onChange={(e) => set("site.footer_copyright", e.target.value)} /></div>
+              <div className="space-y-1"><Label>Texte additionnel</Label><Textarea value={local["site.footer_text"]} onChange={(e) => set("site.footer_text", e.target.value)} rows={3} /></div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader><CardTitle className="text-base">SEO global</CardTitle></CardHeader>
+            <CardContent className="space-y-3">
+              <div className="space-y-1"><Label>Titre par défaut</Label><Input value={local["seo.title"]} onChange={(e) => set("seo.title", e.target.value)} /></div>
+              <div className="space-y-1"><Label>Description</Label><Textarea value={local["seo.description"]} onChange={(e) => set("seo.description", e.target.value)} rows={2} /></div>
+              <div className="space-y-1"><Label>Mots-clés (séparés par virgules)</Label><Input value={local["seo.keywords"]} onChange={(e) => set("seo.keywords", e.target.value)} /></div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader><CardTitle className="text-base">Maintenance</CardTitle></CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label>Mode maintenance</Label>
+                  <p className="text-xs text-muted-foreground">Affiche une page de maintenance aux visiteurs (sauf admins)</p>
+                </div>
+                <Switch checked={!!local["site.maintenance"]} onCheckedChange={(v) => set("site.maintenance", v)} />
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-end">
+            <Button disabled={saving} onClick={() => save(local)}>
+              {saving && <Loader2 className="h-4 w-4 animate-spin mr-2" />} Enregistrer les réglages
+            </Button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
     </div>
   );
 }
