@@ -516,6 +516,9 @@ function ListingsModerationSection() {
                     <Button asChild size="sm" variant="ghost" title="Voir">
                       <a href={`/annonce/${r.id}`} target="_blank" rel="noreferrer"><Eye className="h-4 w-4" /></a>
                     </Button>
+                    <Button size="sm" variant="ghost" title="Modifier" onClick={() => openEdit(r)}>
+                      <Pencil className="h-4 w-4" />
+                    </Button>
                     {r.status !== "active" && (
                       <Button size="sm" variant="ghost" title="Approuver" disabled={busy === r.id}
                         onClick={() => updateStatus(r.id, "active")}>
