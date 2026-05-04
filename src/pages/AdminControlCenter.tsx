@@ -11,8 +11,11 @@ import {
 import {
   LayoutDashboard, Zap, Store, FileText, Users, Calendar,
   Palette, Compass, Settings, Loader2, Search, RefreshCw,
+  Check, X, Eye, Pause, Play, ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Sections — ordre demandé : 1, 5, 6 → 7, 8, 9 → 2, 3, 12
