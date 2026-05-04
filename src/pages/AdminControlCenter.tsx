@@ -16,6 +16,9 @@ import {
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Sections — ordre demandé : 1, 5, 6 → 7, 8, 9 → 2, 3, 12
