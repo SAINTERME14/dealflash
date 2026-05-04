@@ -655,6 +655,20 @@ function UsersSection() {
     setBusy(null); load();
   };
 
+  const toggleBlock = async (uid: string, currentlyBlocked: boolean) => {
+    if (supers.has(uid)) { toast.error("Super-admin protégé."); return; }
+    const reason = currentlyBlocked ? null : (prompt("Raison du blocage ?") ?? "Bloqué par admin");
+    setBusy(uid + "_block");
+    const { error } = await supabase.from("profiles").update({
+      is_blocked: !currentlyBlocked,
+      blocked_reason: reason,
+      blocked_at: currentlyBlocked ? null : new Date().toISOString(),
+    }).eq("user_id", uid);
+    if (error) toast.error(error.message);
+    else toast.success(currentlyBlocked ? "Utilisateur débloqué" : "Utilisateur bloqué");
+    setBusy(null); load();
+  };
+
   return (
     <div className="space-y-4">
       <div>
