@@ -20,7 +20,7 @@ async function logError(payload: {
 
     const { data: { user } } = await supabase.auth.getUser();
     await supabase.from("client_error_logs").insert({
-      user_id: user?.id ?? null,
+      user_id: user?.id ?? undefined,
       url: typeof window !== "undefined" ? window.location.href : null,
       user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
       message: payload.message?.slice(0, 2000) || "(no message)",
