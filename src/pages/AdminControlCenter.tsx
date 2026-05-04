@@ -13,7 +13,7 @@ import {
   Palette, Compass, Settings, Loader2, Search, RefreshCw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Helmet } from "react-helmet-async";
+import { useEffect as useDocTitle } from "react";
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Sections — ordre demandé : 1, 5, 6 → 7, 8, 9 → 2, 3, 12
