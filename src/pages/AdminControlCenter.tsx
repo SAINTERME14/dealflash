@@ -420,6 +420,35 @@ function ListingsModerationSection() {
     load();
   };
 
+  const openEdit = (r: any) => {
+    setEditing(r);
+    setEdit({
+      title: r.title || "",
+      description: r.description || "",
+      price: String(r.price ?? ""),
+      original_price: r.original_price != null ? String(r.original_price) : "",
+      city: r.city || "",
+      status: r.status,
+    });
+  };
+
+  const saveEdit = async () => {
+    if (!editing) return;
+    setBusy(editing.id);
+    const payload: any = {
+      title: edit.title.trim(),
+      description: edit.description.trim(),
+      price: Number(edit.price),
+      original_price: edit.original_price ? Number(edit.original_price) : null,
+      city: edit.city.trim() || null,
+      status: edit.status,
+    };
+    const { error } = await supabase.from("listings").update(payload).eq("id", editing.id);
+    if (error) toast.error(error.message);
+    else { toast.success("Annonce mise à jour"); setEditing(null); load(); }
+    setBusy(null);
+  };
+
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
