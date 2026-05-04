@@ -610,7 +610,7 @@ function UsersSection() {
   const load = async () => {
     setLoading(true);
     const [p, r, s] = await Promise.all([
-      supabase.from("profiles").select("user_id, display_name, city, is_verified, created_at").order("created_at", { ascending: false }).limit(300),
+      supabase.from("profiles").select("user_id, display_name, city, is_verified, is_blocked, created_at").order("created_at", { ascending: false }).limit(300),
       supabase.from("user_roles").select("user_id, role"),
       supabase.from("super_admins").select("user_id"),
     ]);
