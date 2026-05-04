@@ -389,7 +389,7 @@ function ListingsModerationSection() {
     const to = from + PAGE_SIZE - 1;
     let q = supabase
       .from("listings")
-      .select("id, title, price, currency, status, city, created_at, seller_id, category_id, images", { count: "exact" })
+      .select("id, title, description, price, original_price, currency, status, city, created_at, seller_id, category_id, images", { count: "exact" })
       .order("created_at", { ascending: false })
       .range(from, to);
     if (statusFilter !== "all") q = q.eq("status", statusFilter as ListingStatus);
