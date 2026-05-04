@@ -1222,9 +1222,9 @@ export default function AdminControlCenter() {
           {active === "listings"     && <ListingsModerationSection />}
           {active === "users"        && <UsersSection />}
           {active === "appointments" && <AppointmentsSection />}
-          {(active === "theme" || active === "navigation" || active === "settings") && (
-            <PlaceholderSection id={active} label={SECTIONS.find(s => s.id === active)!.label} />
-          )}
+          {active === "theme"        && <ThemeSection />}
+          {active === "navigation"   && <NavigationSection />}
+          {active === "settings"     && <SettingsSection />}
         </main>
       </div>
     </AdminLayout>
