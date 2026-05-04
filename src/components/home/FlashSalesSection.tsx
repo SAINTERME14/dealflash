@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { Camera } from "lucide-react";
 
 interface FlashItem {
   name: string;
-  desc: string;
+  image: string;
   regular: number;
   flash: number;
   discount: number;
@@ -12,17 +11,17 @@ interface FlashItem {
 }
 
 const ITEMS: FlashItem[] = [
-  { name: "TV Samsung 55\" 4K", desc: "Smart TV UHD HDR", regular: 1299, flash: 699, discount: 46, seconds: 4*3600+32*60+17, stock: 2 },
-  { name: "Robot cuiseur Instant Pot", desc: "Multifonction 7-en-1", regular: 249, flash: 89, discount: 64, seconds: 11*3600+5*60+42, stock: 7 },
-  { name: "Vélo électrique pliable", desc: "Autonomie 60 km", regular: 1899, flash: 949, discount: 50, seconds: 47*60+33, stock: 1 },
-  { name: "AirPods Pro 2e gén.", desc: "Réduction de bruit active", regular: 329, flash: 199, discount: 39, seconds: 23*3600+15*60+8, stock: 12 },
-  { name: "Canapé 3 places", desc: "Tissu gris confort", regular: 1499, flash: 749, discount: 50, seconds: 7*3600+20*60+55, stock: 3 },
-  { name: "Machine à expresso", desc: "Broyeur intégré", regular: 599, flash: 279, discount: 53, seconds: 2*3600+10*60+22, stock: 5 },
-  { name: "Trottinette électrique", desc: "Vitesse max 25 km/h", regular: 899, flash: 449, discount: 50, seconds: 16*3600+44*60+10, stock: 4 },
-  { name: "iPad 10e génération", desc: "WiFi 64 Go bleu", regular: 679, flash: 429, discount: 37, seconds: 9*3600+58*60+1, stock: 9 },
+  { name: "Samsung 55\" QLED 4K UHD", image: "https://images.unsplash.com/photo-1593359677879-a4bb92f4bce4?w=400&q=80", regular: 1299, flash: 699, discount: 46, seconds: 4*3600+32*60+17, stock: 2 },
+  { name: "Instant Pot Duo 7-en-1 8L", image: "https://images.unsplash.com/photo-1585515320310-259814833e62?w=400&q=80", regular: 249, flash: 89, discount: 64, seconds: 11*3600+5*60+42, stock: 7 },
+  { name: "Vélo électrique pliant 250W", image: "https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=400&q=80", regular: 1899, flash: 949, discount: 50, seconds: 47*60+33, stock: 1 },
+  { name: "AirPods Pro 2e génération", image: "https://images.unsplash.com/photo-1588423771073-b8903fead85b?w=400&q=80", regular: 329, flash: 199, discount: 39, seconds: 23*3600+15*60+8, stock: 12 },
+  { name: "Canapé 3 places en velours", image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=80", regular: 1499, flash: 749, discount: 50, seconds: 7*3600+20*60+55, stock: 3 },
+  { name: "Machine à expresso 19 bars", image: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=400&q=80", regular: 599, flash: 279, discount: 53, seconds: 2*3600+10*60+22, stock: 5 },
+  { name: "Trottinette électrique 500W", image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80", regular: 899, flash: 449, discount: 50, seconds: 16*3600+44*60+10, stock: 4 },
+  { name: "Apple iPad 10e génération", image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&q=80", regular: 679, flash: 429, discount: 37, seconds: 9*3600+58*60+1, stock: 9 },
 ];
 
-function format(s: number) {
+function fmt(s: number) {
   const h = Math.floor(s / 3600);
   const m = Math.floor((s % 3600) / 60);
   const sec = s % 60;
@@ -42,14 +41,12 @@ export function FlashSalesSection() {
   return (
     <section
       className="py-16 px-4"
-      style={{ background: "#0d0d0d", borderTop: "3px solid #FFD000" }}
+      style={{ background: "#0a0a0a", borderTop: "3px solid #FFD000", fontFamily: "Inter, system-ui, sans-serif" }}
     >
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-10">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-white">
-            ⚡ VENTES FLASH
-          </h2>
-          <p className="text-white/70 mt-2">Offres limitées — Prix en chute libre !</p>
+          <h2 className="text-3xl md:text-4xl font-extrabold text-white">⚡ VENTES FLASH</h2>
+          <p className="text-white/70 mt-2">Offres à durée limitée — prix en chute libre !</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -59,78 +56,92 @@ export function FlashSalesSection() {
             return (
               <div
                 key={item.name}
-                className="relative rounded-xl overflow-hidden flex flex-col"
+                className="rounded-xl overflow-hidden transition-all flex flex-col"
                 style={{
                   background: "#1a1a1a",
                   border: "1px solid #2a2a2a",
                   opacity: expired ? 0.5 : 1,
+                  filter: expired ? "grayscale(1)" : "none",
                 }}
+                onMouseEnter={(e) => { if (!expired) e.currentTarget.style.borderColor = "#FFD000"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#2a2a2a"; }}
               >
-                {/* Image */}
-                <div className="relative" style={{ aspectRatio: "4/3", background: "#222" }}>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Camera className="h-10 w-10 text-white/30" />
-                  </div>
+                <div className="relative" style={{ width: "100%", height: 180 }}>
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    loading="lazy"
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  />
                   <span
-                    className="absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-bold"
-                    style={{ background: "#dc2626", color: "#fff" }}
+                    className="absolute"
+                    style={{ top: 8, right: 8, background: "#e74c3c", color: "#fff", fontWeight: 700, padding: "4px 10px", borderRadius: 20, fontSize: 12 }}
                   >
                     -{item.discount}%
                   </span>
                   {expired && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/70">
-                      <span className="text-2xl font-extrabold text-[#FFD000]">EXPIRÉ</span>
+                    <div className="absolute inset-0 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.7)" }}>
+                      <span style={{ color: "#FFD000", fontWeight: 800, fontSize: 24, letterSpacing: 2 }}>EXPIRÉ</span>
                     </div>
                   )}
                 </div>
 
-                <div className="p-4 flex-1 flex flex-col">
-                  <h3 className="font-bold text-white text-sm line-clamp-2 mb-1">{item.name}</h3>
-                  <p className="text-xs text-white/60 truncate mb-3">{item.desc}</p>
+                <div className="flex-1 flex flex-col" style={{ padding: 14 }}>
+                  <h3 className="text-white font-bold line-clamp-2 mb-2" style={{ fontSize: 14, minHeight: 38 }}>{item.name}</h3>
 
-                  <div className="flex items-baseline gap-2 mb-2">
-                    <span style={{ textDecoration: "line-through", color: "#888", fontSize: 14 }}>
-                      {item.regular} $
+                  <div className="flex items-baseline gap-2 mb-1">
+                    <span style={{ fontSize: 13, color: "#888", textDecoration: "line-through" }}>
+                      {item.regular.toLocaleString("fr-CA")} $
                     </span>
                   </div>
                   <div
                     style={{
                       color: "#FFD000",
-                      fontSize: 28,
-                      fontWeight: 800,
+                      fontSize: 26,
+                      fontWeight: 900,
                       lineHeight: 1,
-                      animation: expired ? "none" : "flashBlink 1.2s ease-in-out infinite",
+                      animation: expired ? "none" : "flashPrice 1.2s ease-in-out infinite",
                     }}
                   >
-                    {item.flash} $
+                    {item.flash.toLocaleString("fr-CA")} $
                   </div>
 
+                  <div className="mt-3" style={{ fontSize: 11, color: "#888" }}>⏱ Expire dans :</div>
                   <div
-                    className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full self-start"
-                    style={{ background: "#1a1a1a", border: "1px solid #2a2a2a" }}
+                    className="inline-block mt-1 self-start"
+                    style={{
+                      fontFamily: "ui-monospace, SFMono-Regular, monospace",
+                      fontSize: 16,
+                      color: "#FFD000",
+                      background: "#0d0d0d",
+                      padding: "4px 10px",
+                      borderRadius: 6,
+                      border: "1px solid #2a2a2a",
+                    }}
                   >
-                    <span className="text-[10px] text-white/60">Expire dans :</span>
-                    <span style={{ fontFamily: "ui-monospace, monospace", color: "#FFD000", fontWeight: 700, fontSize: 13 }}>
-                      {format(t)}
-                    </span>
+                    {fmt(t)}
                   </div>
 
-                  <div className="mt-2 text-xs" style={{ color: "#fb923c" }}>
+                  <div className="mt-2" style={{ fontSize: 12, color: "#e67e22" }}>
                     🔥 {item.stock} restant{item.stock > 1 ? "s" : ""}
                   </div>
 
                   <button
                     disabled={expired}
-                    className="mt-4 w-full rounded-lg py-2.5 font-bold text-sm transition-transform"
+                    className="w-full font-bold transition-transform"
                     style={{
+                      marginTop: 10,
                       background: expired ? "#444" : "#FFD000",
                       color: expired ? "#888" : "#111",
+                      borderRadius: 8,
+                      padding: "10px 0",
+                      fontSize: 14,
                       cursor: expired ? "not-allowed" : "pointer",
                     }}
-                    onMouseEnter={(e) => { if (!expired) e.currentTarget.style.transform = "scale(1.02)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
+                    onMouseEnter={(e) => { if (!expired) { e.currentTarget.style.background = "#e6bc00"; e.currentTarget.style.transform = "scale(1.02)"; } }}
+                    onMouseLeave={(e) => { if (!expired) { e.currentTarget.style.background = "#FFD000"; e.currentTarget.style.transform = "scale(1)"; } }}
                   >
-                    {expired ? "Indisponible" : "Acheter maintenant"}
+                    🛒 Acheter maintenant
                   </button>
                 </div>
               </div>
@@ -140,9 +151,9 @@ export function FlashSalesSection() {
       </div>
 
       <style>{`
-        @keyframes flashBlink {
+        @keyframes flashPrice {
           0%, 100% { opacity: 1; }
-          50% { opacity: 0.4; }
+          50% { opacity: 0.35; }
         }
       `}</style>
     </section>
