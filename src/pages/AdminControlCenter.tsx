@@ -19,6 +19,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Pencil, Ban, Unlock } from "lucide-react";
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Sections — ordre demandé : 1, 5, 6 → 7, 8, 9 → 2, 3, 12
@@ -377,6 +379,8 @@ function ListingsModerationSection() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [busy, setBusy] = useState<string | null>(null);
+  const [editing, setEditing] = useState<any | null>(null);
+  const [edit, setEdit] = useState<{ title: string; description: string; price: string; original_price: string; city: string; status: ListingStatus }>({ title: "", description: "", price: "", original_price: "", city: "", status: "active" });
   const PAGE_SIZE = 20;
 
   const load = async () => {
@@ -385,7 +389,7 @@ function ListingsModerationSection() {
     const to = from + PAGE_SIZE - 1;
     let q = supabase
       .from("listings")
-      .select("id, title, price, currency, status, city, created_at, seller_id, category_id, images", { count: "exact" })
+      .select("id, title, description, price, original_price, currency, status, city, created_at, seller_id, category_id, images", { count: "exact" })
       .order("created_at", { ascending: false })
       .range(from, to);
     if (statusFilter !== "all") q = q.eq("status", statusFilter as ListingStatus);
@@ -414,6 +418,35 @@ function ListingsModerationSection() {
     if (error) toast.error(error.message); else toast.success("Annonce supprimée");
     setBusy(null);
     load();
+  };
+
+  const openEdit = (r: any) => {
+    setEditing(r);
+    setEdit({
+      title: r.title || "",
+      description: r.description || "",
+      price: String(r.price ?? ""),
+      original_price: r.original_price != null ? String(r.original_price) : "",
+      city: r.city || "",
+      status: r.status,
+    });
+  };
+
+  const saveEdit = async () => {
+    if (!editing) return;
+    setBusy(editing.id);
+    const payload: any = {
+      title: edit.title.trim(),
+      description: edit.description.trim(),
+      price: Number(edit.price),
+      original_price: edit.original_price ? Number(edit.original_price) : null,
+      city: edit.city.trim() || null,
+      status: edit.status,
+    };
+    const { error } = await supabase.from("listings").update(payload).eq("id", editing.id);
+    if (error) toast.error(error.message);
+    else { toast.success("Annonce mise à jour"); setEditing(null); load(); }
+    setBusy(null);
   };
 
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -483,6 +516,9 @@ function ListingsModerationSection() {
                     <Button asChild size="sm" variant="ghost" title="Voir">
                       <a href={`/annonce/${r.id}`} target="_blank" rel="noreferrer"><Eye className="h-4 w-4" /></a>
                     </Button>
+                    <Button size="sm" variant="ghost" title="Modifier" onClick={() => openEdit(r)}>
+                      <Pencil className="h-4 w-4" />
+                    </Button>
                     {r.status !== "active" && (
                       <Button size="sm" variant="ghost" title="Approuver" disabled={busy === r.id}
                         onClick={() => updateStatus(r.id, "active")}>
@@ -522,6 +558,37 @@ function ListingsModerationSection() {
           </div>
         </div>
       )}
+
+      <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader><DialogTitle>Modifier l'annonce</DialogTitle></DialogHeader>
+          <div className="grid gap-3">
+            <div><Label>Titre</Label><Input value={edit.title} onChange={(e) => setEdit({ ...edit, title: e.target.value })} /></div>
+            <div><Label>Description</Label><Textarea rows={4} value={edit.description} onChange={(e) => setEdit({ ...edit, description: e.target.value })} /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Prix</Label><Input type="number" step="0.01" value={edit.price} onChange={(e) => setEdit({ ...edit, price: e.target.value })} /></div>
+              <div><Label>Prix régulier (avant rabais)</Label><Input type="number" step="0.01" value={edit.original_price} onChange={(e) => setEdit({ ...edit, original_price: e.target.value })} /></div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Ville</Label><Input value={edit.city} onChange={(e) => setEdit({ ...edit, city: e.target.value })} /></div>
+              <div>
+                <Label>Statut</Label>
+                <Select value={edit.status} onValueChange={(v) => setEdit({ ...edit, status: v as ListingStatus })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>{LISTING_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditing(null)}>Annuler</Button>
+            <Button onClick={saveEdit} disabled={busy === editing?.id}>
+              {busy === editing?.id ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : null}
+              Enregistrer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -543,7 +610,7 @@ function UsersSection() {
   const load = async () => {
     setLoading(true);
     const [p, r, s] = await Promise.all([
-      supabase.from("profiles").select("user_id, display_name, city, is_verified, created_at").order("created_at", { ascending: false }).limit(300),
+      supabase.from("profiles").select("user_id, display_name, city, is_verified, is_blocked, created_at").order("created_at", { ascending: false }).limit(300),
       supabase.from("user_roles").select("user_id, role"),
       supabase.from("super_admins").select("user_id"),
     ]);
@@ -588,6 +655,20 @@ function UsersSection() {
     setBusy(null); load();
   };
 
+  const toggleBlock = async (uid: string, currentlyBlocked: boolean) => {
+    if (supers.has(uid)) { toast.error("Super-admin protégé."); return; }
+    const reason = currentlyBlocked ? null : (prompt("Raison du blocage ?") ?? "Bloqué par admin");
+    setBusy(uid + "_block");
+    const { error } = await supabase.from("profiles").update({
+      is_blocked: !currentlyBlocked,
+      blocked_reason: reason,
+      blocked_at: currentlyBlocked ? null : new Date().toISOString(),
+    }).eq("user_id", uid);
+    if (error) toast.error(error.message);
+    else toast.success(currentlyBlocked ? "Utilisateur débloqué" : "Utilisateur bloqué");
+    setBusy(null); load();
+  };
+
   return (
     <div className="space-y-4">
       <div>
@@ -625,6 +706,7 @@ function UsersSection() {
                       {p.display_name || "(sans nom)"}
                       {isSup && <Badge className="text-[10px] bg-amber-500"><ShieldCheck className="h-3 w-3 mr-0.5" />Super</Badge>}
                       {p.is_verified && <Badge className="text-[10px] bg-green-600">✓</Badge>}
+                      {p.is_blocked && <Badge variant="destructive" className="text-[10px]">Bloqué</Badge>}
                     </div>
                     <div className="text-[10px] text-muted-foreground font-mono">{p.user_id.slice(0, 8)}…</div>
                   </TableCell>
@@ -650,7 +732,17 @@ function UsersSection() {
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex justify-end flex-wrap gap-1">
+                    <div className="flex justify-end flex-wrap gap-1 items-center">
+                      <Button
+                        size="sm"
+                        variant={p.is_blocked ? "outline" : "ghost"}
+                        className="h-6 text-[10px] px-2"
+                        disabled={busy === p.user_id + "_block" || isSup}
+                        onClick={() => toggleBlock(p.user_id, p.is_blocked)}
+                        title={p.is_blocked ? "Débloquer" : "Bloquer"}
+                      >
+                        {p.is_blocked ? <Unlock className="h-3 w-3" /> : <Ban className="h-3 w-3 text-destructive" />}
+                      </Button>
                       {ROLES.filter((r) => !rs.has(r)).map((r) => (
                         <Button key={r} size="sm" variant="outline" className="h-6 text-[10px] px-2"
                           disabled={busy === p.user_id + r}
