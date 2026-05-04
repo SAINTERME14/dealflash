@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Seo } from "@/components/seo/Seo";
-import { BadgeCheck, Briefcase, ShieldCheck, Store, Ticket, User, AlertTriangle } from "lucide-react";
+import { Link } from "react-router-dom";
+import { BadgeCheck, Briefcase, ShieldCheck, Store, Ticket, User, AlertTriangle, ArrowRight } from "lucide-react";
 
 export default function About() {
   return (
