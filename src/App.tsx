@@ -57,6 +57,7 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const BecomeAdvertiser = lazy(() => import("./pages/BecomeAdvertiser"));
 const CommentAcheter = lazy(() => import("./pages/CommentAcheter"));
 const CommentVendre = lazy(() => import("./pages/CommentVendre"));
+const PrototypeHub = lazy(() => import("./pages/PrototypeHub"));
 
 import { CookieConsent } from "@/components/CookieConsent";
 
@@ -123,6 +124,9 @@ const App = () => (
               <Route path="/a-propos" element={<About />} />
               <Route path="/comment-acheter" element={<CommentAcheter />} />
               <Route path="/comment-vendre" element={<CommentVendre />} />
+              <Route path="/annonceurs/:slug" element={<PrototypeHub kind="annonceurs" />} />
+              <Route path="/boutiques" element={<PrototypeHub kind="boutiques-list" />} />
+              <Route path="/boutique/:slug" element={<PrototypeHub kind="boutique" />} />
               <Route path="/politique-confidentialite" element={<PrivacyPolicy />} />
               <Route path="*" element={<NotFound />} />
             </Route>
