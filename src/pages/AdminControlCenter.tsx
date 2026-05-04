@@ -895,7 +895,10 @@ export default function AdminControlCenter() {
           {active === "dashboard"    && <DashboardSection kpis={kpis} refresh={refresh} />}
           {active === "flash"        && <FlashSection />}
           {active === "boutiques"    && <BoutiquesSection />}
-          {active !== "dashboard" && active !== "flash" && active !== "boutiques" && (
+          {active === "listings"     && <ListingsModerationSection />}
+          {active === "users"        && <UsersSection />}
+          {active === "appointments" && <AppointmentsSection />}
+          {(active === "theme" || active === "navigation" || active === "settings") && (
             <PlaceholderSection id={active} label={SECTIONS.find(s => s.id === active)!.label} />
           )}
         </main>
