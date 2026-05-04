@@ -360,14 +360,462 @@ function BoutiquesSection() {
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-// Placeholder générique (sections 7,8,9,2,3,12)
+// ──────────────────────────────────────────────────────────────────────────────
+// Section 7 : Annonces (modération)
+// ──────────────────────────────────────────────────────────────────────────────
+const LISTING_STATUSES = ["active", "draft", "paused", "sold", "expired"] as const;
+type ListingStatus = typeof LISTING_STATUSES[number];
+
+function ListingsModerationSection() {
+  const [rows, setRows] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [busy, setBusy] = useState<string | null>(null);
+  const PAGE_SIZE = 20;
+
+  const load = async () => {
+    setLoading(true);
+    const from = (page - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+    let q = supabase
+      .from("listings")
+      .select("id, title, price, currency, status, city, created_at, seller_id, category_id, images", { count: "exact" })
+      .order("created_at", { ascending: false })
+      .range(from, to);
+    if (statusFilter !== "all") q = q.eq("status", statusFilter as ListingStatus);
+    if (search.trim()) q = q.ilike("title", `%${search.trim()}%`);
+    const { data, count, error } = await q;
+    if (error) toast.error(error.message);
+    setRows(data || []);
+    setTotal(count || 0);
+    setLoading(false);
+  };
+
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, [page, statusFilter]);
+
+  const updateStatus = async (id: string, status: ListingStatus) => {
+    setBusy(id);
+    const { error } = await supabase.from("listings").update({ status }).eq("id", id);
+    if (error) toast.error(error.message); else toast.success("Statut mis à jour");
+    setBusy(null);
+    load();
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("Supprimer définitivement cette annonce ?")) return;
+    setBusy(id);
+    const { error } = await supabase.from("listings").delete().eq("id", id);
+    if (error) toast.error(error.message); else toast.success("Annonce supprimée");
+    setBusy(null);
+    load();
+  };
+
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h1 className="text-2xl font-bold">Annonces</h1>
+        <p className="text-sm text-muted-foreground">{total} annonces · modération centralisée</p>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        <div className="relative flex-1 min-w-[220px] max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Titre…"
+            className="pl-9"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && (setPage(1), load())}
+          />
+        </div>
+        <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1); }}>
+          <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tous statuts</SelectItem>
+            {LISTING_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Button variant="outline" size="sm" onClick={() => { setPage(1); load(); }}>
+          <Search className="h-4 w-4 mr-1" /> Filtrer
+        </Button>
+      </div>
+
+      <Card>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-12">#</TableHead>
+              <TableHead>Titre</TableHead>
+              <TableHead>Prix</TableHead>
+              <TableHead>Ville</TableHead>
+              <TableHead>Créée</TableHead>
+              <TableHead>Statut</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              <TableRow><TableCell colSpan={7} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin inline" /></TableCell></TableRow>
+            ) : rows.length === 0 ? (
+              <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Aucune annonce</TableCell></TableRow>
+            ) : rows.map((r, i) => (
+              <TableRow key={r.id}>
+                <TableCell>{(page - 1) * PAGE_SIZE + i + 1}</TableCell>
+                <TableCell className="font-medium max-w-xs truncate">{r.title}</TableCell>
+                <TableCell>{Number(r.price).toFixed(2)} {r.currency}</TableCell>
+                <TableCell className="text-sm">{r.city || "—"}</TableCell>
+                <TableCell className="text-xs">{new Date(r.created_at).toLocaleDateString("fr-CA")}</TableCell>
+                <TableCell>
+                  <Badge variant={r.status === "active" ? "default" : r.status === "draft" ? "secondary" : "outline"}>
+                    {r.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end gap-1">
+                    <Button asChild size="sm" variant="ghost" title="Voir">
+                      <a href={`/annonce/${r.id}`} target="_blank" rel="noreferrer"><Eye className="h-4 w-4" /></a>
+                    </Button>
+                    {r.status !== "active" && (
+                      <Button size="sm" variant="ghost" title="Approuver" disabled={busy === r.id}
+                        onClick={() => updateStatus(r.id, "active")}>
+                        <Check className="h-4 w-4 text-green-600" />
+                      </Button>
+                    )}
+                    {r.status === "active" && (
+                      <Button size="sm" variant="ghost" title="Mettre en pause" disabled={busy === r.id}
+                        onClick={() => updateStatus(r.id, "paused")}>
+                        <Pause className="h-4 w-4" />
+                      </Button>
+                    )}
+                    {r.status === "paused" && (
+                      <Button size="sm" variant="ghost" title="Réactiver" disabled={busy === r.id}
+                        onClick={() => updateStatus(r.id, "active")}>
+                        <Play className="h-4 w-4" />
+                      </Button>
+                    )}
+                    <Button size="sm" variant="ghost" title="Supprimer" disabled={busy === r.id}
+                      onClick={() => remove(r.id)}>
+                      <X className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
+
+      {pages > 1 && (
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">Page {page} / {pages}</span>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>Précédent</Button>
+            <Button variant="outline" size="sm" disabled={page >= pages} onClick={() => setPage(p => p + 1)}>Suivant</Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Section 8 : Utilisateurs & rôles
+// ──────────────────────────────────────────────────────────────────────────────
+type Role = "admin" | "vendeur_b2c" | "vendeur_c2c" | "acheteur" | "moderateur";
+const ROLES: Role[] = ["admin", "moderateur", "vendeur_b2c", "vendeur_c2c", "acheteur"];
+
+function UsersSection() {
+  const [profiles, setProfiles] = useState<any[]>([]);
+  const [roles, setRoles] = useState<{ user_id: string; role: Role }[]>([]);
+  const [supers, setSupers] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [busy, setBusy] = useState<string | null>(null);
+
+  const load = async () => {
+    setLoading(true);
+    const [p, r, s] = await Promise.all([
+      supabase.from("profiles").select("user_id, display_name, city, is_verified, created_at").order("created_at", { ascending: false }).limit(300),
+      supabase.from("user_roles").select("user_id, role"),
+      supabase.from("super_admins").select("user_id"),
+    ]);
+    setProfiles(p.data || []);
+    setRoles((r.data || []) as any);
+    setSupers(new Set((s.data || []).map((x: any) => x.user_id)));
+    setLoading(false);
+  };
+  useEffect(() => { load(); }, []);
+
+  const rolesByUser = useMemo(() => {
+    const m = new Map<string, Set<Role>>();
+    for (const x of roles) {
+      if (!m.has(x.user_id)) m.set(x.user_id, new Set());
+      m.get(x.user_id)!.add(x.role);
+    }
+    return m;
+  }, [roles]);
+
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase().trim();
+    if (!q) return profiles;
+    return profiles.filter((p) =>
+      (p.display_name || "").toLowerCase().includes(q) ||
+      (p.city || "").toLowerCase().includes(q) ||
+      p.user_id.includes(q));
+  }, [profiles, search]);
+
+  const addRole = async (uid: string, role: Role) => {
+    setBusy(uid + role);
+    const { error } = await supabase.from("user_roles").insert({ user_id: uid, role });
+    if (error) toast.error(error.message); else toast.success(`Rôle « ${role} » ajouté`);
+    setBusy(null); load();
+  };
+  const removeRole = async (uid: string, role: Role) => {
+    if (role === "admin" && supers.has(uid)) {
+      toast.error("Super-admin protégé."); return;
+    }
+    setBusy(uid + role);
+    const { error } = await supabase.from("user_roles").delete().eq("user_id", uid).eq("role", role);
+    if (error) toast.error(error.message); else toast.success(`Rôle « ${role} » retiré`);
+    setBusy(null); load();
+  };
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h1 className="text-2xl font-bold">Utilisateurs &amp; rôles</h1>
+        <p className="text-sm text-muted-foreground">{profiles.length} profils · attribution des rôles</p>
+      </div>
+
+      <div className="relative max-w-sm">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input placeholder="Nom, ville ou ID…" className="pl-9" value={search} onChange={(e) => setSearch(e.target.value)} />
+      </div>
+
+      <Card>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Utilisateur</TableHead>
+              <TableHead>Ville</TableHead>
+              <TableHead>Rôles</TableHead>
+              <TableHead className="text-right">Ajouter</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              <TableRow><TableCell colSpan={4} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin inline" /></TableCell></TableRow>
+            ) : filtered.length === 0 ? (
+              <TableRow><TableCell colSpan={4} className="text-center py-8 text-muted-foreground">Aucun utilisateur</TableCell></TableRow>
+            ) : filtered.map((p) => {
+              const rs = rolesByUser.get(p.user_id) || new Set<Role>();
+              const isSup = supers.has(p.user_id);
+              return (
+                <TableRow key={p.user_id}>
+                  <TableCell>
+                    <div className="font-medium flex items-center gap-1 flex-wrap">
+                      {p.display_name || "(sans nom)"}
+                      {isSup && <Badge className="text-[10px] bg-amber-500"><ShieldCheck className="h-3 w-3 mr-0.5" />Super</Badge>}
+                      {p.is_verified && <Badge className="text-[10px] bg-green-600">✓</Badge>}
+                    </div>
+                    <div className="text-[10px] text-muted-foreground font-mono">{p.user_id.slice(0, 8)}…</div>
+                  </TableCell>
+                  <TableCell className="text-sm">{p.city || "—"}</TableCell>
+                  <TableCell>
+                    <div className="flex flex-wrap gap-1">
+                      {[...rs].length === 0 ? <span className="text-xs text-muted-foreground">—</span> :
+                        [...rs].map((r) => (
+                          <button
+                            key={r}
+                            disabled={busy === p.user_id + r || (r === "admin" && isSup)}
+                            onClick={() => removeRole(p.user_id, r)}
+                            className={cn(
+                              "text-[10px] px-1.5 py-0.5 rounded border",
+                              r === "admin" ? "bg-primary/10 text-primary border-primary/30" : "bg-secondary border-border",
+                              "hover:opacity-70"
+                            )}
+                            title="Cliquer pour retirer"
+                          >
+                            {r} {busy === p.user_id + r ? "…" : "×"}
+                          </button>
+                        ))}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end flex-wrap gap-1">
+                      {ROLES.filter((r) => !rs.has(r)).map((r) => (
+                        <Button key={r} size="sm" variant="outline" className="h-6 text-[10px] px-2"
+                          disabled={busy === p.user_id + r}
+                          onClick={() => addRole(p.user_id, r)}>
+                          + {r}
+                        </Button>
+                      ))}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </Card>
+    </div>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Section 9 : Rendez-vous
+// ──────────────────────────────────────────────────────────────────────────────
+const APPT_STATUSES = ["requested", "confirmed", "rejected", "cancelled", "completed"] as const;
+
+function AppointmentsSection() {
+  const [rows, setRows] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [busy, setBusy] = useState<string | null>(null);
+  const PAGE_SIZE = 20;
+
+  const load = async () => {
+    setLoading(true);
+    const from = (page - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+    let q = supabase
+      .from("appointments")
+      .select("id, requested_date, requested_start_time, requested_end_time, buyer_first_name, buyer_last_name, buyer_email, status, created_at, listing_id, listings(title)", { count: "exact" })
+      .order("requested_date", { ascending: false })
+      .range(from, to);
+    if (statusFilter !== "all") q = q.eq("status", statusFilter as any);
+    const { data, count } = await q;
+    setRows(data || []);
+    setTotal(count || 0);
+    setLoading(false);
+  };
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, [page, statusFilter]);
+
+  const updateStatus = async (id: string, status: typeof APPT_STATUSES[number]) => {
+    setBusy(id);
+    const { error } = await supabase.from("appointments").update({ status, responded_at: new Date().toISOString() }).eq("id", id);
+    if (error) toast.error(error.message); else toast.success("Statut mis à jour");
+    setBusy(null); load();
+  };
+
+  const counts = useMemo(() => {
+    const c: Record<string, number> = { requested: 0, confirmed: 0, rejected: 0, cancelled: 0, completed: 0 };
+    rows.forEach((r) => { c[r.status] = (c[r.status] || 0) + 1; });
+    return c;
+  }, [rows]);
+
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h1 className="text-2xl font-bold">Rendez-vous</h1>
+        <p className="text-sm text-muted-foreground">{total} demandes au total</p>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+        {APPT_STATUSES.map((s) => (
+          <Card key={s} className="text-center">
+            <CardContent className="p-3">
+              <div className="text-xl font-bold">{counts[s] || 0}</div>
+              <div className="text-[10px] text-muted-foreground uppercase">{s}</div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <div className="flex gap-2">
+        <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1); }}>
+          <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tous statuts</SelectItem>
+            {APPT_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <Card>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Date</TableHead>
+              <TableHead>Créneau</TableHead>
+              <TableHead>Acheteur</TableHead>
+              <TableHead>Annonce</TableHead>
+              <TableHead>Statut</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              <TableRow><TableCell colSpan={6} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin inline" /></TableCell></TableRow>
+            ) : rows.length === 0 ? (
+              <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Aucun RDV</TableCell></TableRow>
+            ) : rows.map((r) => (
+              <TableRow key={r.id}>
+                <TableCell className="text-sm">{new Date(r.requested_date).toLocaleDateString("fr-CA")}</TableCell>
+                <TableCell className="text-xs">{(r.requested_start_time as string).slice(0,5)} – {(r.requested_end_time as string).slice(0,5)}</TableCell>
+                <TableCell>
+                  <div className="text-sm font-medium">{r.buyer_first_name} {r.buyer_last_name}</div>
+                  <div className="text-[10px] text-muted-foreground">{r.buyer_email}</div>
+                </TableCell>
+                <TableCell className="text-sm max-w-[200px] truncate">{r.listings?.title || "—"}</TableCell>
+                <TableCell>
+                  <Badge variant={r.status === "confirmed" ? "default" : r.status === "requested" ? "secondary" : "outline"}>
+                    {r.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end gap-1">
+                    {r.status === "requested" && (
+                      <>
+                        <Button size="sm" variant="ghost" disabled={busy === r.id} onClick={() => updateStatus(r.id, "confirmed")} title="Confirmer">
+                          <Check className="h-4 w-4 text-green-600" />
+                        </Button>
+                        <Button size="sm" variant="ghost" disabled={busy === r.id} onClick={() => updateStatus(r.id, "rejected")} title="Refuser">
+                          <X className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </>
+                    )}
+                    {r.status === "confirmed" && (
+                      <Button size="sm" variant="ghost" disabled={busy === r.id} onClick={() => updateStatus(r.id, "completed")} title="Marquer terminé">
+                        <Check className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
+
+      {pages > 1 && (
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">Page {page} / {pages}</span>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>Précédent</Button>
+            <Button variant="outline" size="sm" disabled={page >= pages} onClick={() => setPage(p => p + 1)}>Suivant</Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Placeholder générique (sections restantes : 2, 3, 12)
 // ──────────────────────────────────────────────────────────────────────────────
 function PlaceholderSection({ id, label }: { id: SectionId; label: string }) {
   const plans: Record<SectionId, string[]> = {
-    dashboard: [], flash: [], boutiques: [],
-    listings: ["Table modération (publiée / en attente / refusée / expirée)", "Approuver / refuser en 1 clic", "Filtres catégorie / vendeur / date", "Édition complète d'une annonce"],
-    users: ["Table utilisateurs avec rôles (acheteur, vendeur B2C/C2C, admin)", "Suspension / réactivation", "Envoi d'email / notification ciblée", "Statistiques d'inscription"],
-    appointments: ["Vue calendrier mensuelle", "Table RDV avec confirmation/refus", "Réglages : délai min, durée par défaut, rappels"],
+    dashboard: [], flash: [], boutiques: [], listings: [], users: [], appointments: [],
     theme: ["Palette de couleurs (primaire, fond, cartes, accent)", "Typographie (police, taille, poids)", "Logo, favicon, slogan", "Aperçu en direct"],
     navigation: ["Réorganisation drag & drop du menu", "Édition catégories et typologies annonceurs", "Largeur, couleurs, hover du menu"],
     settings: ["Infos site (nom, contact, adresse, devise)", "Réseaux sociaux", "Footer (colonnes, liens, copyright)", "SEO global, mode maintenance"],
