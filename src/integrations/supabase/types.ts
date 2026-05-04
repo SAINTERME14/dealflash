@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_recovery_codes: {
+        Row: {
+          admin_id: string
+          code_hash: string
+          created_at: string
+          id: string
+          used_at: string | null
+        }
+        Insert: {
+          admin_id: string
+          code_hash: string
+          created_at?: string
+          id?: string
+          used_at?: string | null
+        }
+        Update: {
+          admin_id?: string
+          code_hash?: string
+          created_at?: string
+          id?: string
+          used_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_recovery_codes_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_sessions: {
         Row: {
           admin_id: string
@@ -2097,6 +2129,20 @@ export type Database = {
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
       is_super_admin_v2: { Args: { check_user_id?: string }; Returns: boolean }
       is_user_blocked: { Args: { _user_id: string }; Returns: boolean }
+      log_admin_action: {
+        Args: {
+          _action_type: string
+          _after_state?: Json
+          _before_state?: Json
+          _ip_address?: string
+          _note?: string
+          _target_id?: string
+          _target_type?: string
+          _user_agent?: string
+        }
+        Returns: number
+      }
+      revoke_all_admin_sessions: { Args: never; Returns: number }
       set_vault_service_role_key: { Args: { _key: string }; Returns: undefined }
     }
     Enums: {
