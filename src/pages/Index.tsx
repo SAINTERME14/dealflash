@@ -18,6 +18,7 @@ import { SponsorTicker } from "@/components/home/SponsorTicker";
 import { BoutiquesSection } from "@/components/home/BoutiquesSection";
 import { FlashSalesSection } from "@/components/home/FlashSalesSection";
 import { ListingsShowcase } from "@/components/home/ListingsShowcase";
+import { ServicesSection } from "@/components/home/ServicesSection";
 
 const ICONS: Record<string, typeof Home> = {
   Home, Hotel, Car, Bike, ShoppingBasket, PawPrint, Shirt, Smartphone, Sofa, Wrench,
@@ -165,19 +166,17 @@ export default function Index() {
         </section>
       )}
 
-      {/* SPONSOR TICKER (replaces À propos) */}
+      {/* SPONSOR TICKER */}
       <SponsorTicker />
 
-      {/* BOUTIQUES DEALFLASH (replaces 4 profils) */}
+      {/* VENTES FLASH (en haut) */}
+      <FlashSalesSection />
+
+      {/* BOUTIQUES DEALFLASH */}
       <BoutiquesSection />
 
-      {/* SERVICES PROFESSIONNELS */}
-      <ListingsShowcase
-        title="Services professionnels"
-        subtitle="Découvrez les services offerts par nos professionnels vérifiés"
-        emoji="🛠️"
-        listingTypes={["service"]}
-      />
+      {/* SERVICES PROFESSIONNELS (pages dédiées) */}
+      <ServicesSection />
 
       {/* PETITES ANNONCES (particuliers) */}
       <ListingsShowcase
@@ -187,9 +186,6 @@ export default function Index() {
         listingTypes={["product"]}
         bgColor="#0a0a0a"
       />
-
-      {/* VENTES FLASH (replaces catégories) */}
-      <FlashSalesSection />
 
       {/* WHY DEALFLASH */}
       <section className="bg-secondary/40 py-16">
