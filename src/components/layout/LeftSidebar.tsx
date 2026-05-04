@@ -60,7 +60,17 @@ function Item({ to, icon, label }: ItemProps) {
   );
 }
 
-function Accordion({ icon, label, items }: { icon: string; label: string; items: string[] }) {
+function slugify(s: string) {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/&/g, "et")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+function Accordion({ icon, label, items, basePath }: { icon: string; label: string; items: string[]; basePath: string }) {
   const [open, setOpen] = useState(false);
   return (
     <div>
@@ -78,15 +88,15 @@ function Accordion({ icon, label, items }: { icon: string; label: string; items:
       {open && (
         <div className="bg-[#0d0d0d]">
           {items.map((it) => (
-            <a
+            <NavLink
               key={it}
-              href="#"
-              onClick={(e) => { e.preventDefault(); sidebarStore.set(false); }}
+              to={`${basePath}/${slugify(it)}`}
+              onClick={() => sidebarStore.set(false)}
               className="block text-[13px] text-[#cccccc] hover:text-[#FFD000] transition-colors"
               style={{ padding: "8px 20px 8px 44px" }}
             >
               {it}
-            </a>
+            </NavLink>
           ))}
         </div>
       )}
@@ -132,8 +142,8 @@ export function LeftSidebar() {
         <nav className="flex flex-col py-2">
           <Item to="/" icon="🏠" label="Accueil" />
           <Item to="/a-propos" icon="ℹ️" label="À propos" />
-          <Accordion icon="📂" label="Catégories" items={CATEGORIES} />
-          <Accordion icon="🏷️" label="Typologie des annonceurs" items={ANNONCEURS} />
+          <Accordion icon="📂" label="Catégories" items={CATEGORIES} basePath="/categorie" />
+          <Accordion icon="🏷️" label="Typologie des annonceurs" items={ANNONCEURS} basePath="/annonceurs" />
           <Item to="/boutiques" icon="🏪" label="Nos boutiques" />
           <Item to="/comment-acheter" icon="🎟️" label="Comment acheter" />
           <Item to="/comment-vendre" icon="🏬" label="Comment vendre" />
