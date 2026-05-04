@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/customClient";
+import { sb } from "@/integrations/supabase/untyped";
 
 export function useSystemConfig<T = unknown>(key: string) {
   const [value, setValue] = useState<T | null>(null);
@@ -7,12 +7,12 @@ export function useSystemConfig<T = unknown>(key: string) {
 
   const reload = useCallback(async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from("system_config" as never)
+    const { data } = await sb
+      .from("system_config")
       .select("value")
       .eq("key", key)
       .maybeSingle();
-    setValue(((data as { value: T } | null)?.value as T) ?? null);
+    setValue((data?.value as T) ?? null);
     setLoading(false);
   }, [key]);
 
@@ -22,9 +22,9 @@ export function useSystemConfig<T = unknown>(key: string) {
 
   const update = useCallback(
     async (newValue: T) => {
-      const { error } = await supabase
-        .from("system_config" as never)
-        .update({ value: newValue as never, updated_at: new Date().toISOString() })
+      const { error } = await sb
+        .from("system_config")
+        .update({ value: newValue, updated_at: new Date().toISOString() })
         .eq("key", key);
       if (!error) setValue(newValue);
       return { error };

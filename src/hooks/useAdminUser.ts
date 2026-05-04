@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/customClient";
+import { sb } from "@/integrations/supabase/untyped";
 import { useAuth } from "@/hooks/useAuth";
 
 export type AdminRole =
@@ -36,8 +36,8 @@ export function useAdminUser() {
         }
         return;
       }
-      const { data } = await supabase
-        .from("admin_users" as never)
+      const { data } = await sb
+        .from("admin_users")
         .select("id, user_id, role, is_active, two_fa_enabled, last_login_at")
         .eq("user_id", user.id)
         .eq("is_active", true)
