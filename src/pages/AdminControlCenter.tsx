@@ -32,9 +32,9 @@ const SECTIONS: { id: SectionId; label: string; icon: React.ComponentType<{ clas
   { id: "listings",     label: "Annonces",            icon: FileText,        group: "Modération", ready: true  },
   { id: "users",        label: "Utilisateurs",        icon: Users,           group: "Modération", ready: true  },
   { id: "appointments", label: "Rendez-vous",         icon: Calendar,        group: "Modération", ready: true  },
-  { id: "theme",        label: "Apparence & Thème",   icon: Palette,         group: "Configuration", ready: false },
-  { id: "navigation",   label: "Navigation & Menu",   icon: Compass,         group: "Configuration", ready: false },
-  { id: "settings",     label: "Réglages généraux",   icon: Settings,        group: "Configuration", ready: false },
+  { id: "theme",        label: "Apparence & Thème",   icon: Palette,         group: "Configuration", ready: true },
+  { id: "navigation",   label: "Navigation & Menu",   icon: Compass,         group: "Configuration", ready: true },
+  { id: "settings",     label: "Réglages généraux",   icon: Settings,        group: "Configuration", ready: true },
 ];
 
 // ──────────────────────────────────────────────────────────────────────────────
