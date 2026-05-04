@@ -177,7 +177,11 @@ Deno.serve(async (req) => {
     const finalPriceRounded = Math.round(finalPrice * 100) / 100;
 
     // ── 7. Génération de la signature HMAC-SHA256 ────────────────────────────
-    const hmacKey = Deno.env.get("DEALFLASH_HMAC_KEY") ?? "dealflash-default-key-change-me";
+    const hmacKey = Deno.env.get("DEALFLASH_HMAC_KEY");
+    if (!hmacKey || hmacKey.length < 32) {
+      console.error("DEALFLASH_HMAC_KEY missing or too short");
+      return json({ error: "Configuration serveur incomplète" }, 500, hdrs);
+    }
     const payload = [
       ticket.id,
       ticket.confirmation_code,
@@ -284,7 +288,10 @@ async function buildBonData(supabase: ReturnType<typeof getSupabase>, ticket: Re
     .maybeSingle();
 
   const sellerProfile = (listing as any)?.profiles;
-  const hmacKey = Deno.env.get("DEALFLASH_HMAC_KEY") ?? "dealflash-default-key-change-me";
+  const hmacKey = Deno.env.get("DEALFLASH_HMAC_KEY");
+  if (!hmacKey || hmacKey.length < 32) {
+    throw new Error("DEALFLASH_HMAC_KEY not configured");
+  }
   const payload = [
     ticket.id,
     ticket.confirmation_code,
