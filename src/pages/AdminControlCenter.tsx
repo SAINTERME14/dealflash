@@ -363,7 +363,7 @@ function BoutiquesSection() {
 // ──────────────────────────────────────────────────────────────────────────────
 // Section 7 : Annonces (modération)
 // ──────────────────────────────────────────────────────────────────────────────
-const LISTING_STATUSES = ["active", "draft", "paused", "sold", "expired"] as const;
+const LISTING_STATUSES = ["active", "draft", "paused", "sold", "archived"] as const;
 type ListingStatus = typeof LISTING_STATUSES[number];
 
 function ListingsModerationSection() {
