@@ -732,7 +732,17 @@ function UsersSection() {
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex justify-end flex-wrap gap-1">
+                    <div className="flex justify-end flex-wrap gap-1 items-center">
+                      <Button
+                        size="sm"
+                        variant={p.is_blocked ? "outline" : "ghost"}
+                        className="h-6 text-[10px] px-2"
+                        disabled={busy === p.user_id + "_block" || isSup}
+                        onClick={() => toggleBlock(p.user_id, p.is_blocked)}
+                        title={p.is_blocked ? "Débloquer" : "Bloquer"}
+                      >
+                        {p.is_blocked ? <Unlock className="h-3 w-3" /> : <Ban className="h-3 w-3 text-destructive" />}
+                      </Button>
                       {ROLES.filter((r) => !rs.has(r)).map((r) => (
                         <Button key={r} size="sm" variant="outline" className="h-6 text-[10px] px-2"
                           disabled={busy === p.user_id + r}
