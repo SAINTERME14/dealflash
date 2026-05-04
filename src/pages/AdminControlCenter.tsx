@@ -19,6 +19,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Pencil, Ban, Unlock } from "lucide-react";
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Sections — ordre demandé : 1, 5, 6 → 7, 8, 9 → 2, 3, 12
