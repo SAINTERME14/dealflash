@@ -55,6 +55,8 @@ const MyReviews = lazy(() => import("./pages/MyReviews"));
 const SellerStats = lazy(() => import("./pages/SellerStats"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const BecomeAdvertiser = lazy(() => import("./pages/BecomeAdvertiser"));
+const CommentAcheter = lazy(() => import("./pages/CommentAcheter"));
+const CommentVendre = lazy(() => import("./pages/CommentVendre"));
 
 import { CookieConsent } from "@/components/CookieConsent";
 
@@ -119,6 +121,8 @@ const App = () => (
               <Route path="/admin/canaux" element={<AdminRoute><AdminSalesChannels /></AdminRoute>} />
               <Route path="/devenir-annonceur/:profile" element={<BecomeAdvertiser />} />
               <Route path="/a-propos" element={<About />} />
+              <Route path="/comment-acheter" element={<CommentAcheter />} />
+              <Route path="/comment-vendre" element={<CommentVendre />} />
               <Route path="/politique-confidentialite" element={<PrivacyPolicy />} />
               <Route path="*" element={<NotFound />} />
             </Route>

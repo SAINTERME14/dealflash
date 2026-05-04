@@ -17,6 +17,7 @@ import { SellerApplicationForm } from "@/components/home/SellerApplicationForm";
 import { SponsorTicker } from "@/components/home/SponsorTicker";
 import { BoutiquesSection } from "@/components/home/BoutiquesSection";
 import { FlashSalesSection } from "@/components/home/FlashSalesSection";
+import { ListingsShowcase } from "@/components/home/ListingsShowcase";
 
 const ICONS: Record<string, typeof Home> = {
   Home, Hotel, Car, Bike, ShoppingBasket, PawPrint, Shirt, Smartphone, Sofa, Wrench,
@@ -170,54 +171,22 @@ export default function Index() {
       {/* BOUTIQUES DEALFLASH (replaces 4 profils) */}
       <BoutiquesSection />
 
-      {/* COMMENT ACHETER / COMMENT VENDRE */}
-      <section className="container py-16">
-        <div className="grid lg:grid-cols-2 gap-8">
-          <div className="rounded-2xl border border-border bg-card p-8 shadow-card">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg gradient-accent text-accent-foreground">
-                <Ticket className="h-6 w-6" />
-              </div>
-              <h3 className="text-2xl font-bold">Comment acheter</h3>
-            </div>
-            <ol className="space-y-3 text-sm">
-              <li className="flex gap-3"><span className="font-bold text-accent">1.</span><span>Trouvez l'annonce ou le service qui vous intéresse</span></li>
-              <li className="flex gap-3"><span className="font-bold text-accent">2.</span><span>Cliquez sur <strong>« Entrer en contact »</strong></span></li>
-              <li className="flex gap-3"><span className="font-bold text-accent">3.</span><span>Payez votre ticket d'accès (Stripe ou Interac QR)</span></li>
-              <li className="flex gap-3"><span className="font-bold text-accent">4.</span><span>Recevez votre billet avec rendez-vous</span></li>
-              <li className="flex gap-3"><span className="font-bold text-accent">5.</span><span>Discutez et planifiez la rencontre</span></li>
-              <li className="flex gap-3"><span className="font-bold text-accent">6.</span><span>Complétez votre transaction <strong>en personne</strong></span></li>
-            </ol>
-          </div>
-          <div className="rounded-2xl border border-border bg-card p-8 shadow-card">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg gradient-primary text-primary-foreground">
-                <Store className="h-6 w-6" />
-              </div>
-              <h3 className="text-2xl font-bold">Comment vendre</h3>
-            </div>
-            <ol className="space-y-3 text-sm">
-              <li className="flex gap-3"><span className="font-bold text-primary">1.</span><span>Choisissez votre catégorie (particulier, commerce, professionnel, etc.)</span></li>
-              <li className="flex gap-3"><span className="font-bold text-primary">2.</span><span>Vérifiez votre identité ou licence professionnelle</span></li>
-              <li className="flex gap-3"><span className="font-bold text-primary">3.</span><span>Publiez votre annonce avec photos et description détaillée</span></li>
-              <li className="flex gap-3"><span className="font-bold text-primary">4.</span><span>Définissez vos conditions (prix, rabais, horaires)</span></li>
-              <li className="flex gap-3"><span className="font-bold text-primary">5.</span><span>Recevez les demandes de contact des acheteurs sérieux</span></li>
-              <li className="flex gap-3"><span className="font-bold text-primary">6.</span><span>Synchronisez votre calendrier et confirmez les rendez-vous</span></li>
-              <li className="flex gap-3"><span className="font-bold text-primary">7.</span><span>Rencontrez vos acheteurs qualifiés</span></li>
-            </ol>
-          </div>
-        </div>
+      {/* SERVICES PROFESSIONNELS */}
+      <ListingsShowcase
+        title="Services professionnels"
+        subtitle="Découvrez les services offerts par nos professionnels vérifiés"
+        emoji="🛠️"
+        listingTypes={["service"]}
+      />
 
-        {/* DISCLAIMER */}
-        <div className="mt-8 rounded-xl border border-accent/30 bg-accent/5 p-5 flex items-start gap-3">
-          <AlertTriangle className="h-5 w-5 text-accent shrink-0 mt-0.5" />
-          <p className="text-sm text-foreground">
-            <strong>DealFlash est une plateforme de connexion.</strong> Les transactions
-            (vente, location, prestations de services) se complètent entre l'acheteur et le vendeur.
-            Les acheteurs paient un ticket pour entrer en contact.
-          </p>
-        </div>
-      </section>
+      {/* PETITES ANNONCES (particuliers) */}
+      <ListingsShowcase
+        title="Petites annonces"
+        subtitle="Annonces de particuliers — les annonces boostées apparaissent en premier"
+        emoji="📰"
+        listingTypes={["product"]}
+        bgColor="#0a0a0a"
+      />
 
       {/* VENTES FLASH (replaces catégories) */}
       <FlashSalesSection />
