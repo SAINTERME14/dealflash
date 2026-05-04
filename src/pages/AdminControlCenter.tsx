@@ -11,7 +11,7 @@ import {
 import {
   LayoutDashboard, Zap, Store, FileText, Users, Calendar,
   Palette, Compass, Settings, Loader2, Search, RefreshCw,
-  Check, X, Eye, Pause, Play, ShieldCheck,
+  Check, X, Eye, Pause, Play, ShieldCheck, Bug, Trash2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -27,7 +27,7 @@ import { Pencil, Ban, Unlock } from "lucide-react";
 // ──────────────────────────────────────────────────────────────────────────────
 type SectionId =
   | "dashboard" | "flash" | "boutiques"
-  | "listings" | "users" | "appointments"
+  | "listings" | "users" | "appointments" | "bugs"
   | "theme" | "navigation" | "settings";
 
 const SECTIONS: { id: SectionId; label: string; icon: React.ComponentType<{ className?: string }>; group: string; ready: boolean }[] = [
@@ -37,6 +37,7 @@ const SECTIONS: { id: SectionId; label: string; icon: React.ComponentType<{ clas
   { id: "listings",     label: "Annonces",            icon: FileText,        group: "Modération", ready: true  },
   { id: "users",        label: "Utilisateurs",        icon: Users,           group: "Modération", ready: true  },
   { id: "appointments", label: "Rendez-vous",         icon: Calendar,        group: "Modération", ready: true  },
+  { id: "bugs",         label: "Bugs & Erreurs",      icon: Bug,             group: "Modération", ready: true  },
   { id: "theme",        label: "Apparence & Thème",   icon: Palette,         group: "Configuration", ready: true },
   { id: "navigation",   label: "Navigation & Menu",   icon: Compass,         group: "Configuration", ready: true },
   { id: "settings",     label: "Réglages généraux",   icon: Settings,        group: "Configuration", ready: true },
@@ -1314,6 +1315,7 @@ export default function AdminControlCenter() {
           {active === "listings"     && <ListingsModerationSection />}
           {active === "users"        && <UsersSection />}
           {active === "appointments" && <AppointmentsSection />}
+          {active === "bugs"         && <BugsSection />}
           {active === "theme"        && <ThemeSection />}
           {active === "navigation"   && <NavigationSection />}
           {active === "settings"     && <SettingsSection />}
