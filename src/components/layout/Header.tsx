@@ -2,7 +2,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Plus, User, LogOut, Search, Sparkles, ShieldCheck } from "lucide-react";
+import { Heart, MessageCircle, Plus, User, LogOut, Search, Sparkles, ShieldCheck, Menu } from "lucide-react";
+import { sidebarStore } from "./sidebarStore";
 import { NotificationsBell } from "@/components/notifications/NotificationsBell";
 import {
   DropdownMenu,
@@ -25,6 +26,13 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between gap-4">
+        <button
+          onClick={() => sidebarStore.toggle()}
+          aria-label="Ouvrir le menu"
+          className="flex items-center justify-center h-10 w-10 rounded-lg hover:bg-secondary transition-colors shrink-0"
+        >
+          <Menu className="h-6 w-6" />
+        </button>
         <Link to="/" className="flex items-center gap-2 shrink-0">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg gradient-accent shadow-flash">
             <span className="text-accent-foreground font-bold text-lg">D</span>
