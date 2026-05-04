@@ -706,7 +706,7 @@ function AppointmentsSection() {
   };
 
   const counts = useMemo(() => {
-    const c: Record<string, number> = { requested: 0, confirmed: 0, rejected: 0, cancelled: 0, completed: 0 };
+    const c: Record<string, number> = { requested: 0, accepted: 0, rejected: 0, cancelled: 0, completed: 0 };
     rows.forEach((r) => { c[r.status] = (c[r.status] || 0) + 1; });
     return c;
   }, [rows]);
