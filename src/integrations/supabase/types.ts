@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_sessions: {
+        Row: {
+          admin_id: string
+          created_at: string
+          expires_at: string
+          id: string
+          ip_address: unknown
+          revoked_at: string | null
+          two_fa_verified: boolean
+          user_agent: string | null
+        }
+        Insert: {
+          admin_id: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          ip_address?: unknown
+          revoked_at?: string | null
+          two_fa_verified?: boolean
+          user_agent?: string | null
+        }
+        Update: {
+          admin_id?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          ip_address?: unknown
+          revoked_at?: string | null
+          two_fa_verified?: boolean
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_sessions_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_tasks: {
         Row: {
           assignee_id: string | null
@@ -56,6 +97,54 @@ export type Database = {
           status?: Database["public"]["Enums"]["admin_task_status"]
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      admin_users: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deactivated_at: string | null
+          deactivated_by: string | null
+          id: string
+          is_active: boolean
+          last_login_at: string | null
+          last_login_ip: unknown
+          notes: string | null
+          role: Database["public"]["Enums"]["admin_role"]
+          two_fa_enabled: boolean
+          two_fa_secret: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deactivated_at?: string | null
+          deactivated_by?: string | null
+          id?: string
+          is_active?: boolean
+          last_login_at?: string | null
+          last_login_ip?: unknown
+          notes?: string | null
+          role: Database["public"]["Enums"]["admin_role"]
+          two_fa_enabled?: boolean
+          two_fa_secret?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deactivated_at?: string | null
+          deactivated_by?: string | null
+          id?: string
+          is_active?: boolean
+          last_login_at?: string | null
+          last_login_ip?: unknown
+          notes?: string | null
+          role?: Database["public"]["Enums"]["admin_role"]
+          two_fa_enabled?: boolean
+          two_fa_secret?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -130,6 +219,56 @@ export type Database = {
             columns: ["ticket_id"]
             isOneToOne: false
             referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      audit_logs: {
+        Row: {
+          action_type: string
+          admin_id: string
+          after_state: Json | null
+          before_state: Json | null
+          created_at: string
+          id: number
+          ip_address: unknown
+          note: string | null
+          target_id: string | null
+          target_type: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action_type: string
+          admin_id: string
+          after_state?: Json | null
+          before_state?: Json | null
+          created_at?: string
+          id?: number
+          ip_address?: unknown
+          note?: string | null
+          target_id?: string | null
+          target_type?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action_type?: string
+          admin_id?: string
+          after_state?: Json | null
+          before_state?: Json | null
+          created_at?: string
+          id?: number
+          ip_address?: unknown
+          note?: string | null
+          target_id?: string | null
+          target_type?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_logs_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
             referencedColumns: ["id"]
           },
         ]
@@ -1736,6 +1875,38 @@ export type Database = {
         }
         Relationships: []
       }
+      system_config: {
+        Row: {
+          description: string | null
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          description?: string | null
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value: Json
+        }
+        Update: {
+          description?: string | null
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "system_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tickets: {
         Row: {
           appointment_id: string | null
@@ -1893,6 +2064,10 @@ export type Database = {
       can_manage_seller_notes: { Args: { _user_id: string }; Returns: boolean }
       can_publish_listings: { Args: { _user_id: string }; Returns: boolean }
       expire_featured_listings: { Args: never; Returns: number }
+      get_admin_role: {
+        Args: { check_user_id?: string }
+        Returns: Database["public"]["Enums"]["admin_role"]
+      }
       get_listing_rating_stats: {
         Args: { _listing_id: string }
         Returns: {
@@ -1918,11 +2093,22 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_admin: { Args: { check_user_id?: string }; Returns: boolean }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_super_admin_v2: { Args: { check_user_id?: string }; Returns: boolean }
       is_user_blocked: { Args: { _user_id: string }; Returns: boolean }
       set_vault_service_role_key: { Args: { _key: string }; Returns: undefined }
     }
     Enums: {
+      admin_role:
+        | "super_admin"
+        | "admin"
+        | "moderator"
+        | "support"
+        | "marketing"
+        | "accountant"
+        | "hr"
+        | "analyst"
       admin_task_priority: "low" | "normal" | "high" | "urgent"
       admin_task_status: "todo" | "in_progress" | "done" | "archived"
       advertiser_profile:
@@ -2167,6 +2353,16 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      admin_role: [
+        "super_admin",
+        "admin",
+        "moderator",
+        "support",
+        "marketing",
+        "accountant",
+        "hr",
+        "analyst",
+      ],
       admin_task_priority: ["low", "normal", "high", "urgent"],
       admin_task_status: ["todo", "in_progress", "done", "archived"],
       advertiser_profile: [
