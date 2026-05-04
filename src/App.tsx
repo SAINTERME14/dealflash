@@ -48,6 +48,7 @@ const AdminDropshipping = lazy(() => import("./pages/AdminDropshipping"));
 const AdminSuppliers = lazy(() => import("./pages/AdminSuppliers"));
 const AdminSalesChannels = lazy(() => import("./pages/AdminSalesChannels"));
 const AdminDropshipOverview = lazy(() => import("./pages/AdminDropshipOverview"));
+const AdminControlCenter = lazy(() => import("./pages/AdminControlCenter"));
 const AdminDropshipOrders = lazy(() => import("./pages/AdminDropshipOrders"));
 const About = lazy(() => import("./pages/About"));
 const MyReviews = lazy(() => import("./pages/MyReviews"));
@@ -98,6 +99,7 @@ const App = () => (
               <Route path="/support" element={<ProtectedRoute><Support /></ProtectedRoute>} />
               <Route path="/support/:id" element={<ProtectedRoute><SupportTicket /></ProtectedRoute>} />
               <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+              <Route path="/admin/control-center" element={<AdminRoute><AdminControlCenter /></AdminRoute>} />
               <Route path="/admin/contenu" element={<AdminRoute><AdminContent /></AdminRoute>} />
               <Route path="/admin/vedette" element={<AdminRoute><AdminFeatured /></AdminRoute>} />
               <Route path="/admin/utilisateurs" element={<AdminRoute><AdminUsers /></AdminRoute>} />
