@@ -14,6 +14,9 @@ import {
 } from "lucide-react";
 import heroImage from "@/assets/hero-marketplace.jpg";
 import { SellerApplicationForm } from "@/components/home/SellerApplicationForm";
+import { SponsorTicker } from "@/components/home/SponsorTicker";
+import { BoutiquesSection } from "@/components/home/BoutiquesSection";
+import { FlashSalesSection } from "@/components/home/FlashSalesSection";
 
 const ICONS: Record<string, typeof Home> = {
   Home, Hotel, Car, Bike, ShoppingBasket, PawPrint, Shirt, Smartphone, Sofa, Wrench,
