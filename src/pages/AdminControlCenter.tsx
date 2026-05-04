@@ -379,6 +379,8 @@ function ListingsModerationSection() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [busy, setBusy] = useState<string | null>(null);
+  const [editing, setEditing] = useState<any | null>(null);
+  const [edit, setEdit] = useState<{ title: string; description: string; price: string; original_price: string; city: string; status: ListingStatus }>({ title: "", description: "", price: "", original_price: "", city: "", status: "active" });
   const PAGE_SIZE = 20;
 
   const load = async () => {
