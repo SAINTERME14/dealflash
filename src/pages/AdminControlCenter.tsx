@@ -558,6 +558,37 @@ function ListingsModerationSection() {
           </div>
         </div>
       )}
+
+      <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader><DialogTitle>Modifier l'annonce</DialogTitle></DialogHeader>
+          <div className="grid gap-3">
+            <div><Label>Titre</Label><Input value={edit.title} onChange={(e) => setEdit({ ...edit, title: e.target.value })} /></div>
+            <div><Label>Description</Label><Textarea rows={4} value={edit.description} onChange={(e) => setEdit({ ...edit, description: e.target.value })} /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Prix</Label><Input type="number" step="0.01" value={edit.price} onChange={(e) => setEdit({ ...edit, price: e.target.value })} /></div>
+              <div><Label>Prix régulier (avant rabais)</Label><Input type="number" step="0.01" value={edit.original_price} onChange={(e) => setEdit({ ...edit, original_price: e.target.value })} /></div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Ville</Label><Input value={edit.city} onChange={(e) => setEdit({ ...edit, city: e.target.value })} /></div>
+              <div>
+                <Label>Statut</Label>
+                <Select value={edit.status} onValueChange={(v) => setEdit({ ...edit, status: v as ListingStatus })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>{LISTING_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditing(null)}>Annuler</Button>
+            <Button onClick={saveEdit} disabled={busy === editing?.id}>
+              {busy === editing?.id ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : null}
+              Enregistrer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
