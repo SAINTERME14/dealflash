@@ -175,22 +175,24 @@ export default function Index() {
       <SponsorTicker />
 
       {/* VENTES FLASH (en haut) */}
-      <FlashSalesSection />
+      {showFlash && <FlashSalesSection />}
 
       {/* BOUTIQUES DEALFLASH */}
-      <BoutiquesSection />
+      {showBoutiques && <BoutiquesSection />}
 
       {/* SERVICES PROFESSIONNELS (pages dédiées) */}
-      <ServicesSection />
+      {showServices && <ServicesSection />}
 
       {/* PETITES ANNONCES (particuliers) */}
-      <ListingsShowcase
-        title="Petites annonces"
-        subtitle="Annonces de particuliers — les annonces boostées apparaissent en premier"
-        emoji="📰"
-        listingTypes={["product"]}
-        bgColor="#0a0a0a"
-      />
+      {showListings && (
+        <ListingsShowcase
+          title="Petites annonces"
+          subtitle="Annonces de particuliers — les annonces boostées apparaissent en premier"
+          emoji="📰"
+          listingTypes={["product"]}
+          bgColor="#0a0a0a"
+        />
+      )}
 
       {/* WHY DEALFLASH */}
       <section className="bg-secondary/40 py-16">
