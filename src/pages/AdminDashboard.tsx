@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/customClient";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { AdminAlertsPanel } from "@/components/admin/AdminAlertsPanel";
+import { getAdminFlashItems } from "@/data/flashItems";
+import { getAdminBoutiques } from "@/data/boutiquesData";
+import { getPartners } from "@/data/partnersData";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -190,7 +193,6 @@ export default function AdminDashboard() {
       }
     });
 
-    // Build daily revenue series (last 14 days)
     const days: Record<string, number> = {};
     for (let i = 13; i >= 0; i--) {
       const d = new Date(now.getTime() - i * 24 * 3600 * 1000);
@@ -257,6 +259,8 @@ export default function AdminDashboard() {
   return (
     <AdminLayout>
       <div className="space-y-6">
+        <FlashBoutiqueKpiRow />
+
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div>
             <h1 className="text-2xl font-bold">Vue d'ensemble</h1>
@@ -281,7 +285,6 @@ export default function AdminDashboard() {
           </div>
         ) : !stats ? null : (
           <>
-            {/* Bandeau action requise */}
             <ActionRequiredBar
               kyc={stats.kycPending}
               apps={stats.sellerAppsPending}
@@ -289,7 +292,6 @@ export default function AdminDashboard() {
               dropship={stats.dropshipPending}
             />
 
-            {/* KPIs principaux avec croissance 7j */}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <KpiCard
                 icon={Users}
@@ -325,7 +327,6 @@ export default function AdminDashboard() {
               />
             </div>
 
-            {/* Revenus + sparkline */}
             <div className="grid gap-4 md:grid-cols-2">
               <Card>
                 <CardHeader className="pb-2">
@@ -456,6 +457,50 @@ export default function AdminDashboard() {
         )}
       </div>
     </AdminLayout>
+  );
+}
+
+function FlashBoutiqueKpiRow() {
+  const flashItems = getAdminFlashItems();
+  const boutiques = getAdminBoutiques();
+  const partners = getPartners();
+
+  const flashActive = flashItems.filter((i) => i.status === "active").length;
+  const flashExpired = flashItems.filter((i) => i.status === "expired").length;
+  const flashPending = flashItems.filter((i) => i.status === "pending").length;
+  const boutiquesActive = boutiques.filter((b) => b.status === "active").length;
+  const partnersVisible = partners.filter((p) => p.visible).length;
+
+  const cards = [
+    { icon: "⚡", label: "Flash actives", value: flashActive, color: "#22c55e" },
+    { icon: "⏰", label: "Flash expirées", value: flashExpired, color: "#ef4444" },
+    { icon: "⏳", label: "Flash en attente", value: flashPending, color: "#f59e0b" },
+    { icon: "🏪", label: "Boutiques actives", value: boutiquesActive, color: "#3b82f6" },
+    { icon: "🤝", label: "Partenaires affichés", value: `${partnersVisible}/${partners.length}`, color: "#FFD000" },
+  ];
+
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12 }}>
+      {cards.map((c) => (
+        <div
+          key={c.label}
+          style={{
+            background: "#1a1a1a",
+            borderTop: "3px solid #FFD000",
+            borderRadius: 10,
+            padding: "16px 18px",
+            display: "flex",
+            flexDirection: "column",
+            gap: 6,
+          }}
+        >
+          <div style={{ fontSize: 22 }}>{c.icon}</div>
+          <div style={{ fontSize: 11, color: "#888", textTransform: "uppercase", letterSpacing: 0.5 }}>{c.label}</div>
+          <div style={{ fontSize: 28, fontWeight: 700, color: "white", lineHeight: 1 }}>{c.value}</div>
+          <div style={{ width: 32, height: 3, background: c.color, borderRadius: 2, marginTop: 2 }} />
+        </div>
+      ))}
+    </div>
   );
 }
 
