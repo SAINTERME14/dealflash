@@ -26,7 +26,7 @@ import { Pencil, Ban, Unlock } from "lucide-react";
 // Sections — ordre demandé : 1, 5, 6 → 7, 8, 9 → 2, 3, 12
 // ──────────────────────────────────────────────────────────────────────────────
 type SectionId =
-  | "dashboard" | "flash" | "boutiques"
+  | "dashboard" | "flash" | "boutiques" | "services"
   | "listings" | "users" | "appointments" | "bugs"
   | "theme" | "navigation" | "settings";
 
@@ -34,6 +34,7 @@ const SECTIONS: { id: SectionId; label: string; icon: React.ComponentType<{ clas
   { id: "dashboard",    label: "Tableau de bord",     icon: LayoutDashboard, group: "Pilotage",   ready: true  },
   { id: "flash",        label: "Ventes Flash",        icon: Zap,             group: "Pilotage",   ready: true  },
   { id: "boutiques",    label: "Boutiques",           icon: Store,           group: "Pilotage",   ready: true  },
+  { id: "services",     label: "Services pros",       icon: Wrench,          group: "Pilotage",   ready: true  },
   { id: "listings",     label: "Annonces",            icon: FileText,        group: "Modération", ready: true  },
   { id: "users",        label: "Utilisateurs",        icon: Users,           group: "Modération", ready: true  },
   { id: "appointments", label: "Rendez-vous",         icon: Calendar,        group: "Modération", ready: true  },
