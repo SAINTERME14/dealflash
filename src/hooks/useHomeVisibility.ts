@@ -1,4 +1,3 @@
-import { useSiteContent } from "@/hooks/useSiteContent";
 import { useAllSiteContent } from "@/hooks/useSiteContent";
 
 export type HomeSectionKey =
