@@ -244,6 +244,29 @@ function FlashSection() {
                      : r.is_active ? <Badge className="bg-green-600">Actif</Badge>
                      : <Badge variant="secondary">En attente</Badge>}
                   </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-1">
+                      <Button size="sm" variant="ghost" disabled={busy === r.id} title={r.is_active ? "Suspendre" : "Activer"}
+                        onClick={async () => {
+                          setBusy(r.id);
+                          const { error } = await supabase.from("flash_sales").update({ is_active: !r.is_active }).eq("id", r.id);
+                          if (error) toast.error(error.message); else { toast.success("Mis à jour"); setRows(rows.map(x => x.id === r.id ? { ...x, is_active: !r.is_active } : x)); }
+                          setBusy(null);
+                        }}>
+                        {r.is_active ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 text-green-600" />}
+                      </Button>
+                      <Button size="sm" variant="ghost" disabled={busy === r.id} title="Supprimer"
+                        onClick={async () => {
+                          if (!confirm("Supprimer cette vente flash ?")) return;
+                          setBusy(r.id);
+                          const { error } = await supabase.from("flash_sales").delete().eq("id", r.id);
+                          if (error) toast.error(error.message); else { toast.success("Supprimée"); setRows(rows.filter(x => x.id !== r.id)); }
+                          setBusy(null);
+                        }}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  </TableCell>
                 </TableRow>
               );
             })}
