@@ -158,6 +158,7 @@ function DashboardSection({ kpis, refresh }: { kpis: Kpis; refresh: () => void }
 // Section : Ventes Flash (lecture réelle, pagination)
 // ──────────────────────────────────────────────────────────────────────────────
 function FlashSection() {
+  const [busy, setBusy] = useState<string | null>(null);
   const [rows, setRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
