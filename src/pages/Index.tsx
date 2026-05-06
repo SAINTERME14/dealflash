@@ -35,6 +35,10 @@ interface Category {
 export default function Index() {
   const navigate = useNavigate();
   const { isAdmin } = useIsAdmin();
+  const showFlash = useHomeSectionVisible("home.show_flash");
+  const showBoutiques = useHomeSectionVisible("home.show_boutiques");
+  const showServices = useHomeSectionVisible("home.show_services");
+  const showListings = useHomeSectionVisible("home.show_listings");
   const [categories, setCategories] = useState<Category[]>([]);
   const [recent, setRecent] = useState<ListingCardData[]>([]);
   const [search, setSearch] = useState("");
