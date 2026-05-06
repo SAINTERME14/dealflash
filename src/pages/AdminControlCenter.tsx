@@ -1484,3 +1484,133 @@ function BugsSection() {
     </div>
   );
 }
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Services professionnels — gestion admin
+// ──────────────────────────────────────────────────────────────────────────────
+function ServicesAdminSection() {
+  const [rows, setRows] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [editing, setEditing] = useState<any | null>(null);
+  const [form, setForm] = useState<any>({ name: "", category: "", professional_name: "", location: "", price: 0, description: "", status: "active", featured: false });
+
+  const load = async () => {
+    setLoading(true);
+    const { data, error } = await supabase.from("professional_services").select("*").order("created_at", { ascending: false }).limit(200);
+    if (error) toast.error(error.message);
+    setRows(data || []);
+    setLoading(false);
+  };
+  useEffect(() => { load(); }, []);
+
+  const openNew = () => { setEditing({}); setForm({ name: "", category: "", professional_name: "", location: "", price: 0, description: "", status: "active", featured: false }); };
+  const openEdit = (r: any) => { setEditing(r); setForm({ ...r }); };
+
+  const save = async () => {
+    setBusy("save");
+    const payload = { ...form, price: Number(form.price) || 0 };
+    const { error } = editing?.id
+      ? await supabase.from("professional_services").update(payload).eq("id", editing.id)
+      : await supabase.from("professional_services").insert(payload);
+    if (error) toast.error(error.message); else { toast.success("Enregistré"); setEditing(null); load(); }
+    setBusy(null);
+  };
+
+  const toggleStatus = async (r: any) => {
+    setBusy(r.id);
+    const next = r.status === "active" ? "suspended" : "active";
+    const { error } = await supabase.from("professional_services").update({ status: next }).eq("id", r.id);
+    if (error) toast.error(error.message); else { toast.success("Statut mis à jour"); load(); }
+    setBusy(null);
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("Supprimer ce service ?")) return;
+    setBusy(id);
+    const { error } = await supabase.from("professional_services").delete().eq("id", id);
+    if (error) toast.error(error.message); else { toast.success("Supprimé"); load(); }
+    setBusy(null);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Services professionnels</h1>
+          <p className="text-sm text-muted-foreground">{rows.length} services · gestion complète</p>
+        </div>
+        <Button size="sm" onClick={openNew}><Plus className="h-4 w-4 mr-1" />Nouveau</Button>
+      </div>
+
+      <Card>
+        <Table>
+          <TableHeader><TableRow>
+            <TableHead>Nom</TableHead><TableHead>Catégorie</TableHead><TableHead>Pro</TableHead>
+            <TableHead>Ville</TableHead><TableHead>Prix</TableHead><TableHead>Statut</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
+          </TableRow></TableHeader>
+          <TableBody>
+            {loading ? <TableRow><TableCell colSpan={7} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin inline" /></TableCell></TableRow>
+            : rows.length === 0 ? <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Aucun service</TableCell></TableRow>
+            : rows.map((r) => (
+              <TableRow key={r.id}>
+                <TableCell className="font-medium">{r.name}</TableCell>
+                <TableCell>{r.category}</TableCell>
+                <TableCell>{r.professional_name}</TableCell>
+                <TableCell>{r.location || "—"}</TableCell>
+                <TableCell>{Number(r.price).toFixed(2)} $</TableCell>
+                <TableCell><Badge variant={r.status === "active" ? "default" : "secondary"}>{r.status}</Badge></TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end gap-1">
+                    <Button size="sm" variant="ghost" onClick={() => openEdit(r)} disabled={busy === r.id}><Pencil className="h-4 w-4" /></Button>
+                    <Button size="sm" variant="ghost" onClick={() => toggleStatus(r)} disabled={busy === r.id} title={r.status === "active" ? "Suspendre" : "Réactiver"}>
+                      {r.status === "active" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 text-green-600" />}
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => remove(r.id)} disabled={busy === r.id}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
+
+      <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader><DialogTitle>{editing?.id ? "Modifier" : "Nouveau"} service</DialogTitle></DialogHeader>
+          <div className="grid gap-3">
+            <div><Label>Nom</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Catégorie</Label><Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} /></div>
+              <div><Label>Professionnel</Label><Input value={form.professional_name} onChange={(e) => setForm({ ...form, professional_name: e.target.value })} /></div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Ville</Label><Input value={form.location || ""} onChange={(e) => setForm({ ...form, location: e.target.value })} /></div>
+              <div><Label>Prix</Label><Input type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} /></div>
+            </div>
+            <div><Label>Description</Label><Textarea rows={3} value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Statut</Label>
+                <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">active</SelectItem>
+                    <SelectItem value="suspended">suspended</SelectItem>
+                    <SelectItem value="rejected">rejected</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-end gap-2"><Switch checked={!!form.featured} onCheckedChange={(v) => setForm({ ...form, featured: v })} /><Label>En vedette</Label></div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditing(null)}>Annuler</Button>
+            <Button onClick={save} disabled={busy === "save"}>{busy === "save" && <Loader2 className="h-4 w-4 animate-spin mr-1" />}Enregistrer</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
