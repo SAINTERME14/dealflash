@@ -226,7 +226,7 @@ function FlashSection() {
             {loading ? (
               <TableRow><TableCell colSpan={9} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin inline" /></TableCell></TableRow>
             ) : filtered.length === 0 ? (
-              <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">Aucune vente flash</TableCell></TableRow>
+              <TableRow><TableCell colSpan={9} className="text-center py-8 text-muted-foreground">Aucune vente flash</TableCell></TableRow>
             ) : filtered.map((r, i) => {
               const discount = r.regular_price > 0 ? Math.round((1 - r.flash_price / r.regular_price) * 100) : 0;
               const expired = new Date(r.ends_at) < new Date();
