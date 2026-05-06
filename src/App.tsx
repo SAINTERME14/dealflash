@@ -48,27 +48,17 @@ const AdminDropshipping = lazy(() => import("./pages/AdminDropshipping"));
 const AdminSuppliers = lazy(() => import("./pages/AdminSuppliers"));
 const AdminSalesChannels = lazy(() => import("./pages/AdminSalesChannels"));
 const AdminDropshipOverview = lazy(() => import("./pages/AdminDropshipOverview"));
-const AdminControlCenter = lazy(() => import("./pages/AdminControlCenter"));
 const AdminDropshipOrders = lazy(() => import("./pages/AdminDropshipOrders"));
 const AdminFlashSales = lazy(() => import("./pages/AdminFlashSales"));
 const AdminBoutiques = lazy(() => import("./pages/AdminBoutiques"));
 const AdminPartners = lazy(() => import("./pages/AdminPartners"));
+const AdminServices = lazy(() => import("./pages/AdminServices"));
+const AdminAnnonces = lazy(() => import("./pages/AdminAnnonces"));
 const About = lazy(() => import("./pages/About"));
 const MyReviews = lazy(() => import("./pages/MyReviews"));
 const SellerStats = lazy(() => import("./pages/SellerStats"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const BecomeAdvertiser = lazy(() => import("./pages/BecomeAdvertiser"));
-const CommentAcheter = lazy(() => import("./pages/CommentAcheter"));
-const CommentVendre = lazy(() => import("./pages/CommentVendre"));
-const PrototypeHub = lazy(() => import("./pages/PrototypeHub"));
-const AdminV2Layout = lazy(() => import("./components/admin-v2/AdminV2Layout").then(m => ({ default: m.AdminV2Layout })));
-const AdminV2Dashboard = lazy(() => import("./pages/admin-v2/AdminV2Dashboard"));
-const AdminV2ControlCenter = lazy(() => import("./pages/admin-v2/AdminV2ControlCenter"));
-const AdminV2Team = lazy(() => import("./pages/admin-v2/AdminV2Team"));
-const AdminV2Audit = lazy(() => import("./pages/admin-v2/AdminV2Audit"));
-const AdminV2Security = lazy(() => import("./pages/admin-v2/AdminV2Security"));
-const AdminV2TwoFASetup = lazy(() => import("./pages/admin-v2/AdminV2TwoFASetup"));
-import { AdminV2Route } from "@/components/admin-v2/AdminV2Route";
 
 import { CookieConsent } from "@/components/CookieConsent";
 
@@ -91,14 +81,6 @@ const App = () => (
           <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin/connexion" element={<AdminLogin />} />
-            <Route path="/admin/v2" element={<AdminV2Route><AdminV2Layout /></AdminV2Route>}>
-              <Route index element={<AdminV2Dashboard />} />
-              <Route path="centre-controle" element={<AdminV2ControlCenter />} />
-              <Route path="equipe" element={<AdminV2Team />} />
-              <Route path="journal" element={<AdminV2Audit />} />
-              <Route path="securite" element={<AdminV2Security />} />
-              <Route path="securite/2fa" element={<AdminV2TwoFASetup />} />
-            </Route>
             <Route element={<MainLayout />}>
               <Route path="/" element={<Index />} />
               <Route path="/recherche" element={<Search />} />
@@ -121,7 +103,6 @@ const App = () => (
               <Route path="/support" element={<ProtectedRoute><Support /></ProtectedRoute>} />
               <Route path="/support/:id" element={<ProtectedRoute><SupportTicket /></ProtectedRoute>} />
               <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-              <Route path="/admin/control-center" element={<AdminRoute><AdminControlCenter /></AdminRoute>} />
               <Route path="/admin/contenu" element={<AdminRoute><AdminContent /></AdminRoute>} />
               <Route path="/admin/vedette" element={<AdminRoute><AdminFeatured /></AdminRoute>} />
               <Route path="/admin/utilisateurs" element={<AdminRoute><AdminUsers /></AdminRoute>} />
@@ -142,13 +123,10 @@ const App = () => (
               <Route path="/admin/ventes-flash" element={<AdminRoute><AdminFlashSales /></AdminRoute>} />
               <Route path="/admin/boutiques" element={<AdminRoute><AdminBoutiques /></AdminRoute>} />
               <Route path="/admin/partenaires" element={<AdminRoute><AdminPartners /></AdminRoute>} />
+              <Route path="/admin/services-pro" element={<AdminRoute><AdminServices /></AdminRoute>} />
+              <Route path="/admin/annonces" element={<AdminRoute><AdminAnnonces /></AdminRoute>} />
               <Route path="/devenir-annonceur/:profile" element={<BecomeAdvertiser />} />
               <Route path="/a-propos" element={<About />} />
-              <Route path="/comment-acheter" element={<CommentAcheter />} />
-              <Route path="/comment-vendre" element={<CommentVendre />} />
-              <Route path="/annonceurs/:slug" element={<PrototypeHub kind="annonceurs" />} />
-              <Route path="/boutiques" element={<PrototypeHub kind="boutiques-list" />} />
-              <Route path="/boutique/:slug" element={<PrototypeHub kind="boutique" />} />
               <Route path="/politique-confidentialite" element={<PrivacyPolicy />} />
               <Route path="*" element={<NotFound />} />
             </Route>

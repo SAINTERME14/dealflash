@@ -20,6 +20,8 @@ import {
   Zap,
   Store,
   Handshake,
+  Briefcase,
+  Tag,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -30,7 +32,6 @@ const sections: Array<{ title: string; items: Item[] }> = [
     title: "Plateforme",
     items: [
       { to: "/admin", label: "Vue d'ensemble", icon: LayoutDashboard, end: true },
-      { to: "/admin/control-center", label: "Centre de contrôle", icon: Sparkles },
       { to: "/admin/contenu", label: "Contenu du site", icon: FileText },
       { to: "/admin/utilisateurs", label: "Utilisateurs & rôles", icon: Users },
       { to: "/admin/taches", label: "Tâches internes", icon: KanbanSquare },
@@ -45,6 +46,8 @@ const sections: Array<{ title: string; items: Item[] }> = [
       { to: "/admin/ventes-flash", label: "Ventes Flash", icon: Zap },
       { to: "/admin/boutiques", label: "Boutiques", icon: Store },
       { to: "/admin/partenaires", label: "Partenaires / Sponsors", icon: Handshake },
+      { to: "/admin/services-pro", label: "Services Professionnels", icon: Briefcase },
+      { to: "/admin/annonces", label: "Petites Annonces", icon: Tag },
     ],
   },
   {
