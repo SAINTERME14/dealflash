@@ -1,132 +1,219 @@
-import { useState, KeyboardEvent } from "react";
+import { useState, useRef, useCallback, CSSProperties } from "react";
 
-interface Props {
+interface PaginationProps {
   currentPage: number;
   totalPages: number;
-  onPageChange: (p: number) => void;
   totalItems: number;
   itemsPerPage: number;
+  onPageChange: (page: number) => void;
 }
 
-function buildPages(current: number, total: number): (number | "...")[] {
-  const pages = new Set<number>();
-  [1, 2, total - 1, total].forEach((p) => { if (p >= 1 && p <= total) pages.add(p); });
-  for (let i = current - 2; i <= current + 2; i++) {
-    if (i >= 1 && i <= total) pages.add(i);
+function buildPageList(current: number, total: number): (number | "...")[] {
+  if (total <= 0) return [];
+  if (total === 1) return [1];
+
+  const pageSet = new Set<number>();
+  pageSet.add(1);
+  if (total >= 2) pageSet.add(2);
+  if (total >= 3) pageSet.add(total - 1);
+  pageSet.add(total);
+  for (let i = Math.max(1, current - 2); i <= Math.min(total, current + 2); i++) {
+    pageSet.add(i);
   }
-  const sorted = Array.from(pages).sort((a, b) => a - b);
-  const out: (number | "...")[] = [];
+
+  const sorted = Array.from(pageSet).sort((a, b) => a - b);
+  const result: (number | "...")[] = [];
   for (let i = 0; i < sorted.length; i++) {
-    out.push(sorted[i]);
-    if (i < sorted.length - 1 && sorted[i + 1] - sorted[i] > 1) out.push("...");
+    if (i > 0 && sorted[i] - sorted[i - 1] > 1) result.push("...");
+    result.push(sorted[i]);
   }
-  return out;
+  return result;
 }
 
-const pageBtnBase: React.CSSProperties = {
-  height: 36, minWidth: 36, padding: "0 10px", fontSize: 14,
-  borderRadius: 6, cursor: "pointer", transition: "all 0.2s",
-  display: "inline-flex", alignItems: "center", justifyContent: "center",
+const BASE_BTN: CSSProperties = {
+  height: 36,
+  minWidth: 36,
+  fontSize: 14,
+  cursor: "pointer",
+  transition: "border-color 0.2s, color 0.2s",
+  border: "1px solid #2a2a2a",
+  borderRadius: 6,
+  background: "#1a1a1a",
+  color: "#ccc",
+  padding: "0 8px",
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontFamily: "inherit",
 };
 
-export function Pagination({ currentPage, totalPages, onPageChange, totalItems, itemsPerPage }: Props) {
-  const [jumpVal, setJumpVal] = useState("");
-  const [shake, setShake] = useState(false);
+const ACTIVE_BTN: CSSProperties = {
+  ...BASE_BTN,
+  background: "#FFD000",
+  color: "#111",
+  fontWeight: 700,
+  borderColor: "#FFD000",
+  cursor: "default",
+};
 
-  const from = (currentPage - 1) * itemsPerPage + 1;
-  const to = Math.min(currentPage * itemsPerPage, totalItems);
+const DISABLED_BTN: CSSProperties = {
+  ...BASE_BTN,
+  opacity: 0.3,
+  cursor: "not-allowed",
+};
 
-  const goto = (p: number) => {
-    if (p < 1 || p > totalPages || p === currentPage) return;
-    onPageChange(p);
-  };
+function PageButton({
+  children,
+  active,
+  disabled,
+  onClick,
+}: {
+  children: React.ReactNode;
+  active?: boolean;
+  disabled?: boolean;
+  onClick?: () => void;
+}) {
+  const style = active ? ACTIVE_BTN : disabled ? DISABLED_BTN : BASE_BTN;
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled || active}
+      style={style}
+      onMouseEnter={(e) => {
+        if (!active && !disabled) {
+          e.currentTarget.style.borderColor = "#FFD000";
+          e.currentTarget.style.color = "#FFD000";
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!active && !disabled) {
+          e.currentTarget.style.borderColor = "#2a2a2a";
+          e.currentTarget.style.color = "#ccc";
+        }
+      }}
+    >
+      {children}
+    </button>
+  );
+}
 
-  const handleJump = () => {
-    const n = parseInt(jumpVal, 10);
+export function Pagination({
+  currentPage,
+  totalPages,
+  totalItems,
+  itemsPerPage,
+  onPageChange,
+}: PaginationProps) {
+  const [jumpValue, setJumpValue] = useState("");
+  const [jumpError, setJumpError] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const startItem = Math.min((currentPage - 1) * itemsPerPage + 1, totalItems);
+  const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+
+  const handleJump = useCallback(() => {
+    const n = parseInt(jumpValue, 10);
     if (!isNaN(n) && n >= 1 && n <= totalPages) {
       onPageChange(n);
-      setJumpVal("");
+      setJumpValue("");
+      setJumpError(false);
     } else {
-      setShake(true);
-      setTimeout(() => setShake(false), 1000);
+      setJumpError(true);
+      setTimeout(() => setJumpError(false), 1000);
     }
-  };
+  }, [jumpValue, totalPages, onPageChange]);
 
-  const pages = buildPages(currentPage, totalPages);
+  if (totalPages <= 1) return null;
 
-  const inactive: React.CSSProperties = {
-    ...pageBtnBase,
-    background: "#1a1a1a", color: "#ccc", border: "1px solid #2a2a2a",
-  };
-  const active: React.CSSProperties = {
-    ...pageBtnBase,
-    background: "#FFD000", color: "#111", border: "1px solid #FFD000",
-    fontWeight: 700, cursor: "default",
-  };
+  const pages = buildPageList(currentPage, totalPages);
 
   return (
-    <div className="mt-8 flex flex-col items-center gap-3">
+    <div style={{ marginTop: 24, display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
       <div style={{ color: "#888", fontSize: 13 }}>
-        Affichage de {from} à {to} sur {totalItems} résultats
-      </div>
-      <div className="flex flex-wrap items-center justify-center gap-2">
-        <button
-          style={{ ...inactive, opacity: currentPage === 1 ? 0.3 : 1, cursor: currentPage === 1 ? "not-allowed" : "pointer" }}
-          disabled={currentPage === 1}
-          onClick={() => goto(currentPage - 1)}
-          onMouseEnter={(e) => { if (currentPage !== 1) { e.currentTarget.style.borderColor = "#FFD000"; e.currentTarget.style.color = "#FFD000"; } }}
-          onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#2a2a2a"; e.currentTarget.style.color = "#ccc"; }}
-        >◀ Précédent</button>
-
-        {pages.map((p, i) =>
-          p === "..." ? (
-            <span key={`e${i}`} style={{ color: "#555", padding: "0 8px" }}>...</span>
-          ) : (
-            <button
-              key={p}
-              style={p === currentPage ? active : inactive}
-              onClick={() => goto(p)}
-              onMouseEnter={(e) => { if (p !== currentPage) { e.currentTarget.style.borderColor = "#FFD000"; e.currentTarget.style.color = "#FFD000"; } }}
-              onMouseLeave={(e) => { if (p !== currentPage) { e.currentTarget.style.borderColor = "#2a2a2a"; e.currentTarget.style.color = "#ccc"; } }}
-            >{p}</button>
-          )
-        )}
-
-        <button
-          style={{ ...inactive, opacity: currentPage === totalPages ? 0.3 : 1, cursor: currentPage === totalPages ? "not-allowed" : "pointer" }}
-          disabled={currentPage === totalPages}
-          onClick={() => goto(currentPage + 1)}
-          onMouseEnter={(e) => { if (currentPage !== totalPages) { e.currentTarget.style.borderColor = "#FFD000"; e.currentTarget.style.color = "#FFD000"; } }}
-          onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#2a2a2a"; e.currentTarget.style.color = "#ccc"; }}
-        >Suivant ▶</button>
+        Affichage de {startItem} à {endItem} sur {totalItems} résultats
       </div>
 
-      <div className="flex items-center gap-2">
-        <span style={{ color: "#888", fontSize: 13 }}>Page</span>
-        <input
-          value={jumpVal}
-          onChange={(e) => setJumpVal(e.target.value.replace(/\D/g, ""))}
-          onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => { if (e.key === "Enter") handleJump(); }}
-          style={{
-            width: 60, height: 36, background: "#1a1a1a",
-            border: `1px solid ${shake ? "#e74c3c" : "#333"}`,
-            color: "#fff", textAlign: "center", borderRadius: 6,
-            animation: shake ? "shakeX 0.4s" : "none",
-          }}
-        />
-        <button
-          onClick={handleJump}
-          style={{ height: 36, padding: "0 12px", background: "#FFD000", color: "#111", borderRadius: 6, fontWeight: 700, cursor: "pointer" }}
-        >Go →</button>
+      <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", justifyContent: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap", justifyContent: "center" }}>
+          <PageButton disabled={currentPage === 1} onClick={() => onPageChange(currentPage - 1)}>
+            ◀ Précédent
+          </PageButton>
+
+          {pages.map((p, idx) =>
+            p === "..." ? (
+              <span key={`e${idx}`} style={{ color: "#555", padding: "0 8px", fontSize: 14 }}>
+                ...
+              </span>
+            ) : (
+              <PageButton
+                key={p}
+                active={p === currentPage}
+                onClick={() => onPageChange(p as number)}
+              >
+                {p}
+              </PageButton>
+            )
+          )}
+
+          <PageButton disabled={currentPage === totalPages} onClick={() => onPageChange(currentPage + 1)}>
+            Suivant ▶
+          </PageButton>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ color: "#888", fontSize: 14 }}>Page</span>
+          <input
+            ref={inputRef}
+            type="number"
+            value={jumpValue}
+            onChange={(e) => setJumpValue(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleJump()}
+            min={1}
+            max={totalPages}
+            placeholder="—"
+            style={{
+              width: 60,
+              height: 36,
+              background: "#1a1a1a",
+              border: `1px solid ${jumpError ? "#e74c3c" : "#333"}`,
+              color: "white",
+              textAlign: "center",
+              borderRadius: 6,
+              fontSize: 14,
+              outline: "none",
+              animation: jumpError ? "dfShake 0.5s ease" : "none",
+              fontFamily: "inherit",
+            }}
+          />
+          <button
+            onClick={handleJump}
+            style={{
+              background: "#FFD000",
+              color: "#111",
+              borderRadius: 6,
+              height: 36,
+              padding: "0 12px",
+              fontWeight: 700,
+              fontSize: 14,
+              border: "none",
+              cursor: "pointer",
+              fontFamily: "inherit",
+            }}
+          >
+            Go →
+          </button>
+        </div>
       </div>
+
       <style>{`
-        @keyframes shakeX {
-          0%,100%{transform:translateX(0)}
-          20%{transform:translateX(-6px)}
-          40%{transform:translateX(6px)}
-          60%{transform:translateX(-4px)}
-          80%{transform:translateX(4px)}
+        @keyframes dfShake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
         }
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
       `}</style>
     </div>
   );
