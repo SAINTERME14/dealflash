@@ -1456,9 +1456,13 @@ export type Database = {
       seller_applications: {
         Row: {
           admin_response: string | null
+          admin_response_at: string | null
           advertiser_profile:
             | Database["public"]["Enums"]["advertiser_profile"]
             | null
+          ai_attempts: number | null
+          ai_last_run_at: string | null
+          ai_review: Json | null
           approved_at: string | null
           approved_by: string | null
           business_name: string | null
@@ -1488,9 +1492,13 @@ export type Database = {
         }
         Insert: {
           admin_response?: string | null
+          admin_response_at?: string | null
           advertiser_profile?:
             | Database["public"]["Enums"]["advertiser_profile"]
             | null
+          ai_attempts?: number | null
+          ai_last_run_at?: string | null
+          ai_review?: Json | null
           approved_at?: string | null
           approved_by?: string | null
           business_name?: string | null
@@ -1520,9 +1528,13 @@ export type Database = {
         }
         Update: {
           admin_response?: string | null
+          admin_response_at?: string | null
           advertiser_profile?:
             | Database["public"]["Enums"]["advertiser_profile"]
             | null
+          ai_attempts?: number | null
+          ai_last_run_at?: string | null
+          ai_review?: Json | null
           approved_at?: string | null
           approved_by?: string | null
           business_name?: string | null
