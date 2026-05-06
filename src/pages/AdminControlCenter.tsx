@@ -1205,6 +1205,10 @@ function SettingsSection() {
       "seo.description": String(values["seo.description"] ?? ""),
       "seo.keywords": String(values["seo.keywords"] ?? ""),
       "site.maintenance": Boolean(values["site.maintenance"] ?? false),
+      "home.show_flash": values["home.show_flash"] === undefined ? true : Boolean(values["home.show_flash"]),
+      "home.show_boutiques": values["home.show_boutiques"] === undefined ? true : Boolean(values["home.show_boutiques"]),
+      "home.show_services": values["home.show_services"] === undefined ? true : Boolean(values["home.show_services"]),
+      "home.show_listings": values["home.show_listings"] === undefined ? true : Boolean(values["home.show_listings"]),
     });
   }, [values]);
 
@@ -1221,6 +1225,23 @@ function SettingsSection() {
         <div className="py-8 text-center"><Loader2 className="h-5 w-5 animate-spin inline" /></div>
       ) : (
         <>
+          <Card>
+            <CardHeader><CardTitle className="text-base">Visibilité des sections (page d'accueil)</CardTitle></CardHeader>
+            <CardContent className="space-y-3">
+              {[
+                ["home.show_flash", "Ventes Flash"],
+                ["home.show_boutiques", "Boutiques"],
+                ["home.show_services", "Services professionnels"],
+                ["home.show_listings", "Petites annonces"],
+              ].map(([k, label]) => (
+                <div key={k} className="flex items-center justify-between">
+                  <Label>{label}</Label>
+                  <Switch checked={!!local[k]} onCheckedChange={(v) => set(k, v)} />
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader><CardTitle className="text-base">Informations du site</CardTitle></CardHeader>
             <CardContent className="grid md:grid-cols-2 gap-3">
