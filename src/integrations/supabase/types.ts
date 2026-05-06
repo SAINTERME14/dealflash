@@ -370,6 +370,51 @@ export type Database = {
           },
         ]
       }
+      boutiques: {
+        Row: {
+          active_count: number | null
+          announcements_count: number | null
+          badge_type: string | null
+          city: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          active_count?: number | null
+          announcements_count?: number | null
+          badge_type?: string | null
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          active_count?: number | null
+          announcements_count?: number | null
+          badge_type?: string | null
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       cache_video_embeds: {
         Row: {
           author_name: string | null
@@ -1159,6 +1204,54 @@ export type Database = {
         }
         Relationships: []
       }
+      professional_services: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          featured: boolean | null
+          id: string
+          location: string | null
+          name: string
+          price: number
+          professional_name: string
+          rating: number | null
+          review_count: number | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          location?: string | null
+          name: string
+          price: number
+          professional_name: string
+          rating?: number | null
+          review_count?: number | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          location?: string | null
+          name?: string
+          price?: number
+          professional_name?: string
+          rating?: number | null
+          review_count?: number | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -1358,103 +1451,56 @@ export type Database = {
             | Database["public"]["Enums"]["seller_application_status"]
             | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "seller_application_audit_log_application_id_fkey"
-            columns: ["application_id"]
-            isOneToOne: false
-            referencedRelation: "seller_applications"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       seller_applications: {
         Row: {
-          admin_response: string | null
-          admin_response_at: string | null
-          advertiser_profile:
-            | Database["public"]["Enums"]["advertiser_profile"]
-            | null
-          ai_attempts: number
-          ai_last_run_at: string | null
-          ai_review: Json | null
-          business_name: string | null
-          city: string | null
-          created_at: string
-          documents: string[]
+          approved_at: string | null
+          approved_by: string | null
+          categories: string | null
+          city: string
+          created_at: string | null
+          description: string | null
           email: string
+          full_name: string
           id: string
-          license_number: string | null
-          listing_type: Database["public"]["Enums"]["listing_type"]
-          main_category: string | null
-          message: string | null
-          name: string
-          neq_number: string | null
-          notes: string | null
           phone: string | null
-          photos: string[]
-          profession: string | null
-          status: Database["public"]["Enums"]["seller_application_status"]
-          updated_at: string
-          user_id: string | null
+          rejection_reason: string | null
+          shop_name: string
+          status: string | null
+          updated_at: string | null
         }
         Insert: {
-          admin_response?: string | null
-          admin_response_at?: string | null
-          advertiser_profile?:
-            | Database["public"]["Enums"]["advertiser_profile"]
-            | null
-          ai_attempts?: number
-          ai_last_run_at?: string | null
-          ai_review?: Json | null
-          business_name?: string | null
-          city?: string | null
-          created_at?: string
-          documents?: string[]
+          approved_at?: string | null
+          approved_by?: string | null
+          categories?: string | null
+          city: string
+          created_at?: string | null
+          description?: string | null
           email: string
+          full_name: string
           id?: string
-          license_number?: string | null
-          listing_type: Database["public"]["Enums"]["listing_type"]
-          main_category?: string | null
-          message?: string | null
-          name: string
-          neq_number?: string | null
-          notes?: string | null
           phone?: string | null
-          photos?: string[]
-          profession?: string | null
-          status?: Database["public"]["Enums"]["seller_application_status"]
-          updated_at?: string
-          user_id?: string | null
+          rejection_reason?: string | null
+          shop_name: string
+          status?: string | null
+          updated_at?: string | null
         }
         Update: {
-          admin_response?: string | null
-          admin_response_at?: string | null
-          advertiser_profile?:
-            | Database["public"]["Enums"]["advertiser_profile"]
-            | null
-          ai_attempts?: number
-          ai_last_run_at?: string | null
-          ai_review?: Json | null
-          business_name?: string | null
-          city?: string | null
-          created_at?: string
-          documents?: string[]
+          approved_at?: string | null
+          approved_by?: string | null
+          categories?: string | null
+          city?: string
+          created_at?: string | null
+          description?: string | null
           email?: string
+          full_name?: string
           id?: string
-          license_number?: string | null
-          listing_type?: Database["public"]["Enums"]["listing_type"]
-          main_category?: string | null
-          message?: string | null
-          name?: string
-          neq_number?: string | null
-          notes?: string | null
           phone?: string | null
-          photos?: string[]
-          profession?: string | null
-          status?: Database["public"]["Enums"]["seller_application_status"]
-          updated_at?: string
-          user_id?: string | null
+          rejection_reason?: string | null
+          shop_name?: string
+          status?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
