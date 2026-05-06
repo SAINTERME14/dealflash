@@ -1359,6 +1359,7 @@ export default function AdminControlCenter() {
           {active === "dashboard"    && <DashboardSection kpis={kpis} refresh={refresh} />}
           {active === "flash"        && <FlashSection />}
           {active === "boutiques"    && <BoutiquesSection />}
+          {active === "services"     && <ServicesAdminSection />}
           {active === "listings"     && <ListingsModerationSection />}
           {active === "users"        && <UsersSection />}
           {active === "appointments" && <AppointmentsSection />}
