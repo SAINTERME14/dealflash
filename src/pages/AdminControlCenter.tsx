@@ -11,7 +11,7 @@ import {
 import {
   LayoutDashboard, Zap, Store, FileText, Users, Calendar,
   Palette, Compass, Settings, Loader2, Search, RefreshCw,
-  Check, X, Eye, Pause, Play, ShieldCheck, Bug, Trash2,
+  Check, X, Eye, Pause, Play, ShieldCheck, Bug, Trash2, Wrench, Plus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
