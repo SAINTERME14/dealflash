@@ -58,7 +58,10 @@ export function SellerApplicationForm() {
     setSubmitting(true);
     const { error } = await supabase.from("seller_applications").insert({
       name: parsed.data.name,
+      full_name: parsed.data.name,
+      shop_name: parsed.data.name,
       email: parsed.data.email,
+      city: "",
       listing_type: parsed.data.listing_type,
     });
     setSubmitting(false);

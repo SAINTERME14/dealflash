@@ -19,6 +19,7 @@ import { BoutiquesSection } from "@/components/home/BoutiquesSection";
 import { FlashSalesSection } from "@/components/home/FlashSalesSection";
 import { ListingsShowcase } from "@/components/home/ListingsShowcase";
 import { ServicesSection } from "@/components/home/ServicesSection";
+import { useHomeSectionVisible } from "@/hooks/useHomeVisibility";
 
 const ICONS: Record<string, typeof Home> = {
   Home, Hotel, Car, Bike, ShoppingBasket, PawPrint, Shirt, Smartphone, Sofa, Wrench,
@@ -34,6 +35,10 @@ interface Category {
 export default function Index() {
   const navigate = useNavigate();
   const { isAdmin } = useIsAdmin();
+  const showFlash = useHomeSectionVisible("home.show_flash");
+  const showBoutiques = useHomeSectionVisible("home.show_boutiques");
+  const showServices = useHomeSectionVisible("home.show_services");
+  const showListings = useHomeSectionVisible("home.show_listings");
   const [categories, setCategories] = useState<Category[]>([]);
   const [recent, setRecent] = useState<ListingCardData[]>([]);
   const [search, setSearch] = useState("");
@@ -170,22 +175,24 @@ export default function Index() {
       <SponsorTicker />
 
       {/* VENTES FLASH (en haut) */}
-      <FlashSalesSection />
+      {showFlash && <FlashSalesSection />}
 
       {/* BOUTIQUES DEALFLASH */}
-      <BoutiquesSection />
+      {showBoutiques && <BoutiquesSection />}
 
       {/* SERVICES PROFESSIONNELS (pages dédiées) */}
-      <ServicesSection />
+      {showServices && <ServicesSection />}
 
       {/* PETITES ANNONCES (particuliers) */}
-      <ListingsShowcase
-        title="Petites annonces"
-        subtitle="Annonces de particuliers — les annonces boostées apparaissent en premier"
-        emoji="📰"
-        listingTypes={["product"]}
-        bgColor="#0a0a0a"
-      />
+      {showListings && (
+        <ListingsShowcase
+          title="Petites annonces"
+          subtitle="Annonces de particuliers — les annonces boostées apparaissent en premier"
+          emoji="📰"
+          listingTypes={["product"]}
+          bgColor="#0a0a0a"
+        />
+      )}
 
       {/* WHY DEALFLASH */}
       <section className="bg-secondary/40 py-16">

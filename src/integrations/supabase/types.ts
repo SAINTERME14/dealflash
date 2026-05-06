@@ -370,6 +370,51 @@ export type Database = {
           },
         ]
       }
+      boutiques: {
+        Row: {
+          active_count: number | null
+          announcements_count: number | null
+          badge_type: string | null
+          city: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          active_count?: number | null
+          announcements_count?: number | null
+          badge_type?: string | null
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          active_count?: number | null
+          announcements_count?: number | null
+          badge_type?: string | null
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       cache_video_embeds: {
         Row: {
           author_name: string | null
@@ -1159,6 +1204,54 @@ export type Database = {
         }
         Relationships: []
       }
+      professional_services: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          featured: boolean | null
+          id: string
+          location: string | null
+          name: string
+          price: number
+          professional_name: string
+          rating: number | null
+          review_count: number | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          location?: string | null
+          name: string
+          price: number
+          professional_name: string
+          rating?: number | null
+          review_count?: number | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          location?: string | null
+          name?: string
+          price?: number
+          professional_name?: string
+          rating?: number | null
+          review_count?: number | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -1358,15 +1451,7 @@ export type Database = {
             | Database["public"]["Enums"]["seller_application_status"]
             | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "seller_application_audit_log_application_id_fkey"
-            columns: ["application_id"]
-            isOneToOne: false
-            referencedRelation: "seller_applications"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       seller_applications: {
         Row: {
@@ -1375,27 +1460,34 @@ export type Database = {
           advertiser_profile:
             | Database["public"]["Enums"]["advertiser_profile"]
             | null
-          ai_attempts: number
+          ai_attempts: number | null
           ai_last_run_at: string | null
           ai_review: Json | null
+          approved_at: string | null
+          approved_by: string | null
           business_name: string | null
-          city: string | null
-          created_at: string
-          documents: string[]
+          categories: string | null
+          city: string
+          created_at: string | null
+          description: string | null
+          documents: string[] | null
           email: string
+          full_name: string
           id: string
           license_number: string | null
-          listing_type: Database["public"]["Enums"]["listing_type"]
+          listing_type: Database["public"]["Enums"]["listing_type"] | null
           main_category: string | null
           message: string | null
-          name: string
+          name: string | null
           neq_number: string | null
           notes: string | null
           phone: string | null
-          photos: string[]
+          photos: string[] | null
           profession: string | null
-          status: Database["public"]["Enums"]["seller_application_status"]
-          updated_at: string
+          rejection_reason: string | null
+          shop_name: string
+          status: string | null
+          updated_at: string | null
           user_id: string | null
         }
         Insert: {
@@ -1404,27 +1496,34 @@ export type Database = {
           advertiser_profile?:
             | Database["public"]["Enums"]["advertiser_profile"]
             | null
-          ai_attempts?: number
+          ai_attempts?: number | null
           ai_last_run_at?: string | null
           ai_review?: Json | null
+          approved_at?: string | null
+          approved_by?: string | null
           business_name?: string | null
-          city?: string | null
-          created_at?: string
-          documents?: string[]
+          categories?: string | null
+          city: string
+          created_at?: string | null
+          description?: string | null
+          documents?: string[] | null
           email: string
+          full_name: string
           id?: string
           license_number?: string | null
-          listing_type: Database["public"]["Enums"]["listing_type"]
+          listing_type?: Database["public"]["Enums"]["listing_type"] | null
           main_category?: string | null
           message?: string | null
-          name: string
+          name?: string | null
           neq_number?: string | null
           notes?: string | null
           phone?: string | null
-          photos?: string[]
+          photos?: string[] | null
           profession?: string | null
-          status?: Database["public"]["Enums"]["seller_application_status"]
-          updated_at?: string
+          rejection_reason?: string | null
+          shop_name: string
+          status?: string | null
+          updated_at?: string | null
           user_id?: string | null
         }
         Update: {
@@ -1433,27 +1532,34 @@ export type Database = {
           advertiser_profile?:
             | Database["public"]["Enums"]["advertiser_profile"]
             | null
-          ai_attempts?: number
+          ai_attempts?: number | null
           ai_last_run_at?: string | null
           ai_review?: Json | null
+          approved_at?: string | null
+          approved_by?: string | null
           business_name?: string | null
-          city?: string | null
-          created_at?: string
-          documents?: string[]
+          categories?: string | null
+          city?: string
+          created_at?: string | null
+          description?: string | null
+          documents?: string[] | null
           email?: string
+          full_name?: string
           id?: string
           license_number?: string | null
-          listing_type?: Database["public"]["Enums"]["listing_type"]
+          listing_type?: Database["public"]["Enums"]["listing_type"] | null
           main_category?: string | null
           message?: string | null
-          name?: string
+          name?: string | null
           neq_number?: string | null
           notes?: string | null
           phone?: string | null
-          photos?: string[]
+          photos?: string[] | null
           profession?: string | null
-          status?: Database["public"]["Enums"]["seller_application_status"]
-          updated_at?: string
+          rejection_reason?: string | null
+          shop_name?: string
+          status?: string | null
+          updated_at?: string | null
           user_id?: string | null
         }
         Relationships: []

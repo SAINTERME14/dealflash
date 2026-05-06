@@ -212,6 +212,8 @@ export default function BecomeAdvertiser() {
     if (!user) return null;
     const payload = {
       name: data.name,
+      full_name: data.name,
+      shop_name: data.business_name || data.name,
       email: data.email,
       listing_type: data.listing_type,
       user_id: user.id,

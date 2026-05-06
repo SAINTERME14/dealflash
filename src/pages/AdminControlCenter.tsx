@@ -11,7 +11,7 @@ import {
 import {
   LayoutDashboard, Zap, Store, FileText, Users, Calendar,
   Palette, Compass, Settings, Loader2, Search, RefreshCw,
-  Check, X, Eye, Pause, Play, ShieldCheck, Bug, Trash2,
+  Check, X, Eye, Pause, Play, ShieldCheck, Bug, Trash2, Wrench, Plus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -26,7 +26,7 @@ import { Pencil, Ban, Unlock } from "lucide-react";
 // Sections — ordre demandé : 1, 5, 6 → 7, 8, 9 → 2, 3, 12
 // ──────────────────────────────────────────────────────────────────────────────
 type SectionId =
-  | "dashboard" | "flash" | "boutiques"
+  | "dashboard" | "flash" | "boutiques" | "services"
   | "listings" | "users" | "appointments" | "bugs"
   | "theme" | "navigation" | "settings";
 
@@ -34,6 +34,7 @@ const SECTIONS: { id: SectionId; label: string; icon: React.ComponentType<{ clas
   { id: "dashboard",    label: "Tableau de bord",     icon: LayoutDashboard, group: "Pilotage",   ready: true  },
   { id: "flash",        label: "Ventes Flash",        icon: Zap,             group: "Pilotage",   ready: true  },
   { id: "boutiques",    label: "Boutiques",           icon: Store,           group: "Pilotage",   ready: true  },
+  { id: "services",     label: "Services pros",       icon: Wrench,          group: "Pilotage",   ready: true  },
   { id: "listings",     label: "Annonces",            icon: FileText,        group: "Modération", ready: true  },
   { id: "users",        label: "Utilisateurs",        icon: Users,           group: "Modération", ready: true  },
   { id: "appointments", label: "Rendez-vous",         icon: Calendar,        group: "Modération", ready: true  },
@@ -157,6 +158,7 @@ function DashboardSection({ kpis, refresh }: { kpis: Kpis; refresh: () => void }
 // Section : Ventes Flash (lecture réelle, pagination)
 // ──────────────────────────────────────────────────────────────────────────────
 function FlashSection() {
+  const [busy, setBusy] = useState<string | null>(null);
   const [rows, setRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -217,13 +219,14 @@ function FlashSection() {
               <TableHead>Stock</TableHead>
               <TableHead>Fin</TableHead>
               <TableHead>Statut</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
-              <TableRow><TableCell colSpan={8} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin inline" /></TableCell></TableRow>
+              <TableRow><TableCell colSpan={9} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin inline" /></TableCell></TableRow>
             ) : filtered.length === 0 ? (
-              <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">Aucune vente flash</TableCell></TableRow>
+              <TableRow><TableCell colSpan={9} className="text-center py-8 text-muted-foreground">Aucune vente flash</TableCell></TableRow>
             ) : filtered.map((r, i) => {
               const discount = r.regular_price > 0 ? Math.round((1 - r.flash_price / r.regular_price) * 100) : 0;
               const expired = new Date(r.ends_at) < new Date();
@@ -240,6 +243,29 @@ function FlashSection() {
                     {expired ? <Badge variant="destructive">Expiré</Badge>
                      : r.is_active ? <Badge className="bg-green-600">Actif</Badge>
                      : <Badge variant="secondary">En attente</Badge>}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-1">
+                      <Button size="sm" variant="ghost" disabled={busy === r.id} title={r.is_active ? "Suspendre" : "Activer"}
+                        onClick={async () => {
+                          setBusy(r.id);
+                          const { error } = await supabase.from("flash_sales").update({ is_active: !r.is_active }).eq("id", r.id);
+                          if (error) toast.error(error.message); else { toast.success("Mis à jour"); setRows(rows.map(x => x.id === r.id ? { ...x, is_active: !r.is_active } : x)); }
+                          setBusy(null);
+                        }}>
+                        {r.is_active ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 text-green-600" />}
+                      </Button>
+                      <Button size="sm" variant="ghost" disabled={busy === r.id} title="Supprimer"
+                        onClick={async () => {
+                          if (!confirm("Supprimer cette vente flash ?")) return;
+                          setBusy(r.id);
+                          const { error } = await supabase.from("flash_sales").delete().eq("id", r.id);
+                          if (error) toast.error(error.message); else { toast.success("Supprimée"); setRows(rows.filter(x => x.id !== r.id)); }
+                          setBusy(null);
+                        }}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               );
@@ -1179,6 +1205,10 @@ function SettingsSection() {
       "seo.description": String(values["seo.description"] ?? ""),
       "seo.keywords": String(values["seo.keywords"] ?? ""),
       "site.maintenance": Boolean(values["site.maintenance"] ?? false),
+      "home.show_flash": values["home.show_flash"] === undefined ? true : Boolean(values["home.show_flash"]),
+      "home.show_boutiques": values["home.show_boutiques"] === undefined ? true : Boolean(values["home.show_boutiques"]),
+      "home.show_services": values["home.show_services"] === undefined ? true : Boolean(values["home.show_services"]),
+      "home.show_listings": values["home.show_listings"] === undefined ? true : Boolean(values["home.show_listings"]),
     });
   }, [values]);
 
@@ -1195,6 +1225,23 @@ function SettingsSection() {
         <div className="py-8 text-center"><Loader2 className="h-5 w-5 animate-spin inline" /></div>
       ) : (
         <>
+          <Card>
+            <CardHeader><CardTitle className="text-base">Visibilité des sections (page d'accueil)</CardTitle></CardHeader>
+            <CardContent className="space-y-3">
+              {[
+                ["home.show_flash", "Ventes Flash"],
+                ["home.show_boutiques", "Boutiques"],
+                ["home.show_services", "Services professionnels"],
+                ["home.show_listings", "Petites annonces"],
+              ].map(([k, label]) => (
+                <div key={k} className="flex items-center justify-between">
+                  <Label>{label}</Label>
+                  <Switch checked={!!local[k]} onCheckedChange={(v) => set(k, v)} />
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader><CardTitle className="text-base">Informations du site</CardTitle></CardHeader>
             <CardContent className="grid md:grid-cols-2 gap-3">
@@ -1312,6 +1359,7 @@ export default function AdminControlCenter() {
           {active === "dashboard"    && <DashboardSection kpis={kpis} refresh={refresh} />}
           {active === "flash"        && <FlashSection />}
           {active === "boutiques"    && <BoutiquesSection />}
+          {active === "services"     && <ServicesAdminSection />}
           {active === "listings"     && <ListingsModerationSection />}
           {active === "users"        && <UsersSection />}
           {active === "appointments" && <AppointmentsSection />}
@@ -1433,6 +1481,136 @@ function BugsSection() {
           </div>
         )}
       </Card>
+    </div>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Services professionnels — gestion admin
+// ──────────────────────────────────────────────────────────────────────────────
+function ServicesAdminSection() {
+  const [rows, setRows] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [editing, setEditing] = useState<any | null>(null);
+  const [form, setForm] = useState<any>({ name: "", category: "", professional_name: "", location: "", price: 0, description: "", status: "active", featured: false });
+
+  const load = async () => {
+    setLoading(true);
+    const { data, error } = await supabase.from("professional_services").select("*").order("created_at", { ascending: false }).limit(200);
+    if (error) toast.error(error.message);
+    setRows(data || []);
+    setLoading(false);
+  };
+  useEffect(() => { load(); }, []);
+
+  const openNew = () => { setEditing({}); setForm({ name: "", category: "", professional_name: "", location: "", price: 0, description: "", status: "active", featured: false }); };
+  const openEdit = (r: any) => { setEditing(r); setForm({ ...r }); };
+
+  const save = async () => {
+    setBusy("save");
+    const payload = { ...form, price: Number(form.price) || 0 };
+    const { error } = editing?.id
+      ? await supabase.from("professional_services").update(payload).eq("id", editing.id)
+      : await supabase.from("professional_services").insert(payload);
+    if (error) toast.error(error.message); else { toast.success("Enregistré"); setEditing(null); load(); }
+    setBusy(null);
+  };
+
+  const toggleStatus = async (r: any) => {
+    setBusy(r.id);
+    const next = r.status === "active" ? "suspended" : "active";
+    const { error } = await supabase.from("professional_services").update({ status: next }).eq("id", r.id);
+    if (error) toast.error(error.message); else { toast.success("Statut mis à jour"); load(); }
+    setBusy(null);
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("Supprimer ce service ?")) return;
+    setBusy(id);
+    const { error } = await supabase.from("professional_services").delete().eq("id", id);
+    if (error) toast.error(error.message); else { toast.success("Supprimé"); load(); }
+    setBusy(null);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Services professionnels</h1>
+          <p className="text-sm text-muted-foreground">{rows.length} services · gestion complète</p>
+        </div>
+        <Button size="sm" onClick={openNew}><Plus className="h-4 w-4 mr-1" />Nouveau</Button>
+      </div>
+
+      <Card>
+        <Table>
+          <TableHeader><TableRow>
+            <TableHead>Nom</TableHead><TableHead>Catégorie</TableHead><TableHead>Pro</TableHead>
+            <TableHead>Ville</TableHead><TableHead>Prix</TableHead><TableHead>Statut</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
+          </TableRow></TableHeader>
+          <TableBody>
+            {loading ? <TableRow><TableCell colSpan={7} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin inline" /></TableCell></TableRow>
+            : rows.length === 0 ? <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Aucun service</TableCell></TableRow>
+            : rows.map((r) => (
+              <TableRow key={r.id}>
+                <TableCell className="font-medium">{r.name}</TableCell>
+                <TableCell>{r.category}</TableCell>
+                <TableCell>{r.professional_name}</TableCell>
+                <TableCell>{r.location || "—"}</TableCell>
+                <TableCell>{Number(r.price).toFixed(2)} $</TableCell>
+                <TableCell><Badge variant={r.status === "active" ? "default" : "secondary"}>{r.status}</Badge></TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end gap-1">
+                    <Button size="sm" variant="ghost" onClick={() => openEdit(r)} disabled={busy === r.id}><Pencil className="h-4 w-4" /></Button>
+                    <Button size="sm" variant="ghost" onClick={() => toggleStatus(r)} disabled={busy === r.id} title={r.status === "active" ? "Suspendre" : "Réactiver"}>
+                      {r.status === "active" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 text-green-600" />}
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => remove(r.id)} disabled={busy === r.id}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
+
+      <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader><DialogTitle>{editing?.id ? "Modifier" : "Nouveau"} service</DialogTitle></DialogHeader>
+          <div className="grid gap-3">
+            <div><Label>Nom</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Catégorie</Label><Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} /></div>
+              <div><Label>Professionnel</Label><Input value={form.professional_name} onChange={(e) => setForm({ ...form, professional_name: e.target.value })} /></div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Ville</Label><Input value={form.location || ""} onChange={(e) => setForm({ ...form, location: e.target.value })} /></div>
+              <div><Label>Prix</Label><Input type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} /></div>
+            </div>
+            <div><Label>Description</Label><Textarea rows={3} value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Statut</Label>
+                <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">active</SelectItem>
+                    <SelectItem value="suspended">suspended</SelectItem>
+                    <SelectItem value="rejected">rejected</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-end gap-2"><Switch checked={!!form.featured} onCheckedChange={(v) => setForm({ ...form, featured: v })} /><Label>En vedette</Label></div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditing(null)}>Annuler</Button>
+            <Button onClick={save} disabled={busy === "save"}>{busy === "save" && <Loader2 className="h-4 w-4 animate-spin mr-1" />}Enregistrer</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
