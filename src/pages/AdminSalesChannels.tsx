@@ -48,7 +48,7 @@ export default function AdminSalesChannels() {
     setLoading(false);
   };
 
-  useEffect(() => { document.title = "Canaux de vente — Admin DealFlash"; load(); }, []);
+  useEffect(() => { document.title = "Canaux de vente — Admin Boardeal"; load(); }, []);
 
   const reset = () => { setEditing(null); setForm({ name: "", type: "amazon", status: "active", api_endpoint: "", notes: "" }); };
 

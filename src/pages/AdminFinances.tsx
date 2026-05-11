@@ -72,7 +72,7 @@ export default function AdminFinances() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    document.title = "Finances — Admin DealFlash";
+    document.title = "Finances — Admin Boardeal";
   }, []);
 
   const load = async () => {
@@ -239,7 +239,7 @@ export default function AdminFinances() {
               icon={<Wallet className="h-4 w-4" />}
               label="Commissions plateforme"
               value={fmtCAD(stats.platformCommissions)}
-              hint="Frais perçus par DealFlash"
+              hint="Frais perçus par Boardeal"
             />
             <KpiCard
               icon={<Wallet className="h-4 w-4 text-muted-foreground" />}

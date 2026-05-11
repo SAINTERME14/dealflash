@@ -20,7 +20,7 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    document.title = "Connexion admin · DealFlash";
+    document.title = "Connexion admin · Boardeal";
     // Empêcher l'indexation de cette page
     const meta = document.createElement("meta");
     meta.name = "robots";
@@ -99,7 +99,7 @@ export default function AdminLogin() {
           </div>
           <h1 className="text-2xl font-bold">Console administrateur</h1>
           <p className="text-sm text-muted-foreground mt-2">
-            Accès réservé au personnel autorisé de DealFlash.
+            Accès réservé au personnel autorisé de Boardeal.
           </p>
         </div>
 

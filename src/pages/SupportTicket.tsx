@@ -36,7 +36,7 @@ export default function SupportTicket() {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    document.title = "Ticket de support | DealFlash";
+    document.title = "Ticket de support | Boardeal";
   }, []);
 
   const load = async () => {

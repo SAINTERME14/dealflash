@@ -157,7 +157,7 @@ export default function BecomeAdvertiser() {
   const [attempts, setAttempts] = useState(0);
   const [finalStatus, setFinalStatus] = useState<string | null>(null);
 
-  useEffect(() => { if (cfg) document.title = `Devenir ${cfg.title} — DealFlash`; }, [cfg]);
+  useEffect(() => { if (cfg) document.title = `Devenir ${cfg.title} — Boardeal`; }, [cfg]);
 
   useEffect(() => {
     if (!user) return;
@@ -398,7 +398,7 @@ export default function BecomeAdvertiser() {
                 )}
               </Button>
               <p className="text-xs text-muted-foreground text-center">
-                En soumettant, vous acceptez d'être recontacté par DealFlash pour finaliser votre vérification.
+                En soumettant, vous acceptez d'être recontacté par Boardeal pour finaliser votre vérification.
               </p>
             </form>
           )}

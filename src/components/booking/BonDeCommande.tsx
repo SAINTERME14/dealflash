@@ -69,7 +69,7 @@ export function BonDeCommande({ bon }: Props) {
     const win = window.open("", "_blank");
     if (!win) return;
     win.document.write(`
-      <html><head><title>Bon de commande DealFlash</title>
+      <html><head><title>Bon de commande Boardeal</title>
       <style>
         body { font-family: sans-serif; padding: 24px; font-size: 14px; }
         .section { margin-bottom: 16px; border: 1px solid #ddd; padding: 12px; border-radius: 8px; }
@@ -119,10 +119,10 @@ export function BonDeCommande({ bon }: Props) {
         <div className="bg-amber-50 border border-amber-300 rounded-lg p-3 flex gap-2 text-sm">
           <Info className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
           <p className="text-amber-800">
-            <strong>DealFlash est un facilitateur.</strong> Le paiement du produit
+            <strong>Boardeal est un facilitateur.</strong> Le paiement du produit
             ({fmt(bon.final_price, bon.currency)}) se fait{" "}
             <strong>directement au vendeur</strong> — Interac, virement, terminal
-            ou comptant. DealFlash n'encaisse que les frais de réservation ({fmt(bon.platform_fee, bon.currency)}).
+            ou comptant. Boardeal n'encaisse que les frais de réservation ({fmt(bon.platform_fee, bon.currency)}).
           </p>
         </div>
 
@@ -260,7 +260,7 @@ export function BonDeCommande({ bon }: Props) {
           </p>
           <p className="text-xs">
             Les taxes (TPS/TVQ), les retours et les garanties sont de la
-            responsabilité exclusive du vendeur. DealFlash est un facilitateur de
+            responsabilité exclusive du vendeur. Boardeal est un facilitateur de
             mise en relation et n'est pas partie à la transaction commerciale.
           </p>
         </Card>

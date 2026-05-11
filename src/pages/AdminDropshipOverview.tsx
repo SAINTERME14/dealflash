@@ -24,7 +24,7 @@ export default function AdminDropshipOverview() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    document.title = "Vue d'ensemble dropshipping — Admin DealFlash";
+    document.title = "Vue d'ensemble dropshipping — Admin Boardeal";
     (async () => {
       try {
         const since = new Date();
@@ -100,7 +100,7 @@ export default function AdminDropshipOverview() {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold">Vue d'ensemble dropshipping</h1>
-          <p className="text-muted-foreground mt-1">Activité retail DealFlash sur les 30 derniers jours.</p>
+          <p className="text-muted-foreground mt-1">Activité retail Boardeal sur les 30 derniers jours.</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

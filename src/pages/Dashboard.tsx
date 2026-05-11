@@ -12,7 +12,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState({ listings: 0, bookingsAsBuyer: 0, bookingsAsSeller: 0, favorites: 0 });
 
   useEffect(() => {
-    document.title = "Tableau de bord — DealFlash";
+    document.title = "Tableau de bord — Boardeal";
     if (!user) return;
     (async () => {
       const [l, bb, bs, f] = await Promise.all([

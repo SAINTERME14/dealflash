@@ -151,7 +151,7 @@ export default function AdminFlashSales() {
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    document.title = "Admin · Ventes Flash | DealFlash";
+    document.title = "Admin · Ventes Flash | Boardeal";
     setItems(getAdminFlashItems());
   }, []);
 

@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* DealFlash design system — Marketplace Québec */
+/* Boardeal design system — Marketplace Québec */
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -26,10 +26,10 @@
     --muted: 220 20% 96%;
     --muted-foreground: 220 10% 45%;
 
-    /* Accent: flash orange */
-    --accent: 22 95% 55%;
+    /* Accent: Boardeal green (from logo) */
+    --accent: 158 64% 38%;
     --accent-foreground: 0 0% 100%;
-    --accent-glow: 32 100% 60%;
+    --accent-glow: 158 70% 48%;
 
     --success: 142 70% 40%;
     --success-foreground: 0 0% 100%;
@@ -47,7 +47,7 @@
     --radius: 0.75rem;
 
     /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(222 78% 22%) 0%, hsl(222 88% 35%) 50%, hsl(22 95% 55%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(222 78% 22%) 0%, hsl(222 88% 35%) 50%, hsl(158 64% 38%) 100%);
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 100%);
     --gradient-accent: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--accent-glow)) 100%);
     --gradient-subtle: linear-gradient(180deg, hsl(220 30% 98%) 0%, hsl(0 0% 100%) 100%);
@@ -55,7 +55,7 @@
     /* Shadows */
     --shadow-card: 0 1px 3px 0 hsl(222 47% 11% / 0.06), 0 1px 2px 0 hsl(222 47% 11% / 0.04);
     --shadow-elevated: 0 10px 30px -10px hsl(222 47% 11% / 0.15);
-    --shadow-flash: 0 8px 24px -8px hsl(22 95% 55% / 0.45);
+    --shadow-flash: 0 8px 24px -8px hsl(158 64% 38% / 0.45);
     --shadow-primary: 0 8px 24px -8px hsl(222 78% 28% / 0.4);
 
     /* Animations */
@@ -92,9 +92,9 @@
     --muted: 222 30% 14%;
     --muted-foreground: 220 10% 65%;
 
-    --accent: 22 95% 58%;
-    --accent-foreground: 222 47% 6%;
-    --accent-glow: 32 100% 65%;
+    --accent: 158 64% 45%;
+    --accent-foreground: 0 0% 100%;
+    --accent-glow: 158 70% 55%;
 
     --success: 142 70% 45%;
     --success-foreground: 0 0% 100%;

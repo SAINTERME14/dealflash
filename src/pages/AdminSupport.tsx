@@ -21,7 +21,7 @@ export default function AdminSupport() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
 
-  useEffect(() => { document.title = "Admin · Support | DealFlash"; }, []);
+  useEffect(() => { document.title = "Admin · Support | Boardeal"; }, []);
 
   const load = async () => {
     setLoading(true);

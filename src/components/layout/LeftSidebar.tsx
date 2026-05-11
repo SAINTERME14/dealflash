@@ -28,8 +28,8 @@ const ANNONCEURS = [
   "Particuliers",
   "Petites & moyennes entreprises (PME)",
   "Grandes enseignes",
-  "Boutiques DealFlash officielles",
-  "Affiliés certifiés DealFlash",
+  "Boutiques Boardeal officielles",
+  "Affiliés certifiés Boardeal",
   "Organismes à but non lucratif (OBNL)",
 ];
 
@@ -129,7 +129,7 @@ export function LeftSidebar() {
         }}
       >
         <div className="flex items-center justify-between px-5 py-5 border-b border-white/10">
-          <span className="text-2xl font-extrabold text-[#FFD000] tracking-tight">DealFlash</span>
+          <span className="text-2xl font-extrabold text-[#FFD000] tracking-tight">Boardeal</span>
           <button
             onClick={() => sidebarStore.set(false)}
             aria-label="Fermer"

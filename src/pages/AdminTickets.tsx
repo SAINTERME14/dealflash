@@ -45,7 +45,7 @@ export default function AdminTickets() {
   const [filter, setFilter] = useState<Filter>("all");
 
   useEffect(() => {
-    document.title = "Admin · Tickets | DealFlash";
+    document.title = "Admin · Tickets | Boardeal";
   }, []);
 
   useEffect(() => {

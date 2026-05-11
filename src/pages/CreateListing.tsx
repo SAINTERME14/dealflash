@@ -125,7 +125,7 @@ export default function CreateListing() {
   });
 
   useEffect(() => {
-    document.title = "Publier une annonce — DealFlash";
+    document.title = "Publier une annonce — Boardeal";
     supabase
       .from("categories")
       .select("id, name, slug, parent_id, listing_type")
@@ -193,7 +193,7 @@ export default function CreateListing() {
           <AlertTitle>Vérification requise</AlertTitle>
           <AlertDescription className="space-y-3">
             <p>
-              Pour publier des annonces sur DealFlash, vous devez d'abord compléter votre dossier
+              Pour publier des annonces sur Boardeal, vous devez d'abord compléter votre dossier
               de vérification d'identité conforme aux exigences canadiennes.
             </p>
             <Button asChild>
@@ -488,7 +488,7 @@ export default function CreateListing() {
             <div className="flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-800">
               <Info className="h-3.5 w-3.5 shrink-0 mt-0.5" />
               <span>
-                Cette annonce accepte les <strong>points de fidélité DealFlash</strong> du vendeur.
+                Cette annonce accepte les <strong>points de fidélité Boardeal</strong> du vendeur.
                 Aucun ticket de réservation requis. Les acheteurs paient directement au vendeur.
               </span>
             </div>
@@ -550,7 +550,7 @@ export default function CreateListing() {
             <p className="text-xs text-muted-foreground">
               Apparaissent sur le bon de commande signé remis à l'acheteur.
               Le paiement du produit se fait <strong>directement entre l'acheteur et vous</strong> —
-              DealFlash est facilitateur et n'encaisse que le ticket (2$).
+              Boardeal est facilitateur et n'encaisse que le ticket (2$).
             </p>
           </div>
           <div className="grid grid-cols-2 gap-3">

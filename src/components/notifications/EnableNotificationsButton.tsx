@@ -42,7 +42,7 @@ export function EnableNotificationsButton() {
     if (result === "granted") {
       toast.success("Notifications activées");
       try {
-        new Notification("DealFlash", {
+        new Notification("Boardeal", {
           body: "Vous recevrez maintenant les alertes en temps réel.",
           icon: "/icon-192.png",
         });

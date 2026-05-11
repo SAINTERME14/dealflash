@@ -36,7 +36,7 @@ export default function Messages() {
   const [loading, setLoading] = useState(true);
   const endRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { document.title = "Messages — DealFlash"; }, []);
+  useEffect(() => { document.title = "Messages — Boardeal"; }, []);
 
   // Build threads from messages
   const loadThreads = async () => {

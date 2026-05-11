@@ -113,7 +113,7 @@ export default function AdminDropshipOrders() {
   };
 
   useEffect(() => {
-    document.title = "Commandes dropshipping — Admin DealFlash";
+    document.title = "Commandes dropshipping — Admin Boardeal";
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);

@@ -53,7 +53,7 @@ export default function MyTickets() {
   const [bonOpen, setBonOpen] = useState(false);
 
   useEffect(() => {
-    document.title = "Mes tickets DealFlash";
+    document.title = "Mes tickets Boardeal";
     if (!user) return;
     (async () => {
       const { data, error } = await supabase
@@ -125,7 +125,7 @@ export default function MyTickets() {
 
   return (
     <div className="container py-8">
-      <h1 className="text-3xl font-bold mb-2">Mes tickets DealFlash</h1>
+      <h1 className="text-3xl font-bold mb-2">Mes tickets Boardeal</h1>
       <p className="text-sm text-muted-foreground mb-6">
         Chaque ticket verrouille votre droit au rabais pour toute la durée de l'annonce.
         Cliquez « Confirmer ma commande » pour geler votre rabais et obtenir votre bon.
@@ -257,7 +257,7 @@ export default function MyTickets() {
       <Dialog open={bonOpen} onOpenChange={setBonOpen}>
         <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Bon de commande DealFlash</DialogTitle>
+            <DialogTitle>Bon de commande Boardeal</DialogTitle>
           </DialogHeader>
           {bon && <BonDeCommande bon={bon} />}
         </DialogContent>

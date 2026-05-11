@@ -66,7 +66,7 @@ export default function AdminPartners() {
   const dragOverIdx = useRef<number | null>(null);
 
   useEffect(() => {
-    document.title = "Admin · Partenaires | DealFlash";
+    document.title = "Admin · Partenaires | Boardeal";
     setPartners(getPartners().sort((a, b) => a.order - b.order));
   }, []);
 

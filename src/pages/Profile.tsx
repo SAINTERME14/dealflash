@@ -16,7 +16,7 @@ export default function Profile() {
   const [form, setForm] = useState({ display_name: "", phone: "", city: "", bio: "", avatar_url: "" });
 
   useEffect(() => {
-    document.title = "Mon profil — DealFlash";
+    document.title = "Mon profil — Boardeal";
     if (!user) return;
     supabase.from("profiles").select("display_name, phone, city, bio, avatar_url").eq("user_id", user.id).maybeSingle()
       .then(({ data }) => {

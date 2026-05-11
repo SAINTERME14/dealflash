@@ -1071,7 +1071,7 @@ function ThemeSection() {
             <CardHeader><CardTitle className="text-base">Aperçu</CardTitle></CardHeader>
             <CardContent>
               <div className="rounded-lg p-6" style={{ background: local["theme.background"], color: local["theme.text"], fontFamily: local["theme.font"] }}>
-                <div className="text-2xl font-bold" style={{ color: local["theme.primary"] }}>DealFlash</div>
+                <div className="text-2xl font-bold" style={{ color: local["theme.primary"] }}>Boardeal</div>
                 <p className="text-sm opacity-80 mt-1">{local["theme.tagline"]}</p>
                 <button className="mt-3 px-4 py-2 rounded font-semibold text-black" style={{ background: local["theme.primary"] }}>
                   Action
@@ -1191,7 +1191,7 @@ function SettingsSection() {
   const [local, setLocal] = useState<Record<string, any>>({});
   useEffect(() => {
     setLocal({
-      "site.name": String(values["site.name"] ?? "DealFlash"),
+      "site.name": String(values["site.name"] ?? "Boardeal"),
       "site.email": String(values["site.email"] ?? "contact@dealflash.ca"),
       "site.phone": String(values["site.phone"] ?? ""),
       "site.address": String(values["site.address"] ?? ""),
@@ -1199,9 +1199,9 @@ function SettingsSection() {
       "site.facebook": String(values["site.facebook"] ?? ""),
       "site.instagram": String(values["site.instagram"] ?? ""),
       "site.tiktok": String(values["site.tiktok"] ?? ""),
-      "site.footer_copyright": String(values["site.footer_copyright"] ?? "© DealFlash 2026"),
+      "site.footer_copyright": String(values["site.footer_copyright"] ?? "© Boardeal 2026"),
       "site.footer_text": String(values["site.footer_text"] ?? ""),
-      "seo.title": String(values["seo.title"] ?? "DealFlash — Marketplace de bons plans"),
+      "seo.title": String(values["seo.title"] ?? "Boardeal — Marketplace de bons plans"),
       "seo.description": String(values["seo.description"] ?? ""),
       "seo.keywords": String(values["seo.keywords"] ?? ""),
       "site.maintenance": Boolean(values["site.maintenance"] ?? false),

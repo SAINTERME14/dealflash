@@ -64,7 +64,7 @@ export default function ListingDetail() {
         .maybeSingle();
       if (data) {
         setListing(data as unknown as Listing);
-        document.title = `${data.title} — DealFlash`;
+        document.title = `${data.title} — Boardeal`;
         supabase.from("listings").update({ view_count: (data.view_count ?? 0) + 1 }).eq("id", id).then();
       }
       setLoading(false);
@@ -251,7 +251,7 @@ export default function ListingDetail() {
             <div className="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-3 flex gap-2 text-xs text-amber-800">
               <Info className="h-3.5 w-3.5 shrink-0 mt-0.5 text-amber-600" />
               <span>
-                <strong>DealFlash est facilitateur.</strong> Seul le ticket de réservation est encaissé par DealFlash. Le paiement du produit se fait directement au vendeur.
+                <strong>Boardeal est facilitateur.</strong> Seul le ticket de réservation est encaissé par Boardeal. Le paiement du produit se fait directement au vendeur.
               </span>
             </div>
 
@@ -360,7 +360,7 @@ export default function ListingDetail() {
       <Dialog open={bonOpen} onOpenChange={setBonOpen}>
         <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Bon de commande DealFlash</DialogTitle>
+            <DialogTitle>Bon de commande Boardeal</DialogTitle>
           </DialogHeader>
           {bon && <BonDeCommande bon={bon} />}
         </DialogContent>

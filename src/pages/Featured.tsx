@@ -30,9 +30,9 @@ export default function Featured() {
   const { position, loading: geoLoading, error: geoError, request } = useGeolocation();
 
   useEffect(() => {
-    document.title = "En vedette — DealFlash";
+    document.title = "En vedette — Boardeal";
     const meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute("content", "Découvrez les annonces en vedette et les rabais exclusifs sur DealFlash.");
+    if (meta) meta.setAttribute("content", "Découvrez les annonces en vedette et les rabais exclusifs sur Boardeal.");
   }, []);
 
   useEffect(() => {
@@ -112,7 +112,7 @@ export default function Featured() {
           Les meilleurs deals, en vedette.
         </h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          Annonces sponsorisées par nos commerçants partenaires et rabais d'au moins 10% — la philosophie DealFlash : vendre rapide.
+          Annonces sponsorisées par nos commerçants partenaires et rabais d'au moins 10% — la philosophie Boardeal : vendre rapide.
         </p>
       </header>
 

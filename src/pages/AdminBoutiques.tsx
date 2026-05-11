@@ -61,7 +61,7 @@ function BadgePill({ official, onClick }: { official: boolean; onClick?: () => v
         whiteSpace: "nowrap",
       }}
     >
-      {official ? "✅ Officielle DealFlash" : "🤝 Affiliée"}
+      {official ? "✅ Officielle Boardeal" : "🤝 Affiliée"}
     </span>
   );
 }
@@ -123,7 +123,7 @@ function BoutiqueModal({ item, onSave, onClose }: BoutiqueModalProps) {
           <label style={labelStyle}>
             Badge
             <select value={official ? "official" : "affiliated"} onChange={(e) => setOfficial(e.target.value === "official")} style={inputStyle}>
-              <option value="official">✅ Officielle DealFlash</option>
+              <option value="official">✅ Officielle Boardeal</option>
               <option value="affiliated">🤝 Affiliée</option>
             </select>
           </label>
@@ -186,7 +186,7 @@ export default function AdminBoutiques() {
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    document.title = "Admin · Boutiques | DealFlash";
+    document.title = "Admin · Boutiques | Boardeal";
     setItems(getAdminBoutiques());
   }, []);
 
@@ -289,7 +289,7 @@ export default function AdminBoutiques() {
             style={{ ...inputStyle, maxWidth: 200 }}
           >
             <option value="all">Tous les badges</option>
-            <option value="official">Officielle DealFlash</option>
+            <option value="official">Officielle Boardeal</option>
             <option value="affiliated">Affiliée</option>
           </select>
         </div>

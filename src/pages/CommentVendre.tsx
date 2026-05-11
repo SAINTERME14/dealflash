@@ -2,7 +2,7 @@ import { Store } from "lucide-react";
 import { useEffect } from "react";
 
 export default function CommentVendre() {
-  useEffect(() => { document.title = "Comment vendre — DealFlash"; }, []);
+  useEffect(() => { document.title = "Comment vendre — Boardeal"; }, []);
   return (
     <div className="container py-12 max-w-3xl">
       <div className="rounded-2xl border border-border bg-card p-8 shadow-card">

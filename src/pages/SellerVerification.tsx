@@ -141,7 +141,7 @@ export default function SellerVerification() {
   });
 
   useEffect(() => {
-    document.title = "Devenir vendeur professionnel — DealFlash";
+    document.title = "Devenir vendeur professionnel — Boardeal";
   }, []);
 
   useEffect(() => {
@@ -859,7 +859,7 @@ export default function SellerVerification() {
                   disabled={!isEditable}
                 />
                 <span className="text-sm leading-relaxed">
-                  J'accepte les conditions d'utilisation de DealFlash et certifie que les
+                  J'accepte les conditions d'utilisation de Boardeal et certifie que les
                   informations et documents fournis sont exacts et authentiques.
                 </span>
               </Label>
@@ -870,7 +870,7 @@ export default function SellerVerification() {
                   disabled={!isEditable}
                 />
                 <span className="text-sm leading-relaxed">
-                  J'autorise DealFlash à conserver et traiter mes données personnelles aux fins de
+                  J'autorise Boardeal à conserver et traiter mes données personnelles aux fins de
                   vérification d'identité, conformément à la Loi 25 (Québec) et à la LPRPDE.
                 </span>
               </Label>

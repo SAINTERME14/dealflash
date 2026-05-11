@@ -33,8 +33,8 @@ export default function Search() {
 
   useEffect(() => {
     document.title = categoryName
-      ? `${categoryName} — DealFlash`
-      : "Rechercher — DealFlash";
+      ? `${categoryName} — Boardeal`
+      : "Rechercher — Boardeal";
   }, [categoryName]);
 
   useEffect(() => {

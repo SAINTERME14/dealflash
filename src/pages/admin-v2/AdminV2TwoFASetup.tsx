@@ -40,7 +40,7 @@ export default function AdminV2TwoFASetup() {
     const s = new OTPAuth.Secret({ size: 20 });
     setSecret(s.base32);
     const totp = new OTPAuth.TOTP({
-      issuer: "DealFlash Admin", label: user.email ?? "admin",
+      issuer: "Boardeal Admin", label: user.email ?? "admin",
       algorithm: "SHA1", digits: 6, period: 30, secret: s,
     });
     QRCode.toDataURL(totp.toString()).then(setQr);
@@ -50,7 +50,7 @@ export default function AdminV2TwoFASetup() {
     if (!admin || !secret) return;
     setBusy(true);
     const totp = new OTPAuth.TOTP({
-      issuer: "DealFlash Admin", label: user?.email ?? "admin",
+      issuer: "Boardeal Admin", label: user?.email ?? "admin",
       algorithm: "SHA1", digits: 6, period: 30, secret: OTPAuth.Secret.fromBase32(secret),
     });
     const delta = totp.validate({ token: code, window: 1 });

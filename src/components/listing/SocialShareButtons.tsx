@@ -8,7 +8,7 @@ import { Share2, CheckCircle2 } from "lucide-react";
 
 // Conformité Loi 25 : aucun partage automatique.
 // L'utilisateur ouvre lui-même la plateforme via window.open.
-// Le clic enregistre le partage côté DealFlash UNIQUEMENT après action explicite.
+// Le clic enregistre le partage côté Boardeal UNIQUEMENT après action explicite.
 
 interface Props {
   listingId: string;
@@ -63,7 +63,7 @@ export function SocialShareButtons({ listingId, listingTitle, dealType, listingU
       }
     }
 
-    // Enregistrer le partage côté DealFlash (si connecté)
+    // Enregistrer le partage côté Boardeal (si connecté)
     if (user) {
       const { data, error } = await (supabase.rpc as any)("register_listing_share", {
         p_listing_id: listingId,
@@ -73,7 +73,7 @@ export function SocialShareButtons({ listingId, listingTitle, dealType, listingU
       if (!error && d?.success) {
         setShared((prev) => new Set([...prev, platform]));
         if (d.points_awarded > 0) {
-          toast.success(`+${d.points_awarded} point${d.points_awarded > 1 ? "s" : ""} DealFlash gagnés !`);
+          toast.success(`+${d.points_awarded} point${d.points_awarded > 1 ? "s" : ""} Boardeal gagnés !`);
         }
       }
     }
@@ -113,7 +113,7 @@ export function SocialShareButtons({ listingId, listingTitle, dealType, listingU
 
       {!user && isDiscounted && (
         <p className="text-xs text-muted-foreground">
-          Connectez-vous pour accumuler des points DealFlash en partageant.
+          Connectez-vous pour accumuler des points Boardeal en partageant.
         </p>
       )}
     </div>

@@ -87,7 +87,7 @@ export function MyAdvertiserApplications() {
               {app.admin_response && (
                 <div className="rounded-md bg-primary/5 border border-primary/20 p-3 text-sm">
                   <p className="font-semibold text-xs mb-1 inline-flex items-center gap-1">
-                    <MessageSquare className="h-3 w-3" /> Message de l'équipe DealFlash
+                    <MessageSquare className="h-3 w-3" /> Message de l'équipe Boardeal
                   </p>
                   <p className="whitespace-pre-wrap">{app.admin_response}</p>
                   {app.admin_response_at && (

@@ -94,7 +94,7 @@ export function SellerApplicationForm() {
               Lancez-vous en 30 secondes
             </h2>
             <p className="text-primary-foreground/90 text-sm md:text-base leading-relaxed">
-              Laissez vos coordonnées : un membre de l'équipe DealFlash vous accompagne
+              Laissez vos coordonnées : un membre de l'équipe Boardeal vous accompagne
               pour publier votre première annonce.
             </p>
             <div className="mt-6 space-y-2 text-sm text-primary-foreground/90">
@@ -190,7 +190,7 @@ export function SellerApplicationForm() {
                 </Button>
 
                 <p className="text-xs text-muted-foreground text-center">
-                  En soumettant, vous acceptez d'être recontacté par DealFlash.
+                  En soumettant, vous acceptez d'être recontacté par Boardeal.
                 </p>
               </form>
             )}

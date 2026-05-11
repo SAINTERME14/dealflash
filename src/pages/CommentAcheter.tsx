@@ -2,7 +2,7 @@ import { Ticket, AlertTriangle } from "lucide-react";
 import { useEffect } from "react";
 
 export default function CommentAcheter() {
-  useEffect(() => { document.title = "Comment acheter — DealFlash"; }, []);
+  useEffect(() => { document.title = "Comment acheter — Boardeal"; }, []);
   return (
     <div className="container py-12 max-w-3xl">
       <div className="rounded-2xl border border-border bg-card p-8 shadow-card">
@@ -24,7 +24,7 @@ export default function CommentAcheter() {
       <div className="mt-6 rounded-xl border border-accent/30 bg-accent/5 p-5 flex items-start gap-3">
         <AlertTriangle className="h-5 w-5 text-accent shrink-0 mt-0.5" />
         <p className="text-sm">
-          <strong>DealFlash est une plateforme de connexion.</strong> Les transactions se complètent entre l'acheteur et le vendeur. Les acheteurs paient un ticket pour entrer en contact.
+          <strong>Boardeal est une plateforme de connexion.</strong> Les transactions se complètent entre l'acheteur et le vendeur. Les acheteurs paient un ticket pour entrer en contact.
         </p>
       </div>
     </div>
