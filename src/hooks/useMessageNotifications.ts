@@ -27,7 +27,7 @@ export function useMessageNotifications() {
         (payload) => {
           const msg = payload.new as { content?: string };
           const preview = (msg.content ?? "").slice(0, 80);
-          showLocalNotification("Nouveau message — DealFlash", {
+          showLocalNotification("Nouveau message — Boardeal", {
             body: preview,
             tag: "dealflash-message",
           });

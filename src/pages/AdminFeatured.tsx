@@ -92,7 +92,7 @@ export default function AdminFeatured() {
 
   useEffect(() => {
     const prev = document.title;
-    document.title = "Admin — Sélection sponsorisée | DealFlash";
+    document.title = "Admin — Sélection sponsorisée | Boardeal";
     return () => {
       document.title = prev;
     };

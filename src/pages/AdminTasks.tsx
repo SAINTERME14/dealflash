@@ -91,7 +91,7 @@ export default function AdminTasks() {
   const [draggingId, setDraggingId] = useState<string | null>(null);
 
   useEffect(() => {
-    document.title = "Tâches internes — Admin DealFlash";
+    document.title = "Tâches internes — Admin Boardeal";
   }, []);
 
   const loadTasks = async () => {

@@ -43,7 +43,7 @@ export default function AdminUsers() {
   
 
   useEffect(() => {
-    document.title = "Admin · Utilisateurs | DealFlash";
+    document.title = "Admin · Utilisateurs | Boardeal";
   }, []);
 
   async function load() {

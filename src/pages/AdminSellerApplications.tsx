@@ -78,7 +78,7 @@ export default function AdminSellerApplications() {
   const [filter, setFilter] = useState<ApplicationStatus | "all">("all");
 
   useEffect(() => {
-    document.title = "Admin · Demandes vendeurs | DealFlash";
+    document.title = "Admin · Demandes vendeurs | Boardeal";
   }, []);
 
   const load = async () => {
@@ -373,7 +373,7 @@ function NotesCell({
           </DialogTitle>
           <DialogDescription className="flex items-center gap-1.5 text-xs">
             <Lock className="h-3 w-3" />
-            Visible uniquement par l'équipe DealFlash autorisée. Le demandeur ne verra jamais ce contenu.
+            Visible uniquement par l'équipe Boardeal autorisée. Le demandeur ne verra jamais ce contenu.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-2">

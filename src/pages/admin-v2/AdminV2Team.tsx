@@ -113,7 +113,7 @@ export default function AdminV2Team() {
     // Approche pragmatique : demander à entrer l'user_id. Pour cette V1, on demande l'user_id directement.
     if (!prof || prof.length === 0) {
       toast.error("Utilisateur introuvable", {
-        description: "Cet utilisateur doit d'abord créer un compte sur DealFlash. Astuce : utilisez son user_id complet.",
+        description: "Cet utilisateur doit d'abord créer un compte sur Boardeal. Astuce : utilisez son user_id complet.",
       });
       setInviting(false);
       return;
@@ -203,7 +203,7 @@ export default function AdminV2Team() {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Inviter un administrateur</DialogTitle>
-              <DialogDescription>L'utilisateur doit déjà avoir un compte DealFlash.</DialogDescription>
+              <DialogDescription>L'utilisateur doit déjà avoir un compte Boardeal.</DialogDescription>
             </DialogHeader>
             <div className="space-y-3">
               <div className="space-y-1">

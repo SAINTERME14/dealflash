@@ -7,13 +7,13 @@ export default function About() {
   return (
     <div className="container py-10 max-w-4xl">
       <Seo
-        title="À propos — DealFlash"
-        description="DealFlash est la plateforme québécoise qui met en relation des acheteurs sérieux avec des vendeurs et professionnels vérifiés."
+        title="À propos — Boardeal"
+        description="Boardeal est la plateforme québécoise qui met en relation des acheteurs sérieux avec des vendeurs et professionnels vérifiés."
         canonical="https://dealflash.ca/a-propos"
       />
 
       <header className="mb-8">
-        <h1 className="text-4xl font-bold mb-3">DealFlash — Connectez-vous avec les bons acheteurs ou vendeurs</h1>
+        <h1 className="text-4xl font-bold mb-3">Boardeal — Connectez-vous avec les bons acheteurs ou vendeurs</h1>
         <p className="text-lg text-muted-foreground">
           La plateforme locale du Québec qui met en relation des acheteurs sérieux avec des vendeurs
           et professionnels vérifiés.
@@ -114,7 +114,7 @@ export default function About() {
         <div className="flex items-start gap-3">
           <AlertTriangle className="h-5 w-5 text-accent shrink-0 mt-0.5" />
           <p className="text-sm">
-            <strong>DealFlash est une plateforme de connexion.</strong> Les transactions
+            <strong>Boardeal est une plateforme de connexion.</strong> Les transactions
             (vente, location, prestations de services) se complètent entre l'acheteur et
             le vendeur. Les acheteurs paient un ticket pour entrer en contact.
           </p>

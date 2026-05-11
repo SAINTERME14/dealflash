@@ -11,7 +11,7 @@ export default function MobileHome() {
   const { user } = useAuth();
 
   useEffect(() => {
-    document.title = "Accueil — DealFlash";
+    document.title = "Accueil — Boardeal";
   }, []);
 
   const handleEnableNotifications = async () => {
@@ -36,7 +36,7 @@ export default function MobileHome() {
           <Smartphone className="h-7 w-7 text-accent-foreground" />
         </div>
         <h1 className="text-2xl md:text-3xl font-bold">
-          {user ? `Bonjour 👋` : "Bienvenue sur DealFlash"}
+          {user ? `Bonjour 👋` : "Bienvenue sur Boardeal"}
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
           Le marketplace local du Québec, dans votre poche.

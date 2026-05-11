@@ -65,7 +65,7 @@ export default function AdminSuppliers() {
   };
 
   useEffect(() => {
-    document.title = "Fournisseurs — Admin DealFlash";
+    document.title = "Fournisseurs — Admin Boardeal";
     load();
   }, []);
 

@@ -44,9 +44,9 @@ export default function Index() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    document.title = "DealFlash — Marketplace local du Québec";
+    document.title = "Boardeal — Marketplace local du Québec";
     const meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute("content", "Achetez, vendez et réservez des visites partout au Québec : autos, logements, services et plus sur DealFlash.");
+    if (meta) meta.setAttribute("content", "Achetez, vendez et réservez des visites partout au Québec : autos, logements, services et plus sur Boardeal.");
   }, []);
 
   useEffect(() => {
@@ -145,7 +145,7 @@ export default function Index() {
                     <Badge variant="secondary" className="text-[10px]">admin</Badge>
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    Accès rapide aux outils de gestion DealFlash.
+                    Accès rapide aux outils de gestion Boardeal.
                   </p>
                 </div>
               </div>

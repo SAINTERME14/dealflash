@@ -157,7 +157,7 @@ export default function AdminSellerApplicationDetail() {
   const [runningAi, setRunningAi] = useState(false);
 
   useEffect(() => {
-    document.title = "Admin · Détail candidature | DealFlash";
+    document.title = "Admin · Détail candidature | Boardeal";
   }, []);
 
   const load = async () => {

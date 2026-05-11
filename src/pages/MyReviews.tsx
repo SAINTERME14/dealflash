@@ -20,7 +20,7 @@ export default function MyReviews() {
 
   return (
     <div className="container py-8 max-w-3xl">
-      <Seo title="Avis à laisser — DealFlash" description="Notez vos derniers achats et aidez la communauté DealFlash." />
+      <Seo title="Avis à laisser — Boardeal" description="Notez vos derniers achats et aidez la communauté Boardeal." />
       <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
         <Star className="h-6 w-6 text-amber-400 fill-amber-400" />
         Mes avis à laisser

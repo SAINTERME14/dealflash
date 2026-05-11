@@ -99,7 +99,7 @@ export default function AdminAuditLog() {
   const [sendingToSupport, setSendingToSupport] = useState(false);
 
   useEffect(() => {
-    document.title = "Admin · Journal | DealFlash";
+    document.title = "Admin · Journal | Boardeal";
   }, []);
 
   // Load audit log
@@ -318,11 +318,11 @@ export default function AdminAuditLog() {
         },
         {} as Record<string, number>,
       );
-      const subject = `[DealFlash] Rapport d'alertes — ${dateStr} (${filteredAlerts.length})`;
+      const subject = `[Boardeal] Rapport d'alertes — ${dateStr} (${filteredAlerts.length})`;
       const body = [
         "Bonjour équipe Support,",
         "",
-        `Veuillez trouver ci-joint le rapport d'alertes système DealFlash du ${dateStr}.`,
+        `Veuillez trouver ci-joint le rapport d'alertes système Boardeal du ${dateStr}.`,
         "",
         `Total d'alertes : ${filteredAlerts.length}`,
         `• Critiques : ${counts.critical ?? 0}`,
@@ -333,7 +333,7 @@ export default function AdminAuditLog() {
         "Merci de l'attacher manuellement à cet email avant l'envoi.",
         "",
         "Cordialement,",
-        "Admin DealFlash",
+        "Admin Boardeal",
       ].join("\n");
       const mailto = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       window.location.href = mailto;

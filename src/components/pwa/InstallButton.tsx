@@ -26,7 +26,7 @@ export function InstallButton({ variant = "default", className }: Props) {
   const handleClick = async () => {
     const outcome = await promptInstall();
     if (outcome === "accepted") {
-      toast.success("DealFlash installée !");
+      toast.success("Boardeal installée !");
     }
   };
 
@@ -37,7 +37,7 @@ export function InstallButton({ variant = "default", className }: Props) {
       className={className}
     >
       <Download className="mr-2 h-4 w-4" />
-      Installer DealFlash
+      Installer Boardeal
     </Button>
   );
 }

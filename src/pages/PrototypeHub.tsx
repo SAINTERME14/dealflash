@@ -11,8 +11,8 @@ const LABELS: Record<string, string> = {
   particuliers: "Particuliers",
   "petites-et-moyennes-entreprises-pme": "Petites & moyennes entreprises (PME)",
   "grandes-enseignes": "Grandes enseignes",
-  "boutiques-dealflash-officielles": "Boutiques DealFlash officielles",
-  "affilies-certifies-dealflash": "Affiliés certifiés DealFlash",
+  "boutiques-dealflash-officielles": "Boutiques Boardeal officielles",
+  "affilies-certifies-dealflash": "Affiliés certifiés Boardeal",
   "organismes-a-but-non-lucratif-obnl": "Organismes à but non lucratif (OBNL)",
 };
 
@@ -63,7 +63,7 @@ export default function PrototypeHub({ kind }: Props) {
   const label = slug ? unslug(slug) : kind === "boutiques-list" ? "Toutes les boutiques" : "";
 
   useEffect(() => {
-    document.title = `${label} — DealFlash`;
+    document.title = `${label} — Boardeal`;
   }, [label]);
 
   const intro =
@@ -71,13 +71,13 @@ export default function PrototypeHub({ kind }: Props) {
       ? `Annonceurs de la catégorie « ${label} ». Les profils boostés apparaissent en premier.`
       : kind === "boutique"
       ? `Boutique « ${label} » — vitrine, ventes flash et catalogue.`
-      : `Découvrez toutes les boutiques DealFlash. Les boutiques boostées sont mises en avant.`;
+      : `Découvrez toutes les boutiques Boardeal. Les boutiques boostées sont mises en avant.`;
 
   return (
     <div style={{ background: "#0d0d0d", minHeight: "100vh" }}>
       <header className="py-12 px-4 text-center" style={{ background: "linear-gradient(180deg,#111 0%,#0d0d0d 100%)" }}>
         <div className="max-w-5xl mx-auto">
-          <p className="text-xs uppercase tracking-widest text-[#FFD000] mb-2">DealFlash</p>
+          <p className="text-xs uppercase tracking-widest text-[#FFD000] mb-2">Boardeal</p>
           <h1 className="text-3xl md:text-5xl font-extrabold text-white">{label}</h1>
           <p className="text-white/70 mt-3 max-w-2xl mx-auto">{intro}</p>
           <div className="mt-5 inline-flex items-center gap-2 text-xs px-3 py-1 rounded-full" style={{ background: "#1a1a1a", color: "#FFD000", border: "1px solid #2a2a2a" }}>

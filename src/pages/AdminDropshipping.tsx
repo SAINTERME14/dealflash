@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Loader2, Plus, Pencil, Trash2, Package } from "lucide-react";
 import { toast } from "sonner";
 
-interface DealflashProduct {
+interface BoardealProduct {
   id: string;
   internal_sku: string;
   title: string;
@@ -44,10 +44,10 @@ const statusLabels: Record<string, string> = {
 };
 
 export default function AdminDropshipping() {
-  const [products, setProducts] = useState<DealflashProduct[]>([]);
+  const [products, setProducts] = useState<BoardealProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState<DealflashProduct | null>(null);
+  const [editing, setEditing] = useState<BoardealProduct | null>(null);
 
   const [form, setForm] = useState({
     internal_sku: "",
@@ -57,7 +57,7 @@ export default function AdminDropshipping() {
     margin_percent: "30",
     selling_price: "0",
     stock_quantity: "",
-    status: "draft" as DealflashProduct["status"],
+    status: "draft" as BoardealProduct["status"],
     internal_notes: "",
   });
 
@@ -68,12 +68,12 @@ export default function AdminDropshipping() {
       .select("*")
       .order("created_at", { ascending: false });
     if (error) toast.error(error.message);
-    else setProducts((data ?? []) as DealflashProduct[]);
+    else setProducts((data ?? []) as BoardealProduct[]);
     setLoading(false);
   };
 
   useEffect(() => {
-    document.title = "Catalogue dropshipping — Admin DealFlash";
+    document.title = "Catalogue dropshipping — Admin Boardeal";
     load();
   }, []);
 
@@ -97,7 +97,7 @@ export default function AdminDropshipping() {
     setOpen(true);
   };
 
-  const openEdit = (p: DealflashProduct) => {
+  const openEdit = (p: BoardealProduct) => {
     setEditing(p);
     setForm({
       internal_sku: p.internal_sku,
@@ -170,7 +170,7 @@ export default function AdminDropshipping() {
               <Package className="h-7 w-7" /> Catalogue dropshipping
             </h1>
             <p className="text-muted-foreground mt-1">
-              Produits vendus officiellement par DealFlash via fournisseurs externes.
+              Produits vendus officiellement par Boardeal via fournisseurs externes.
             </p>
           </div>
           <Button onClick={openNew} variant="hero">
@@ -184,7 +184,7 @@ export default function AdminDropshipping() {
           </div>
         ) : products.length === 0 ? (
           <Card className="p-12 text-center">
-            <p className="text-muted-foreground mb-4">Aucun produit DealFlash dans le catalogue.</p>
+            <p className="text-muted-foreground mb-4">Aucun produit Boardeal dans le catalogue.</p>
             <Button onClick={openNew} variant="hero">
               Créer le premier produit
             </Button>
@@ -222,7 +222,7 @@ export default function AdminDropshipping() {
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogContent className="max-w-xl">
             <DialogHeader>
-              <DialogTitle>{editing ? "Modifier le produit" : "Nouveau produit DealFlash"}</DialogTitle>
+              <DialogTitle>{editing ? "Modifier le produit" : "Nouveau produit Boardeal"}</DialogTitle>
             </DialogHeader>
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
@@ -232,7 +232,7 @@ export default function AdminDropshipping() {
                 </div>
                 <div>
                   <Label>Statut</Label>
-                  <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v as DealflashProduct["status"] })}>
+                  <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v as BoardealProduct["status"] })}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="draft">Brouillon</SelectItem>

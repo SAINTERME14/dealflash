@@ -119,7 +119,7 @@ export default function SellerStats() {
 
   return (
     <div className="container py-8 max-w-6xl">
-      <Seo title="Statistiques vendeur — DealFlash" description="Vos revenus, ventes et performances sur les 30 derniers jours." />
+      <Seo title="Statistiques vendeur — Boardeal" description="Vos revenus, ventes et performances sur les 30 derniers jours." />
 
       <header className="mb-8 flex items-end justify-between flex-wrap gap-4">
         <div>

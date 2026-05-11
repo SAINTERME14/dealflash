@@ -11,7 +11,7 @@ export default function Favorites() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    document.title = "Mes favoris — DealFlash";
+    document.title = "Mes favoris — Boardeal";
     if (!user) return;
     (async () => {
       const { data } = await supabase

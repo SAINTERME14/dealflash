@@ -45,7 +45,7 @@ export default function MyListings() {
     setLoading(false);
   };
 
-  useEffect(() => { document.title = "Mes annonces — DealFlash"; load(); }, [user]);
+  useEffect(() => { document.title = "Mes annonces — Boardeal"; load(); }, [user]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Supprimer cette annonce ?")) return;

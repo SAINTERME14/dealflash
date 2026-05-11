@@ -51,7 +51,7 @@ export default function Support() {
   const [form, setForm] = useState({ subject: "", description: "", category: "other", priority: "normal" });
 
   useEffect(() => {
-    document.title = "Support | DealFlash";
+    document.title = "Support | Boardeal";
   }, []);
 
   const load = async () => {

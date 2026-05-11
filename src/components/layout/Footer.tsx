@@ -50,7 +50,7 @@ export function Footer() {
       <div className="border-t border-border bg-accent/5">
         <div className="container py-4">
           <p className="text-xs text-foreground/80 text-center">
-            ⚠️ <strong>DealFlash est une plateforme de connexion.</strong> Les transactions (vente,
+            ⚠️ <strong>Boardeal est une plateforme de connexion.</strong> Les transactions (vente,
             location, prestations de services) se complètent entre l'acheteur et le vendeur. Les
             acheteurs paient un ticket pour entrer en contact.
           </p>
@@ -58,7 +58,7 @@ export function Footer() {
       </div>
       <div className="border-t border-border">
         <div className="container py-6 text-sm text-muted-foreground flex flex-col sm:flex-row justify-between gap-2">
-          <p>© {new Date().getFullYear()} DealFlash Inc. — Laval, Québec, Canada</p>
+          <p>© {new Date().getFullYear()} Boardeal Inc. — Laval, Québec, Canada</p>
           <div className="flex gap-4">
             <Link to="/conditions" className="hover:text-foreground transition-smooth">Conditions</Link>
             <Link to="/politique-confidentialite" className="hover:text-foreground transition-smooth">Confidentialité</Link>

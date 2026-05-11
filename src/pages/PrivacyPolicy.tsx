@@ -5,8 +5,8 @@ export default function PrivacyPolicy() {
   return (
     <div className="container mx-auto max-w-3xl px-4 py-12">
       <Seo
-        title="Politique de confidentialité — DealFlash"
-        description="Politique de confidentialité de DealFlash conforme à la Loi 25 du Québec."
+        title="Politique de confidentialité — Boardeal"
+        description="Politique de confidentialité de Boardeal conforme à la Loi 25 du Québec."
         canonical="https://www.dealflash.ca/politique-confidentialite"
       />
       <h1 className="text-3xl font-bold mb-2">Politique de confidentialité</h1>
@@ -18,7 +18,7 @@ export default function PrivacyPolicy() {
         <section>
           <h2 className="text-xl font-semibold mb-2">1. Responsable du traitement</h2>
           <p>
-            DealFlash Inc., dont le siège social est situé au Québec, Canada, est responsable du
+            Boardeal Inc., dont le siège social est situé au Québec, Canada, est responsable du
             traitement des renseignements personnels collectés via la plateforme
             <strong> www.dealflash.ca</strong>. Pour toute question, contactez notre responsable de la
             protection des renseignements personnels : <a className="text-accent underline" href="mailto:privacy@dealflash.ca">privacy@dealflash.ca</a>.

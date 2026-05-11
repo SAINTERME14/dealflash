@@ -53,7 +53,7 @@ export default function MyBookings() {
     setLoading(false);
   };
 
-  useEffect(() => { document.title = "Mes réservations — DealFlash"; load(); }, [user]);
+  useEffect(() => { document.title = "Mes réservations — Boardeal"; load(); }, [user]);
 
   const updateStatus = async (id: string, status: BookingStatus) => {
     const { error } = await supabase

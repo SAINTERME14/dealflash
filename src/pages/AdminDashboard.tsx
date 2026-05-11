@@ -82,7 +82,7 @@ export default function AdminDashboard() {
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
 
   useEffect(() => {
-    document.title = "Admin · Vue d'ensemble | DealFlash";
+    document.title = "Admin · Vue d'ensemble | Boardeal";
   }, []);
 
   const load = async () => {
@@ -265,7 +265,7 @@ export default function AdminDashboard() {
           <div>
             <h1 className="text-2xl font-bold">Vue d'ensemble</h1>
             <p className="text-sm text-muted-foreground">
-              Indicateurs clés de la plateforme DealFlash en temps réel.
+              Indicateurs clés de la plateforme Boardeal en temps réel.
               {lastRefresh && (
                 <span className="ml-1 text-xs">
                   · MAJ {lastRefresh.toLocaleTimeString("fr-CA")}
