@@ -180,6 +180,48 @@ export type Database = {
         }
         Relationships: []
       }
+      affiliate_profiles: {
+        Row: {
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          is_active: boolean
+          kind: Database["public"]["Enums"]["affiliate_kind"]
+          kyc_documents: string[]
+          kyc_status: Database["public"]["Enums"]["kyc_status"]
+          social_links: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          is_active?: boolean
+          kind: Database["public"]["Enums"]["affiliate_kind"]
+          kyc_documents?: string[]
+          kyc_status?: Database["public"]["Enums"]["kyc_status"]
+          social_links?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          is_active?: boolean
+          kind?: Database["public"]["Enums"]["affiliate_kind"]
+          kyc_documents?: string[]
+          kyc_status?: Database["public"]["Enums"]["kyc_status"]
+          social_links?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       appointments: {
         Row: {
           buyer_email: string
@@ -609,6 +651,90 @@ export type Database = {
         }
         Relationships: []
       }
+      commission_rules: {
+        Row: {
+          affiliate_kind: Database["public"]["Enums"]["affiliate_kind"]
+          created_at: string
+          id: string
+          is_active: boolean
+          notes: string | null
+          pct_affiliate: number
+          pct_platform: number
+          points_per_visit: number
+          points_to_money_rate: number
+          points_to_money_threshold: number
+          updated_at: string
+        }
+        Insert: {
+          affiliate_kind: Database["public"]["Enums"]["affiliate_kind"]
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          pct_affiliate?: number
+          pct_platform?: number
+          points_per_visit?: number
+          points_to_money_rate?: number
+          points_to_money_threshold?: number
+          updated_at?: string
+        }
+        Update: {
+          affiliate_kind?: Database["public"]["Enums"]["affiliate_kind"]
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          pct_affiliate?: number
+          pct_platform?: number
+          points_per_visit?: number
+          points_to_money_rate?: number
+          points_to_money_threshold?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      commissions: {
+        Row: {
+          amount: number
+          beneficiary_user_id: string
+          created_at: string
+          currency: string
+          id: string
+          payout_id: string | null
+          pct: number
+          qr_conversion_id: string
+          role: Database["public"]["Enums"]["user_type"]
+          status: Database["public"]["Enums"]["commission_status"]
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          beneficiary_user_id: string
+          created_at?: string
+          currency?: string
+          id?: string
+          payout_id?: string | null
+          pct: number
+          qr_conversion_id: string
+          role: Database["public"]["Enums"]["user_type"]
+          status?: Database["public"]["Enums"]["commission_status"]
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          beneficiary_user_id?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          payout_id?: string | null
+          pct?: number
+          qr_conversion_id?: string
+          role?: Database["public"]["Enums"]["user_type"]
+          status?: Database["public"]["Enums"]["commission_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       dealflash_products: {
         Row: {
           cost_price: number
@@ -827,6 +953,48 @@ export type Database = {
         }
         Relationships: []
       }
+      employer_profiles: {
+        Row: {
+          city: string | null
+          company_name: string
+          created_at: string
+          description: string | null
+          id: string
+          is_verified: boolean
+          sector: string | null
+          size: string | null
+          updated_at: string
+          user_id: string
+          website_url: string | null
+        }
+        Insert: {
+          city?: string | null
+          company_name: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_verified?: boolean
+          sector?: string | null
+          size?: string | null
+          updated_at?: string
+          user_id: string
+          website_url?: string | null
+        }
+        Update: {
+          city?: string | null
+          company_name?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_verified?: boolean
+          sector?: string | null
+          size?: string | null
+          updated_at?: string
+          user_id?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       errors_video_resolution: {
         Row: {
           created_at: string
@@ -984,6 +1152,63 @@ export type Database = {
           },
         ]
       }
+      job_ticket_messages: {
+        Row: {
+          content: string
+          created_at: string
+          filtered: boolean
+          id: string
+          sender_id: string
+          ticket_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          filtered?: boolean
+          id?: string
+          sender_id: string
+          ticket_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          filtered?: boolean
+          id?: string
+          sender_id?: string
+          ticket_id?: string
+        }
+        Relationships: []
+      }
+      job_tickets: {
+        Row: {
+          created_at: string
+          employer_id: string
+          id: string
+          professional_id: string
+          status: Database["public"]["Enums"]["job_ticket_status"]
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          employer_id: string
+          id?: string
+          professional_id: string
+          status?: Database["public"]["Enums"]["job_ticket_status"]
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          employer_id?: string
+          id?: string
+          professional_id?: string
+          status?: Database["public"]["Enums"]["job_ticket_status"]
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       listing_availability: {
         Row: {
           created_at: string
@@ -1133,6 +1358,51 @@ export type Database = {
           },
         ]
       }
+      merchant_profiles: {
+        Row: {
+          business_name: string
+          city: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_verified: boolean
+          logo_url: string | null
+          neq_number: string | null
+          region: string | null
+          updated_at: string
+          user_id: string
+          website_url: string | null
+        }
+        Insert: {
+          business_name: string
+          city?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_verified?: boolean
+          logo_url?: string | null
+          neq_number?: string | null
+          region?: string | null
+          updated_at?: string
+          user_id: string
+          website_url?: string | null
+        }
+        Update: {
+          business_name?: string
+          city?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_verified?: boolean
+          logo_url?: string | null
+          neq_number?: string | null
+          region?: string | null
+          updated_at?: string
+          user_id?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           content: string
@@ -1200,6 +1470,129 @@ export type Database = {
           message?: string | null
           title?: string
           type?: Database["public"]["Enums"]["notification_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      payouts: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          external_ref: string | null
+          id: string
+          method: Database["public"]["Enums"]["payout_method"]
+          notes: string | null
+          period_end: string | null
+          period_start: string | null
+          status: Database["public"]["Enums"]["payout_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          external_ref?: string | null
+          id?: string
+          method?: Database["public"]["Enums"]["payout_method"]
+          notes?: string | null
+          period_end?: string | null
+          period_start?: string | null
+          status?: Database["public"]["Enums"]["payout_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          external_ref?: string | null
+          id?: string
+          method?: Database["public"]["Enums"]["payout_method"]
+          notes?: string | null
+          period_end?: string | null
+          period_start?: string | null
+          status?: Database["public"]["Enums"]["payout_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      points_ledger: {
+        Row: {
+          created_at: string
+          delta: number
+          id: number
+          note: string | null
+          ref_id: string | null
+          source: Database["public"]["Enums"]["points_source"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          delta: number
+          id?: number
+          note?: string | null
+          ref_id?: string | null
+          source: Database["public"]["Enums"]["points_source"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          delta?: number
+          id?: number
+          note?: string | null
+          ref_id?: string | null
+          source?: Database["public"]["Enums"]["points_source"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      professional_profiles: {
+        Row: {
+          available_from: string | null
+          bio: string | null
+          city: string | null
+          created_at: string
+          headline: string
+          hourly_rate: number | null
+          id: string
+          is_public: boolean
+          portfolio_links: Json
+          sector: string | null
+          skills: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          available_from?: string | null
+          bio?: string | null
+          city?: string | null
+          created_at?: string
+          headline: string
+          hourly_rate?: number | null
+          id?: string
+          is_public?: boolean
+          portfolio_links?: Json
+          sector?: string | null
+          skills?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          available_from?: string | null
+          bio?: string | null
+          city?: string | null
+          created_at?: string
+          headline?: string
+          hourly_rate?: number | null
+          id?: string
+          is_public?: boolean
+          portfolio_links?: Json
+          sector?: string | null
+          skills?: string[]
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -1297,6 +1690,114 @@ export type Database = {
           phone?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      qr_codes: {
+        Row: {
+          code: string
+          created_at: string
+          discount_pct: number | null
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          owner_role: Database["public"]["Enums"]["user_type"]
+          owner_user_id: string
+          target_id: string | null
+          target_type: Database["public"]["Enums"]["qr_target_type"]
+          target_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          discount_pct?: number | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          owner_role: Database["public"]["Enums"]["user_type"]
+          owner_user_id: string
+          target_id?: string | null
+          target_type: Database["public"]["Enums"]["qr_target_type"]
+          target_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          discount_pct?: number | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          owner_role?: Database["public"]["Enums"]["user_type"]
+          owner_user_id?: string
+          target_id?: string | null
+          target_type?: Database["public"]["Enums"]["qr_target_type"]
+          target_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      qr_conversions: {
+        Row: {
+          commission_total: number
+          created_at: string
+          currency: string
+          gross_amount: number
+          id: string
+          order_ref: string | null
+          qr_id: string
+          ticket_id: string | null
+        }
+        Insert: {
+          commission_total?: number
+          created_at?: string
+          currency?: string
+          gross_amount: number
+          id?: string
+          order_ref?: string | null
+          qr_id: string
+          ticket_id?: string | null
+        }
+        Update: {
+          commission_total?: number
+          created_at?: string
+          currency?: string
+          gross_amount?: number
+          id?: string
+          order_ref?: string | null
+          qr_id?: string
+          ticket_id?: string | null
+        }
+        Relationships: []
+      }
+      qr_visits: {
+        Row: {
+          created_at: string
+          id: number
+          ip_country: string | null
+          qr_id: string
+          referrer: string | null
+          user_agent: string | null
+          visitor_fingerprint: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          ip_country?: string | null
+          qr_id: string
+          referrer?: string | null
+          user_agent?: string | null
+          visitor_fingerprint?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          ip_country?: string | null
+          qr_id?: string
+          referrer?: string | null
+          user_agent?: string | null
+          visitor_fingerprint?: string | null
         }
         Relationships: []
       }
@@ -1775,6 +2276,33 @@ export type Database = {
         }
         Relationships: []
       }
+      shop_affiliations: {
+        Row: {
+          affiliate_user_id: string
+          created_at: string
+          id: string
+          merchant_user_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          affiliate_user_id: string
+          created_at?: string
+          id?: string
+          merchant_user_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          affiliate_user_id?: string
+          created_at?: string
+          id?: string
+          merchant_user_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       site_content: {
         Row: {
           category: string
@@ -1805,6 +2333,57 @@ export type Database = {
           updated_at?: string
           updated_by?: string | null
           value?: Json
+        }
+        Relationships: []
+      }
+      subscription_plans: {
+        Row: {
+          code: string
+          created_at: string
+          currency: string
+          description: string | null
+          display_order: number
+          features: Json
+          id: string
+          interval: string
+          is_active: boolean
+          name: string
+          price_cents: number
+          stripe_price_id: string | null
+          target_role: Database["public"]["Enums"]["user_type"] | null
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          display_order?: number
+          features?: Json
+          id?: string
+          interval?: string
+          is_active?: boolean
+          name: string
+          price_cents?: number
+          stripe_price_id?: string | null
+          target_role?: Database["public"]["Enums"]["user_type"] | null
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          display_order?: number
+          features?: Json
+          id?: string
+          interval?: string
+          is_active?: boolean
+          name?: string
+          price_cents?: number
+          stripe_price_id?: string | null
+          target_role?: Database["public"]["Enums"]["user_type"] | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -2159,6 +2738,45 @@ export type Database = {
         }
         Relationships: []
       }
+      user_subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean
+          created_at: string
+          current_period_end: string | null
+          id: string
+          plan_code: string
+          status: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          plan_code: string
+          status?: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          plan_code?: string
+          status?: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       public_profiles: {
@@ -2268,6 +2886,7 @@ export type Database = {
         | "pro_occasionnel"
         | "commerce"
         | "pro_reglemente"
+      affiliate_kind: "closer" | "influencer" | "promoter"
       app_role:
         | "admin"
         | "vendeur_b2c"
@@ -2293,6 +2912,7 @@ export type Database = {
         | "published"
         | "error"
         | "removed"
+      commission_status: "pending" | "approved" | "paid" | "cancelled"
       dealflash_product_status: "draft" | "listed" | "paused" | "archived"
       dropship_order_status:
         | "pending"
@@ -2301,6 +2921,7 @@ export type Database = {
         | "delivered"
         | "cancelled"
         | "refunded"
+      job_ticket_status: "open" | "in_progress" | "resolved" | "closed"
       kyc_document_status: "pending" | "accepted" | "rejected"
       kyc_document_type:
         | "gov_id_front"
@@ -2314,6 +2935,7 @@ export type Database = {
         | "work_authorization"
         | "professional_license"
         | "other"
+      kyc_status: "pending" | "approved" | "rejected"
       listing_status: "draft" | "active" | "paused" | "sold" | "archived"
       listing_type: "product" | "vehicle" | "rental" | "hotel" | "service"
       notification_type:
@@ -2328,6 +2950,15 @@ export type Database = {
         | "listing_featured"
         | "support_reply"
         | "admin_announcement"
+      payout_method: "bank_transfer" | "paypal" | "stripe_connect" | "manual"
+      payout_status: "pending" | "processing" | "paid" | "failed"
+      points_source:
+        | "qr_visit"
+        | "qr_conversion"
+        | "bonus"
+        | "adjustment"
+        | "redemption"
+      qr_target_type: "shop" | "product" | "service" | "campaign"
       sales_channel_type:
         | "amazon"
         | "temu"
@@ -2349,6 +2980,12 @@ export type Database = {
         | "more_info_required"
         | "approved"
         | "rejected"
+      subscription_status:
+        | "active"
+        | "trialing"
+        | "past_due"
+        | "canceled"
+        | "unpaid"
       supplier_status: "active" | "paused" | "disabled"
       supplier_type:
         | "cj_dropshipping"
@@ -2378,6 +3015,14 @@ export type Database = {
         | "expired"
         | "refunded"
         | "cancelled"
+      user_type:
+        | "buyer"
+        | "merchant"
+        | "closer"
+        | "influencer"
+        | "promoter"
+        | "professional"
+        | "employer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2523,6 +3168,7 @@ export const Constants = {
         "commerce",
         "pro_reglemente",
       ],
+      affiliate_kind: ["closer", "influencer", "promoter"],
       app_role: [
         "admin",
         "vendeur_b2c",
@@ -2552,6 +3198,7 @@ export const Constants = {
         "error",
         "removed",
       ],
+      commission_status: ["pending", "approved", "paid", "cancelled"],
       dealflash_product_status: ["draft", "listed", "paused", "archived"],
       dropship_order_status: [
         "pending",
@@ -2561,6 +3208,7 @@ export const Constants = {
         "cancelled",
         "refunded",
       ],
+      job_ticket_status: ["open", "in_progress", "resolved", "closed"],
       kyc_document_status: ["pending", "accepted", "rejected"],
       kyc_document_type: [
         "gov_id_front",
@@ -2575,6 +3223,7 @@ export const Constants = {
         "professional_license",
         "other",
       ],
+      kyc_status: ["pending", "approved", "rejected"],
       listing_status: ["draft", "active", "paused", "sold", "archived"],
       listing_type: ["product", "vehicle", "rental", "hotel", "service"],
       notification_type: [
@@ -2590,6 +3239,16 @@ export const Constants = {
         "support_reply",
         "admin_announcement",
       ],
+      payout_method: ["bank_transfer", "paypal", "stripe_connect", "manual"],
+      payout_status: ["pending", "processing", "paid", "failed"],
+      points_source: [
+        "qr_visit",
+        "qr_conversion",
+        "bonus",
+        "adjustment",
+        "redemption",
+      ],
+      qr_target_type: ["shop", "product", "service", "campaign"],
       sales_channel_type: [
         "amazon",
         "temu",
@@ -2613,6 +3272,13 @@ export const Constants = {
         "more_info_required",
         "approved",
         "rejected",
+      ],
+      subscription_status: [
+        "active",
+        "trialing",
+        "past_due",
+        "canceled",
+        "unpaid",
       ],
       supplier_status: ["active", "paused", "disabled"],
       supplier_type: [
@@ -2646,6 +3312,15 @@ export const Constants = {
         "expired",
         "refunded",
         "cancelled",
+      ],
+      user_type: [
+        "buyer",
+        "merchant",
+        "closer",
+        "influencer",
+        "promoter",
+        "professional",
+        "employer",
       ],
     },
   },
