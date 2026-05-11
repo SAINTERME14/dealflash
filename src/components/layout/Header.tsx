@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import boardealLogo from "@/assets/boardeal-logo.jpeg";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { Button } from "@/components/ui/button";
@@ -34,11 +35,7 @@ export function Header() {
           <Menu className="h-6 w-6" />
         </button>
         <Link to="/" className="flex items-center gap-2 shrink-0" aria-label="Boardeal">
-          <img
-            src={(await import("@/assets/boardeal-logo.jpeg")).default}
-            alt="Boardeal"
-            className="h-9 w-auto"
-          />
+          <img src={boardealLogo} alt="Boardeal" className="h-9 w-auto" />
         </Link>
 
         <Link
