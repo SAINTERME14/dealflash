@@ -33,13 +33,12 @@ export function Header() {
         >
           <Menu className="h-6 w-6" />
         </button>
-        <Link to="/" className="flex items-center gap-2 shrink-0">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg gradient-accent shadow-flash">
-            <span className="text-accent-foreground font-bold text-lg">D</span>
-          </div>
-          <span className="font-bold text-xl tracking-tight hidden sm:inline">
-            Deal<span className="text-accent">Flash</span>
-          </span>
+        <Link to="/" className="flex items-center gap-2 shrink-0" aria-label="Boardeal">
+          <img
+            src={(await import("@/assets/boardeal-logo.jpeg")).default}
+            alt="Boardeal"
+            className="h-9 w-auto"
+          />
         </Link>
 
         <Link
