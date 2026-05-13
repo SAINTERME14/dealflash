@@ -59,6 +59,7 @@ const MyReviews = lazy(() => import("./pages/MyReviews"));
 const SellerStats = lazy(() => import("./pages/SellerStats"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const BecomeAdvertiser = lazy(() => import("./pages/BecomeAdvertiser"));
+const QrRedirect = lazy(() => import("./pages/QrRedirect"));
 
 import { CookieConsent } from "@/components/CookieConsent";
 
