@@ -120,6 +120,63 @@ async function handleCheckoutCompleted(session: StripeSession) {
   }
 
   console.log("Ticket created", ticket.id, ticket.confirmation_code);
+
+  // ── Attribution QR : crée qr_conversions + commissions selon les règles ──
+  const qrCode = m.qr_code;
+  if (qrCode) {
+    try {
+      const { data: qr } = await supabase
+        .from("qr_codes")
+        .select("id, owner_user_id, owner_role")
+        .eq("code", qrCode)
+        .maybeSingle();
+      if (qr) {
+        const gross = flashPrice + platformFee;
+        const { data: conv } = await supabase
+          .from("qr_conversions")
+          .insert({
+            qr_id: qr.id,
+            ticket_id: ticket.id,
+            order_ref: ticket.confirmation_code,
+            gross_amount: gross,
+            currency: "CAD",
+            commission_total: 0,
+          })
+          .select("id")
+          .single();
+
+        if (conv) {
+          // Cherche la règle commission active pour ce rôle (closer/influencer/promoter)
+          const { data: rule } = await supabase
+            .from("commission_rules")
+            .select("pct_platform, pct_affiliate")
+            .eq("affiliate_kind", qr.owner_role)
+            .eq("is_active", true)
+            .maybeSingle();
+          const pctAff = Number(rule?.pct_affiliate ?? 50);
+          const affAmount = Math.round((platformFee * pctAff) / 100 * 100) / 100;
+
+          if (affAmount > 0) {
+            await supabase.from("commissions").insert({
+              qr_conversion_id: conv.id,
+              beneficiary_user_id: qr.owner_user_id,
+              role: qr.owner_role,
+              pct: pctAff,
+              amount: affAmount,
+              currency: "CAD",
+              status: "pending",
+            });
+            await supabase
+              .from("qr_conversions")
+              .update({ commission_total: affAmount })
+              .eq("id", conv.id);
+          }
+        }
+      }
+    } catch (qrErr) {
+      console.error("QR attribution error", qrErr);
+    }
+  }
 }
 
 async function handleRefund(charge: { payment_intent?: string | null }) {
