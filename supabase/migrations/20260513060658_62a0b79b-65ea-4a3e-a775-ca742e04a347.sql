@@ -1,0 +1,1 @@
+ALTER VIEW public.ranked_listings SET (security_invoker = true);
