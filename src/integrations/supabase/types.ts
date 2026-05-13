@@ -289,6 +289,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "appointments_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "ranked_listings"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "appointments_ticket_id_fkey"
             columns: ["ticket_id"]
             isOneToOne: false
@@ -408,6 +415,13 @@ export type Database = {
             columns: ["listing_id"]
             isOneToOne: false
             referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "ranked_listings"
             referencedColumns: ["id"]
           },
         ]
@@ -799,6 +813,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "dealflash_products_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "ranked_listings"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "dealflash_products_supplier_product_id_fkey"
             columns: ["supplier_product_id"]
             isOneToOne: false
@@ -1052,6 +1073,13 @@ export type Database = {
             referencedRelation: "listings"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "favorites_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "ranked_listings"
+            referencedColumns: ["id"]
+          },
         ]
       }
       featured_audit_log: {
@@ -1150,6 +1178,13 @@ export type Database = {
             referencedRelation: "listings"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "flash_sales_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "ranked_listings"
+            referencedColumns: ["id"]
+          },
         ]
       }
       job_ticket_messages: {
@@ -1245,6 +1280,13 @@ export type Database = {
             referencedRelation: "listings"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "listing_availability_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "ranked_listings"
+            referencedColumns: ["id"]
+          },
         ]
       }
       listings: {
@@ -1253,10 +1295,12 @@ export type Database = {
           allows_appointment: boolean
           allows_booking: boolean
           attributes: Json
+          boost_weight: number
           category_id: string
           city: string | null
           created_at: string
           currency: string
+          deal_type: Database["public"]["Enums"]["deal_type"] | null
           description: string
           discount_percent: number | null
           featured_priority: number
@@ -1284,10 +1328,12 @@ export type Database = {
           allows_appointment?: boolean
           allows_booking?: boolean
           attributes?: Json
+          boost_weight?: number
           category_id: string
           city?: string | null
           created_at?: string
           currency?: string
+          deal_type?: Database["public"]["Enums"]["deal_type"] | null
           description: string
           discount_percent?: number | null
           featured_priority?: number
@@ -1315,10 +1361,12 @@ export type Database = {
           allows_appointment?: boolean
           allows_booking?: boolean
           attributes?: Json
+          boost_weight?: number
           category_id?: string
           city?: string | null
           created_at?: string
           currency?: string
+          deal_type?: Database["public"]["Enums"]["deal_type"] | null
           description?: string
           discount_percent?: number | null
           featured_priority?: number
@@ -1437,6 +1485,13 @@ export type Database = {
             columns: ["listing_id"]
             isOneToOne: false
             referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "ranked_listings"
             referencedColumns: ["id"]
           },
         ]
@@ -1856,6 +1911,13 @@ export type Database = {
             columns: ["listing_id"]
             isOneToOne: false
             referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "ranked_listings"
             referencedColumns: ["id"]
           },
           {
@@ -2715,6 +2777,13 @@ export type Database = {
             referencedRelation: "listings"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "tickets_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "ranked_listings"
+            referencedColumns: ["id"]
+          },
         ]
       }
       user_roles: {
@@ -2815,6 +2884,129 @@ export type Database = {
         }
         Relationships: []
       }
+      ranked_listings: {
+        Row: {
+          address: string | null
+          allows_appointment: boolean | null
+          allows_booking: boolean | null
+          attributes: Json | null
+          boost_weight: number | null
+          category_id: string | null
+          city: string | null
+          created_at: string | null
+          currency: string | null
+          deal_type: Database["public"]["Enums"]["deal_type"] | null
+          description: string | null
+          discount_percent: number | null
+          featured_priority: number | null
+          featured_until: string | null
+          has_active_flash: boolean | null
+          id: string | null
+          images: string[] | null
+          is_featured: boolean | null
+          latitude: number | null
+          listing_type: Database["public"]["Enums"]["listing_type"] | null
+          longitude: number | null
+          original_price: number | null
+          postal_code: string | null
+          price: number | null
+          rank_score: number | null
+          region: string | null
+          seller_id: string | null
+          slug: string | null
+          status: Database["public"]["Enums"]["listing_status"] | null
+          subcategory_id: string | null
+          title: string | null
+          updated_at: string | null
+          view_count: number | null
+        }
+        Insert: {
+          address?: string | null
+          allows_appointment?: boolean | null
+          allows_booking?: boolean | null
+          attributes?: Json | null
+          boost_weight?: number | null
+          category_id?: string | null
+          city?: string | null
+          created_at?: string | null
+          currency?: string | null
+          deal_type?: Database["public"]["Enums"]["deal_type"] | null
+          description?: string | null
+          discount_percent?: number | null
+          featured_priority?: number | null
+          featured_until?: string | null
+          has_active_flash?: never
+          id?: string | null
+          images?: string[] | null
+          is_featured?: boolean | null
+          latitude?: number | null
+          listing_type?: Database["public"]["Enums"]["listing_type"] | null
+          longitude?: number | null
+          original_price?: number | null
+          postal_code?: string | null
+          price?: number | null
+          rank_score?: never
+          region?: string | null
+          seller_id?: string | null
+          slug?: string | null
+          status?: Database["public"]["Enums"]["listing_status"] | null
+          subcategory_id?: string | null
+          title?: string | null
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Update: {
+          address?: string | null
+          allows_appointment?: boolean | null
+          allows_booking?: boolean | null
+          attributes?: Json | null
+          boost_weight?: number | null
+          category_id?: string | null
+          city?: string | null
+          created_at?: string | null
+          currency?: string | null
+          deal_type?: Database["public"]["Enums"]["deal_type"] | null
+          description?: string | null
+          discount_percent?: number | null
+          featured_priority?: number | null
+          featured_until?: string | null
+          has_active_flash?: never
+          id?: string | null
+          images?: string[] | null
+          is_featured?: boolean | null
+          latitude?: number | null
+          listing_type?: Database["public"]["Enums"]["listing_type"] | null
+          longitude?: number | null
+          original_price?: number | null
+          postal_code?: string | null
+          price?: number | null
+          rank_score?: never
+          region?: string | null
+          seller_id?: string | null
+          slug?: string | null
+          status?: Database["public"]["Enums"]["listing_status"] | null
+          subcategory_id?: string | null
+          title?: string | null
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listings_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "listings_subcategory_id_fkey"
+            columns: ["subcategory_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       can_manage_seller_notes: { Args: { _user_id: string }; Returns: boolean }
@@ -2867,6 +3059,41 @@ export type Database = {
         Returns: number
       }
       revoke_all_admin_sessions: { Args: never; Returns: number }
+      search_ranked_listings: {
+        Args: {
+          _category_id?: string
+          _deal_type?: Database["public"]["Enums"]["deal_type"]
+          _lat?: number
+          _limit?: number
+          _lng?: number
+          _offset?: number
+          _q?: string
+          _radius_km?: number
+        }
+        Returns: {
+          category_id: string
+          city: string
+          created_at: string
+          currency: string
+          deal_type: Database["public"]["Enums"]["deal_type"]
+          description: string
+          discount_percent: number
+          distance_km: number
+          featured_priority: number
+          has_active_flash: boolean
+          id: string
+          images: string[]
+          is_featured: boolean
+          latitude: number
+          longitude: number
+          original_price: number
+          price: number
+          rank_score: number
+          region: string
+          subcategory_id: string
+          title: string
+        }[]
+      }
       set_vault_service_role_key: { Args: { _key: string }; Returns: undefined }
     }
     Enums: {
@@ -2913,6 +3140,13 @@ export type Database = {
         | "error"
         | "removed"
       commission_status: "pending" | "approved" | "paid" | "cancelled"
+      deal_type:
+        | "damaged_packaging"
+        | "overstock"
+        | "end_of_season"
+        | "clearance"
+        | "promo_40plus"
+        | "trending"
       dealflash_product_status: "draft" | "listed" | "paused" | "archived"
       dropship_order_status:
         | "pending"
@@ -3199,6 +3433,14 @@ export const Constants = {
         "removed",
       ],
       commission_status: ["pending", "approved", "paid", "cancelled"],
+      deal_type: [
+        "damaged_packaging",
+        "overstock",
+        "end_of_season",
+        "clearance",
+        "promo_40plus",
+        "trending",
+      ],
       dealflash_product_status: ["draft", "listed", "paused", "archived"],
       dropship_order_status: [
         "pending",
