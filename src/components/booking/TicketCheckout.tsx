@@ -1,6 +1,7 @@
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
 import { getStripe, getStripeEnvironment } from "@/lib/stripe";
 import { supabase } from "@/integrations/supabase/customClient";
+import { getQrAttribution } from "@/lib/qrAttribution";
 
 interface Props {
   listingId: string;
@@ -18,6 +19,7 @@ interface Props {
 
 export function TicketCheckout(props: Props) {
   const fetchClientSecret = async (): Promise<string> => {
+    const att = getQrAttribution();
     const { data, error } = await supabase.functions.invoke("create-ticket-checkout", {
       body: {
         listing_id: props.listingId,
@@ -30,6 +32,8 @@ export function TicketCheckout(props: Props) {
         buyer_email: props.buyer.email,
         return_url: props.returnUrl,
         environment: getStripeEnvironment(),
+        qr_code: att?.qr_code,
+        qr_id: att?.qr_id,
       },
     });
     if (error || !data?.clientSecret) {

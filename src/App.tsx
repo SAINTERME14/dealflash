@@ -59,6 +59,7 @@ const MyReviews = lazy(() => import("./pages/MyReviews"));
 const SellerStats = lazy(() => import("./pages/SellerStats"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const BecomeAdvertiser = lazy(() => import("./pages/BecomeAdvertiser"));
+const QrRedirect = lazy(() => import("./pages/QrRedirect"));
 
 import { CookieConsent } from "@/components/CookieConsent";
 
@@ -81,6 +82,7 @@ const App = () => (
           <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin/connexion" element={<AdminLogin />} />
+            <Route path="/qr/:code" element={<Suspense fallback={<RouteFallback />}><QrRedirect /></Suspense>} />
             <Route element={<MainLayout />}>
               <Route path="/" element={<Index />} />
               <Route path="/recherche" element={<Search />} />
