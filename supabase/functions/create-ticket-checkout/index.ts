@@ -171,6 +171,8 @@ Deno.serve(async (req) => {
         flash_price: String(basePrice),
         platform_fee: String(feeAmount),
         validity_hours: String(validityHours),
+        qr_code: qr_code || "",
+        qr_id: qr_id || "",
       },
     });
 
