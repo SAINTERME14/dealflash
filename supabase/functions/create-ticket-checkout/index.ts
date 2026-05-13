@@ -84,6 +84,8 @@ Deno.serve(async (req) => {
       return_url,
       environment,
       kind,
+      qr_code,
+      qr_id,
     } = body;
 
     if (!listing_id || !buyer_email || !return_url || !environment || !kind) {
