@@ -82,6 +82,7 @@ const App = () => (
           <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin/connexion" element={<AdminLogin />} />
+            <Route path="/qr/:code" element={<Suspense fallback={<RouteFallback />}><QrRedirect /></Suspense>} />
             <Route element={<MainLayout />}>
               <Route path="/" element={<Index />} />
               <Route path="/recherche" element={<Search />} />
