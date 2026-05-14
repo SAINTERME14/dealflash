@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import boardealLogo from "@/assets/boardeal-logo.jpeg";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -32,9 +33,7 @@ export default function MobileHome() {
   return (
     <div className="container max-w-2xl py-6 md:py-10">
       <header className="mb-6">
-        <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl gradient-accent shadow-flash mb-3">
-          <Smartphone className="h-7 w-7 text-accent-foreground" />
-        </div>
+        <img src={boardealLogo} alt="Boardeal" className="h-16 w-auto rounded-xl mb-3" />
         <h1 className="text-2xl md:text-3xl font-bold">
           {user ? `Bonjour 👋` : "Bienvenue sur Boardeal"}
         </h1>

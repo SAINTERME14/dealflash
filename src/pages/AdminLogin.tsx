@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import boardealLogo from "@/assets/boardeal-logo.jpeg";
 import { supabase } from "@/integrations/supabase/customClient";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -94,9 +95,7 @@ export default function AdminLogin() {
     <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-background">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 mb-4">
-            <ShieldCheck className="h-7 w-7 text-primary" />
-          </div>
+          <img src={boardealLogo} alt="Boardeal" className="h-20 w-auto mx-auto mb-4 rounded-xl drop-shadow-lg" />
           <h1 className="text-2xl font-bold">Console administrateur</h1>
           <p className="text-sm text-muted-foreground mt-2">
             Accès réservé au personnel autorisé de Boardeal.

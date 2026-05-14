@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import boardealLogo from "@/assets/boardeal-logo.jpeg";
 import { Card } from "@/components/ui/card";
 import { Smartphone, Share, Plus, Download } from "lucide-react";
 import { InstallButton } from "@/components/pwa/InstallButton";
@@ -9,9 +10,7 @@ export default function Install() {
   return (
     <div className="container max-w-2xl py-12">
       <div className="text-center mb-10">
-        <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl gradient-accent shadow-flash mb-4">
-          <Smartphone className="h-8 w-8 text-accent-foreground" />
-        </div>
+        <img src={boardealLogo} alt="Boardeal" className="h-20 w-auto mx-auto rounded-2xl mb-4 shadow-flash" />
         <h1 className="text-3xl font-bold">Installer Boardeal sur votre mobile</h1>
         <p className="text-muted-foreground mt-2">Accédez au marketplace en un clic, comme une vraie application.</p>
         <div className="mt-6 flex justify-center">
