@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import boardealLogo from "@/assets/boardeal-logo.jpeg";
 import { useSiteText } from "@/hooks/useSiteContent";
 
 export function Footer() {
@@ -10,13 +11,8 @@ export function Footer() {
     <footer className="border-t border-border bg-secondary/30 mt-20">
       <div className="container py-12 grid gap-8 md:grid-cols-4">
         <div>
-          <div className="flex items-center gap-2 mb-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-accent">
-              <span className="text-accent-foreground font-bold">D</span>
-            </div>
-            <span className="font-bold text-lg">
-              Deal<span className="text-accent">Flash</span>
-            </span>
+          <div className="flex items-center gap-3 mb-3">
+            <img src={boardealLogo} alt="Boardeal" className="h-12 w-auto rounded-lg" />
           </div>
           <p className="text-sm text-muted-foreground">{tagline}</p>
         </div>
