@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
+import boardealLogo from "@/assets/boardeal-logo.jpeg";
 import { ChevronDown, X } from "lucide-react";
 import { sidebarStore, useSidebarOpen } from "./sidebarStore";
 
@@ -129,7 +130,7 @@ export function LeftSidebar() {
         }}
       >
         <div className="flex items-center justify-between px-5 py-5 border-b border-white/10">
-          <span className="text-2xl font-extrabold text-[#FFD000] tracking-tight">Boardeal</span>
+          <img src={boardealLogo} alt="Boardeal" className="h-12 w-auto rounded-lg" />
           <button
             onClick={() => sidebarStore.set(false)}
             aria-label="Fermer"

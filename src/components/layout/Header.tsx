@@ -35,7 +35,7 @@ export function Header() {
           <Menu className="h-6 w-6" />
         </button>
         <Link to="/" className="flex items-center gap-2 shrink-0" aria-label="Boardeal">
-          <img src={boardealLogo} alt="Boardeal" className="h-9 w-auto" />
+          <img src={boardealLogo} alt="Boardeal" className="h-14 w-auto drop-shadow-lg" />
         </Link>
 
         <Link
