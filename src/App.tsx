@@ -131,6 +131,7 @@ const App = () => (
               <Route path="/admin/annonces" element={<AdminRoute><AdminAnnonces /></AdminRoute>} />
               <Route path="/devenir-annonceur/:profile" element={<BecomeAdvertiser />} />
               <Route path="/affilie" element={<AffiliateDashboard />} />
+              <Route path="/devenir-affilie" element={<AffiliateOnboarding />} />
               <Route path="/a-propos" element={<About />} />
               <Route path="/politique-confidentialite" element={<PrivacyPolicy />} />
               <Route path="*" element={<NotFound />} />
