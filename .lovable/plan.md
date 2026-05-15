@@ -1,207 +1,120 @@
-# Transformation Dealflash → Boardeal — Plan méthodique
+# Audit Boardeal & plan de réorganisation — espace utilisateurs multi-rôles
 
-Vu l'ampleur (rebrand global + 6 nouveaux rôles + moteur QR/commissions + module emploi + refonte vitrine), je propose un découpage en **7 phases livrables**, chacune testable et déployable indépendamment. Cette approche évite l'effet « big bang » et préserve le panel admin déjà construit.
+## 1. État actuel (audit)
 
----
+### Ce qui existe déjà côté code
+- **Site public** : `Index`, `Search`, `ListingDetail`, `Featured`, `Boutiques`, `CommentAcheter`, `CommentVendre`, `About`, `MobileHome`, `Install`, `Auth`, `BecomeAdvertiser`, `QrRedirect`, `PrototypeHub`. Layout commun via `MainLayout` (Header + LeftSidebar + Footer).
+- **Espace utilisateur (éclaté)** : `Dashboard`, `Profile`, `MyListings`, `CreateListing`, `Favorites`, `Messages`, `MyBookings`, `MyTickets`, `MyReviews`, `SellerStats`, `SellerVerification`, `Support`, `SupportTicket`, `AffiliateOnboarding`, `AffiliateDashboard`. Pas de hub unique : chaque page vit isolée.
+- **Espace admin (deux générations)** : ancien `/admin/*` (≈20 pages : Annonces, Boutiques, Users, Finances, Tickets, Dropshipping, Suppliers, SalesChannels, Featured, FlashSales, Partners, Tasks, Verifications, Content, ControlCenter, AuditLog, Support, SellerApplications…) **et** nouveau `/admin/v2/*` (Dashboard, ControlCenter, Team, Security, Audit, 2FASetup) protégé par `AdminV2Route` + 2FA obligatoire.
+- **Auth & rôles** : `useAuth` (singleton Supabase), `useIsAdmin` (rôle `admin` dans `user_roles`), `useAdminUser` (table `admin_users` v2), `ProtectedRoute`, `AdminRoute`, `AdminV2Route`, `SellerNotesRoute`.
+- **Backend Supabase** : tables et RLS en place pour `merchant_profiles`, `affiliate_profiles` (kind = closer/influencer/promoter, KYC), `employer_profiles`, `job_tickets` + `job_ticket_messages`, `commission_rules`, `commissions`, `qr_codes`/`qr_visits`/`qr_conversions` (Phase 2 livrée), `listings` + `ranked_listings` + `search_ranked_listings` (Phase 3 livrée), `flash_sales`, `bookings`, `appointments`, `dealflash_products`, `dropship_orders`, `audit_logs`, `admin_users`, `admin_sessions`, etc.
+- **ENUM `app_role`** actif : `acheteur`, `vendeur_b2c`, `vendeur_c2c`, `admin`, `moderateur` (visible via `assign_vendor_role_on_approval` et `can_manage_seller_notes`). `affiliate_kind` séparé (closer/influencer/promoter). **Pas encore** : `professional`, `employer` comme rôles applicatifs ; ils existent uniquement via leurs tables profil.
 
-## Phase 0 — Rebrand visuel & identité (rapide, ~1 itération)
+### Écarts vs la cible Boardeal (7 rôles + MenuFlash)
+| Domaine | Cible | État |
+|---|---|---|
+| Rôles applicatifs | buyer, merchant, closer, influencer, promoter, professional, employer | Partiel : acheteur/vendeur côté `app_role`, affiliés via `affiliate_kind`, pro/employer seulement par tables profil |
+| Hub utilisateur unique | Un `/mon-compte` qui route selon rôle(s) | Absent — pages dispersées |
+| Onboarding par rôle | Wizard guidé après signup pour choisir/activer un rôle | Partiel : seulement `AffiliateOnboarding` et `BecomeAdvertiser` |
+| Switch multi-rôles | Un user peut être merchant **et** closer, basculer de contexte | Absent |
+| Dashboards par rôle | Vue dédiée (KPIs, actions) pour chacun des 7 rôles | Seulement merchant (SellerStats), affilié (AffiliateDashboard), buyer (Dashboard générique) |
+| MenuFlash | (à confirmer périmètre) | Absent du code — aucun fichier `menuflash` |
+| Pro / Employeur | Profils + annuaire + tickets | Tables OK, **pages manquantes** |
 
-**But :** changer le nom et le logo partout, sans toucher aux fonctionnalités.
+## 2. Plan de réorganisation — espace utilisateurs multi-rôles
 
-- Intégrer le logo **Boardeal** (`src/assets/boardeal-logo.jpeg`) dans Header, Footer, favicon, manifest PWA, emails, page Auth, sitemap.
-- Mettre à jour la palette : **navy `#1e3a8a`** (principal) + **vert `#10b981`** (accent, du logo) + blanc. L'orange Dealflash devient secondaire ou est retiré (à confirmer).
-- Mise à jour `index.css` (tokens HSL), `tailwind.config.ts`, `index.html` (title, meta, OG), `manifest.json`, `README.md`.
-- Remplacer toutes occurrences textuelles « Dealflash » → « Boardeal » (≈ recherche `rg -i dealflash`).
-- Mettre à jour copy de la page d'accueil avec la **vision** : « Trouver et faire un bon deal en toute sécurité ».
+Approche **non destructive** : on garde toutes les pages existantes, on ajoute une couche de routage et un hub. Découpage en 4 étapes livrables séparément.
 
-**Livrable :** site visuellement Boardeal, aucune régression fonctionnelle.
+### Étape A — Fondations (1 itération)
+- Étendre `app_role` : ajouter `closer`, `influencer`, `promoter`, `professional`, `employer` (migration ENUM `ADD VALUE`). `acheteur` reste = buyer, `vendeur_b2c`/`c2c` restent = merchant.
+- Créer `professional_profiles` (compétences[], dispo, secteur, taux, CV). RLS comme `employer_profiles`.
+- Hook `useUserRoles()` : retourne **toutes** les rôles actifs du user (lecture `user_roles` + `merchant_profiles`/`affiliate_profiles`/`professional_profiles`/`employer_profiles`).
+- Composant `RoleGuard` : `<RoleGuard roles={["merchant","admin"]}>…</RoleGuard>`.
+- Store léger `activeRoleStore` (pattern `sidebarStore`) : rôle de contexte courant, persistant `localStorage`.
 
----
-
-## Phase 1 — Fondations base de données (rôles étendus + RBAC)
-
-**But :** poser le schéma pour les 6 nouveaux rôles sans casser l'existant.
-
-Nouveaux ENUMs et tables (migrations Supabase) :
-
+### Étape B — Hub `/mon-compte` (1 itération)
+Nouveau layout `AccountLayout` + sous-routes :
 ```text
-ENUM user_type: buyer | merchant | closer | influencer | promoter | professional | employer
-                (admin reste séparé via admin_users existant)
-
-Tables nouvelles :
-- merchant_profiles      (lié à un user, infos boutique étendues)
-- affiliate_profiles     (closer/influencer/promoter — KYC, statut validé)
-- professional_profiles  (CV public, compétences, dispo)
-- employer_profiles      (entreprise, secteur)
-- shop_affiliations      (qui est affilié à quelle boutique, statut)
-- qr_codes               (id, owner_user_id, owner_role, target_type[shop|product|service|campaign],
-                         target_id, code unique, discount_pct, is_active)
-- qr_visits              (qr_id, visitor_fingerprint, ip_country, ts) — pour points
-- qr_conversions         (qr_id, order_id, gross_amount, commission_total, ts)
-- commissions            (qr_conversion_id, beneficiary_user_id, role, pct, amount, status)
-- points_ledger          (user_id, delta, source, ref_id) — wallet de points
-- payouts                (user_id, amount, method, status, period)
-- subscription_plans     (code, name, price_cents, target_role, features jsonb)
-- user_subscriptions     (user_id, plan_code, status, current_period_end, stripe_sub_id)
-- job_tickets            (employer_id, professional_id, subject, status) + job_ticket_messages
-- commission_rules       (table paramétrable : type_affilié, pct_platform, pct_affiliate,
-                         points_per_visit, points_to_money_threshold, points_to_money_rate)
+/mon-compte                       → AccountHome (résumé tous rôles, KPIs croisés)
+/mon-compte/profil                → existant Profile
+/mon-compte/parametres            → préférences, langue, notifs, sécurité
+/mon-compte/messages              → existant Messages
+/mon-compte/favoris               → existant Favorites
+/mon-compte/notifications         → centre notifs
+/mon-compte/roles                 → activer/désactiver chaque rôle (lance onboarding)
 ```
+Avec un **RoleSwitcher** dans le header du hub (pastilles colorées par rôle, 1 clic = change `activeRole` et bascule la sidebar contextuelle).
 
-RLS strict par rôle. Helper SQL `has_role(user, role)` étendu. Table `user_roles` existante conservée et alignée avec l'ENUM.
-
-**Livrable :** schéma complet, types TS régénérés, aucune UI changée.
-
----
-
-## Phase 2 — Moteur QR + tracking + commissions (cœur métier)
-
-**But :** rendre opérationnel le tracking multi-sided.
-
-- **Génération QR** : edge function `qr-create` (vérifie rôle + affiliation), stockage en base, image générée côté client (`qrcode` lib déjà présente).
-- **Page de redirection** `/qr/:code` :
-  1. Log dans `qr_visits` (fingerprint anonyme, géo via Cloudflare trace).
-  2. Crédit points dans `points_ledger` selon `commission_rules`.
-  3. Applique cookie d'attribution (30 j) avant redirect vers la cible (boutique/produit).
-- **Webhook commande** : à la confirmation d'un achat, lookup cookie/session → crée `qr_conversions` + `commissions` selon règles paramétrables (par défaut 50/50).
-- **Cas visiteur direct vitrine** : QR téléchargé sans affilié → 100 % plateforme.
-- **Restriction « pas de contact direct »** : ListingCard et fiche produit n'exposent **jamais** email/tel/URL externe du commerçant ; tout passe par bouton « Obtenir le QR ».
-
-**Livrable :** un closer peut s'affilier, générer son QR, le partager, et voir ses points/commissions s'accumuler en temps réel.
-
----
-
-## Phase 3 — Refonte vitrine Boardeal (ranking & filtres)
-
-**But :** moteur de tri intelligent.
-
-- Nouveau champ `listing.deal_type` ENUM : `damaged_packaging | overstock | end_of_season | clearance | promo_40plus | trending`.
-- Vue SQL `ranked_listings` qui pondère :
-  - boost abonnement commerçant (poids le plus fort),
-  - distance géolocalisation (PostGIS ou simple lat/lng + Haversine),
-  - match catégorie/mots-clés (full-text `tsvector`),
-  - fraîcheur.
-- Pagination infinie côté frontend (`useInfiniteQuery`).
-- Filtres UI : type de deal, distance, catégorie, recherche texte.
-
-**Livrable :** vitrine performante avec ranking transparent + admin peut ajuster les poids.
-
----
-
-## Phase 4 — Module Professionnels & Employeurs
-
-**But :** marketplace emploi avec tickets cloisonnés.
-
-- Pages : `/professionnels` (annuaire), `/professionnels/:id` (profil), `/employeurs/dashboard`, `/emploi/annonces`.
-- Création profil pro (compétences, dispo, secteur) + création annonce employeur.
-- **Système de tickets** : table `job_tickets` + `job_ticket_messages` avec **filtre serveur anti-coordonnées** (regex bloque emails, tels, URLs externes tant qu'aucun abonnement actif des deux côtés).
-- Plans : Pro 5 $/mois, Employeur Starter/Pro (paramétrables via `subscription_plans`).
-- Limites gratuites : employeur = X annonces, pro = visibilité limitée.
-
-**Livrable :** module emploi complet, isolé du marketplace deals (modules indépendants).
-
----
-
-## Phase 5 — Abonnements & paiements (Stripe seamless)
-
-**But :** monétisation des plans + payouts affiliés.
-
-- Activer **Stripe seamless payments** (built-in Lovable, pas de BYOK).
-- Produits Stripe pour chaque plan (`subscription_plans` → produits Stripe via `payments--batch_create_product`).
-- Webhook `payments-webhook` étendu pour gérer les events `customer.subscription.*` → MAJ `user_subscriptions`.
-- Page `/abonnements` par rôle, upgrade/downgrade, gestion via Stripe Customer Portal.
-- **Payouts** : page admin pour valider/exporter les paiements aux affiliés (initial = manuel via virement, automatisable plus tard avec Stripe Connect).
-
-**Livrable :** monétisation opérationnelle.
-
----
-
-## Phase 6 — Admin Boardeal étendu
-
-**But :** rendre tout paramétrable depuis `/admin/v2`.
-
-Nouveaux modules dans le panel admin v2 existant :
-- **Règles de commissions** : éditeur des `commission_rules` (pcts, seuils points→$).
-- **Affiliés** : table closers/influencers/promoters, validation KYC, suspension.
-- **Tracking** : dashboards QR (visites/conversions/top affiliés).
-- **Plans & abonnements** : CRUD `subscription_plans`.
-- **Litiges** : nouvelle table `disputes` + UI de résolution.
-- **Notation/avis** : modération.
-
-**Livrable :** super-admin a contrôle total sur les leviers business.
-
----
-
-## Phase 7 — Améliorations recommandées (à valider)
-
-Opportunités identifiées :
-1. **KYC affiliés** (Stripe Identity ou upload pièce) avant activation des payouts.
-2. **Système d'avis** bidirectionnel (acheteur↔commerçant, employeur↔pro).
-3. **Gestion litiges** avec SLA et escalade admin.
-4. **Anti-fraude QR** : rate-limit visites par fingerprint, détection auto-scan.
-5. **Multi-devises / multi-pays** : ajout `currency` sur listings et `country_config`.
-6. **Notifications temps réel** (Supabase Realtime déjà en place) pour conversions affiliés.
-7. **API publique** pour intégrations futures (extension navigateur closer, etc.).
-
----
-
-## Détails techniques transverses
-
-**Stack conservée :** React 18 + Vite + Tailwind + TypeScript + Lovable Cloud (Supabase). Pas de changement de stack.
-
-**Sécurité :**
-- RLS sur **toutes** les nouvelles tables.
-- Rôles dans `user_roles` (jamais sur `profiles`).
-- Filtre serveur anti-coordonnées dans messages tickets (edge function).
-- Audit logs étendus (table `audit_logs` existante).
-
-**Compte super-admin préservé :** aucune phase ne touche à `admin_users` ni à votre rôle.
-
-**Modèle de données — diagramme synthétique :**
-
+### Étape C — Sous-espaces par rôle (2 itérations)
+Chaque rôle a son sous-arbre, monté seulement si rôle actif :
 ```text
-                    ┌──────────┐
-                    │  users   │
-                    └────┬─────┘
-         ┌───────────────┼───────────────┬──────────────┬──────────────┐
-         ▼               ▼               ▼              ▼              ▼
-   merchant_       affiliate_     professional_   employer_      admin_users
-   profiles        profiles         profiles      profiles      (existant)
-         │               │               │              │
-         ▼               ▼               ▼              ▼
-     listings    shop_affiliations   job_tickets ◄─── job_tickets
-         │               │
-         ▼               ▼
-    qr_codes ──► qr_visits ──► points_ledger ──► payouts
-         │
-         ▼
-   qr_conversions ──► commissions ──► payouts
-         │
-         ▼
-       orders
+/mon-compte/acheteur/             AcheteurDashboard, MesBookings, MesTickets, MesAvis
+/mon-compte/marchand/             MerchantDashboard, MesAnnonces, CreerAnnonce, FlashSales,
+                                  Disponibilites, Stats, Verification, Boutique
+/mon-compte/closer/               CloserDashboard, MesQR, MesAffiliations, Commissions, Points, Payouts
+/mon-compte/influenceur/          InfluencerDashboard (même base que closer + médias sociaux)
+/mon-compte/promoteur/            PromoterDashboard (idem + campagnes terrain)
+/mon-compte/pro/                  ProDashboard, MonCV, MesTicketsEmploi, Disponibilites
+/mon-compte/employeur/            EmployerDashboard, MesAnnoncesEmploi, Candidats, MesTicketsEmploi
 ```
+Wizards d'activation réutilisant `AffiliateOnboarding` (pattern multi-step zod) pour chacun des nouveaux rôles. Le `AffiliateDashboard` actuel devient `closer/influencer/promoter` partagé via prop `kind`.
 
----
+Règles préservées :
+- Aucune coordonnée directe (email/tel) sur les fiches publiques pro/marchand → tout passe par tickets ou QR.
+- Filtre serveur anti-coordonnées sur `job_ticket_messages` (déjà prévu côté trigger à compléter).
+- `boost_weight` et `featured_*` restent réservés admin.
+- Affiliés : payouts visibles seulement si KYC `approved`.
 
-## Ordre d'exécution recommandé
+### Étape D — Migration douce des pages existantes (1 itération)
+- Ajouter des **redirections 301 internes** : `/dashboard` → `/mon-compte`, `/my-listings` → `/mon-compte/marchand/annonces`, `/affilie` → `/mon-compte/closer` (selon `kind`), `/profile` → `/mon-compte/profil`, etc.
+- Garder les anciens chemins fonctionnels pendant 1 release (liens externes, emails, PWA).
+- Mettre à jour `LeftSidebar` et `Header` : menu compte regroupé sous un seul point d'entrée + RoleSwitcher.
 
-| # | Phase | Effort | Risque | Bloque la suite ? |
-|---|-------|--------|--------|-------------------|
-| 0 | Rebrand | Faible | Très faible | Non |
-| 1 | DB rôles | Moyen | Moyen (migration) | Oui (phases 2–6) |
-| 2 | Moteur QR | Élevé | Moyen | Oui (phase 6) |
-| 3 | Vitrine | Moyen | Faible | Non |
-| 4 | Emploi | Élevé | Faible | Non |
-| 5 | Paiements | Moyen | Moyen (Stripe) | Phase 6 partielle |
-| 6 | Admin étendu | Moyen | Faible | Non |
-| 7 | Améliorations | Variable | — | — |
+## 3. Détails techniques
 
----
+**Routing** : ajouter dans `App.tsx` un bloc `<Route path="/mon-compte" element={<ProtectedRoute><AccountLayout/></ProtectedRoute>}>` avec routes enfants lazy. Les sous-routes par rôle sont gardées par `<RoleGuard>` qui redirige vers `/mon-compte/roles?activate=<role>` si le rôle n'est pas actif.
 
-## Questions avant de commencer
+**Migration DB (étape A)** :
+```sql
+ALTER TYPE app_role ADD VALUE IF NOT EXISTS 'closer';
+ALTER TYPE app_role ADD VALUE IF NOT EXISTS 'influencer';
+ALTER TYPE app_role ADD VALUE IF NOT EXISTS 'promoter';
+ALTER TYPE app_role ADD VALUE IF NOT EXISTS 'professional';
+ALTER TYPE app_role ADD VALUE IF NOT EXISTS 'employer';
 
-1. **Couleurs :** garde-t-on l'orange Dealflash en accent secondaire, ou bascule-t-on intégralement sur **navy + vert Boardeal** (palette du logo) ?
-2. **Phase 0 maintenant ?** Je propose de démarrer immédiatement par le rebrand (logo + couleurs + textes) — visible tout de suite — puis d'enchaîner sur la Phase 1 (migrations DB) dans un second message. Ça vous convient ?
-3. **Ancien panel admin** (`/admin/*`, hors `/admin/v2`) : on le **supprime** maintenant ou on le garde en lecture seule pendant la transition ?
+CREATE TABLE public.professional_profiles (
+  id uuid PK default gen_random_uuid(),
+  user_id uuid not null unique,
+  headline text, bio text, sector text, city text,
+  skills text[] default '{}', hourly_rate numeric, currency text default 'CAD',
+  availability text, cv_url text, is_published boolean default false,
+  created_at/updated_at
+);
+-- RLS : owner ALL, public SELECT si is_published, admin ALL
+```
+Triggers existants `handle_new_user` / `assign_vendor_role_on_approval` conservés. Activation d'un rôle = INSERT dans `user_roles` (idempotent) + INSERT dans la table profil correspondante.
 
-Confirmez ces 3 points et je démarre la Phase 0 immédiatement.
+**Sécurité** :
+- `useUserRoles` lit via `has_role` (security definer) — pas de récursion RLS.
+- `RoleGuard` est une garde **UX** ; les RLS restent la vraie barrière.
+- Admin v2 (`/admin/v2`) reste intouché : aucune route `/mon-compte/*` ne peut accorder de privilège admin.
+
+**MenuFlash** : non inclus dans cette étape (périmètre à clarifier — restaurants ? menu QR éphémère sur fiche commerçant ?). Sera traité dans une phase ultérieure une fois le hub multi-rôles en place.
+
+## 4. Ordre d'exécution proposé
+
+1. **Étape A** — migration ENUM + `professional_profiles` + hook `useUserRoles` + `RoleGuard`. (1 message)
+2. **Étape B** — `AccountLayout` + `/mon-compte` + RoleSwitcher + page `/mon-compte/roles`. (1 message)
+3. **Étape C1** — sous-espaces buyer + merchant + affiliés (réutilise pages existantes). (1 message)
+4. **Étape C2** — sous-espaces pro + employeur (nouvelles pages, réutilise tables existantes). (1 message)
+5. **Étape D** — redirections + nettoyage `LeftSidebar`/`Header`. (1 message)
+
+Chaque étape est testable indépendamment et n'introduit aucune régression sur les flux existants.
+
+## 5. Hors scope (à valider ensuite)
+- MenuFlash (périmètre à définir).
+- Phase 4 (module emploi côté public + plans payants pro/employeur).
+- Phase 5 (Stripe seamless + payouts automatisés).
+- Phase 6 admin v2 étendu (commission_rules CRUD, KYC affiliés UI, dashboards QR).
+
+Confirme l'approche pour que je lance l'**Étape A** (migration + fondations) — je t'enverrai la migration SQL en attente d'approbation avant d'écrire le code.

@@ -3446,6 +3446,11 @@ export type Database = {
         | "vendeur_c2c"
         | "acheteur"
         | "moderateur"
+        | "closer"
+        | "influencer"
+        | "promoter"
+        | "professional"
+        | "employer"
       appointment_status:
         | "requested"
         | "accepted"
@@ -3735,6 +3740,11 @@ export const Constants = {
         "vendeur_c2c",
         "acheteur",
         "moderateur",
+        "closer",
+        "influencer",
+        "promoter",
+        "professional",
+        "employer",
       ],
       appointment_status: [
         "requested",
