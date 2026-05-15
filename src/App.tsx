@@ -60,6 +60,7 @@ const SellerStats = lazy(() => import("./pages/SellerStats"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const BecomeAdvertiser = lazy(() => import("./pages/BecomeAdvertiser"));
 const QrRedirect = lazy(() => import("./pages/QrRedirect"));
+const AffiliateDashboard = lazy(() => import("./pages/AffiliateDashboard"));
 
 import { CookieConsent } from "@/components/CookieConsent";
 
@@ -128,6 +129,7 @@ const App = () => (
               <Route path="/admin/services-pro" element={<AdminRoute><AdminServices /></AdminRoute>} />
               <Route path="/admin/annonces" element={<AdminRoute><AdminAnnonces /></AdminRoute>} />
               <Route path="/devenir-annonceur/:profile" element={<BecomeAdvertiser />} />
+              <Route path="/affilie" element={<AffiliateDashboard />} />
               <Route path="/a-propos" element={<About />} />
               <Route path="/politique-confidentialite" element={<PrivacyPolicy />} />
               <Route path="*" element={<NotFound />} />

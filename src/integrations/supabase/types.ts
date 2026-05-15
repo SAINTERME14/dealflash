@@ -180,6 +180,305 @@ export type Database = {
         }
         Relationships: []
       }
+      affiliate_clicks: {
+        Row: {
+          affiliate_id: string
+          clicked_at: string | null
+          country_code: string | null
+          device_type: string | null
+          id: string
+          ip_address: string | null
+          link_id: string
+          user_agent: string | null
+        }
+        Insert: {
+          affiliate_id: string
+          clicked_at?: string | null
+          country_code?: string | null
+          device_type?: string | null
+          id?: string
+          ip_address?: string | null
+          link_id: string
+          user_agent?: string | null
+        }
+        Update: {
+          affiliate_id?: string
+          clicked_at?: string | null
+          country_code?: string | null
+          device_type?: string | null
+          id?: string
+          ip_address?: string | null
+          link_id?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_clicks_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_clicks_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_links"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_commissions: {
+        Row: {
+          affiliate_id: string
+          approved_at: string | null
+          commission_amount: number
+          commission_rate: number
+          conversion_id: string | null
+          created_at: string | null
+          id: string
+          status: string | null
+        }
+        Insert: {
+          affiliate_id: string
+          approved_at?: string | null
+          commission_amount: number
+          commission_rate: number
+          conversion_id?: string | null
+          created_at?: string | null
+          id?: string
+          status?: string | null
+        }
+        Update: {
+          affiliate_id?: string
+          approved_at?: string | null
+          commission_amount?: number
+          commission_rate?: number
+          conversion_id?: string | null
+          created_at?: string | null
+          id?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_commissions_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_commissions_conversion_id_fkey"
+            columns: ["conversion_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_conversions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_conversions: {
+        Row: {
+          affiliate_id: string
+          amount: number
+          click_id: string | null
+          converted_at: string | null
+          currency: string | null
+          id: string
+          link_id: string
+          order_id: string | null
+          status: string | null
+        }
+        Insert: {
+          affiliate_id: string
+          amount: number
+          click_id?: string | null
+          converted_at?: string | null
+          currency?: string | null
+          id?: string
+          link_id: string
+          order_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          affiliate_id?: string
+          amount?: number
+          click_id?: string | null
+          converted_at?: string | null
+          currency?: string | null
+          id?: string
+          link_id?: string
+          order_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_conversions_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_conversions_click_id_fkey"
+            columns: ["click_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_clicks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_conversions_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_links"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_links: {
+        Row: {
+          affiliate_id: string
+          clicks_count: number | null
+          conversions_count: number | null
+          created_at: string | null
+          description: string | null
+          display_name: string
+          id: string
+          link_code: string
+          revenue_generated: number | null
+          status: string | null
+          tracking_url: string
+          updated_at: string | null
+        }
+        Insert: {
+          affiliate_id: string
+          clicks_count?: number | null
+          conversions_count?: number | null
+          created_at?: string | null
+          description?: string | null
+          display_name: string
+          id?: string
+          link_code: string
+          revenue_generated?: number | null
+          status?: string | null
+          tracking_url: string
+          updated_at?: string | null
+        }
+        Update: {
+          affiliate_id?: string
+          clicks_count?: number | null
+          conversions_count?: number | null
+          created_at?: string | null
+          description?: string | null
+          display_name?: string
+          id?: string
+          link_code?: string
+          revenue_generated?: number | null
+          status?: string | null
+          tracking_url?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_links_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_payout_history: {
+        Row: {
+          action: string | null
+          affiliate_id: string
+          created_at: string | null
+          id: string
+          notes: string | null
+          payout_id: string | null
+        }
+        Insert: {
+          action?: string | null
+          affiliate_id: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          payout_id?: string | null
+        }
+        Update: {
+          action?: string | null
+          affiliate_id?: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          payout_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_payout_history_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_payout_history_payout_id_fkey"
+            columns: ["payout_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_payouts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_payouts: {
+        Row: {
+          affiliate_id: string
+          amount: number
+          approved_at: string | null
+          completed_at: string | null
+          currency: string | null
+          id: string
+          payment_email: string | null
+          payment_method: string | null
+          reference_id: string | null
+          requested_at: string | null
+          status: string | null
+        }
+        Insert: {
+          affiliate_id: string
+          amount: number
+          approved_at?: string | null
+          completed_at?: string | null
+          currency?: string | null
+          id?: string
+          payment_email?: string | null
+          payment_method?: string | null
+          reference_id?: string | null
+          requested_at?: string | null
+          status?: string | null
+        }
+        Update: {
+          affiliate_id?: string
+          amount?: number
+          approved_at?: string | null
+          completed_at?: string | null
+          currency?: string | null
+          id?: string
+          payment_email?: string | null
+          payment_method?: string | null
+          reference_id?: string | null
+          requested_at?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_payouts_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       affiliate_profiles: {
         Row: {
           bio: string | null
@@ -704,6 +1003,33 @@ export type Database = {
           points_to_money_rate?: number
           points_to_money_threshold?: number
           updated_at?: string
+        }
+        Relationships: []
+      }
+      commission_tiers: {
+        Row: {
+          commission_rate: number
+          created_at: string | null
+          id: number
+          max_earnings: number | null
+          min_earnings: number | null
+          tier_name: string
+        }
+        Insert: {
+          commission_rate: number
+          created_at?: string | null
+          id?: number
+          max_earnings?: number | null
+          min_earnings?: number | null
+          tier_name: string
+        }
+        Update: {
+          commission_rate?: number
+          created_at?: string | null
+          id?: number
+          max_earnings?: number | null
+          min_earnings?: number | null
+          tier_name?: string
         }
         Relationships: []
       }
