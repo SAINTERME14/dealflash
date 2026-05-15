@@ -61,6 +61,7 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const BecomeAdvertiser = lazy(() => import("./pages/BecomeAdvertiser"));
 const QrRedirect = lazy(() => import("./pages/QrRedirect"));
 const AffiliateDashboard = lazy(() => import("./pages/AffiliateDashboard"));
+const AffiliateOnboarding = lazy(() => import("./pages/AffiliateOnboarding"));
 
 import { CookieConsent } from "@/components/CookieConsent";
 
