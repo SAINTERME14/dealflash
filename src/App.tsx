@@ -160,6 +160,7 @@ const App = () => (
         </Suspense>
       </BrowserRouter>
     </TooltipProvider>
+    </MarketProvider>
   </QueryClientProvider>
 );
 
