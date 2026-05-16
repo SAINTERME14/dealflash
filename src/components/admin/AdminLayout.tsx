@@ -24,6 +24,8 @@ import {
   Tag,
   Map,
   ToggleLeft,
+  FolderTree,
+  Coins,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -46,6 +48,8 @@ const sections: Array<{ title: string; items: Item[] }> = [
       { to: "/admin/booster", label: "Booster géo-campagnes", icon: Zap },
       { to: "/admin/tickets", label: "Tickets & revenus", icon: Receipt },
       { to: "/admin/finances", label: "Finances", icon: Wallet },
+      { to: "/admin/commissions", label: "Commissions affiliés", icon: Coins },
+      { to: "/admin/categories", label: "Catégories", icon: FolderTree },
       { to: "/admin/ventes-flash", label: "Ventes Flash", icon: Zap },
       { to: "/admin/boutiques", label: "Boutiques", icon: Store },
       { to: "/admin/partenaires", label: "Partenaires / Sponsors", icon: Handshake },
