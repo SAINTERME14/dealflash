@@ -83,6 +83,9 @@ export function Header() {
                   {leadsEnabled && (
                     <DropdownMenuItem asChild><Link to="/mes-leads">Mes leads</Link></DropdownMenuItem>
                   )}
+                  <DropdownMenuItem asChild><Link to="/affilie/qr-codes">Mes QR d'affiliation</Link></DropdownMenuItem>
+                  {false && (
+                  )}
                   <DropdownMenuItem asChild><Link to="/mes-reservations">Mes réservations</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link to="/profil">Mon profil</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link to="/support">Support & aide</Link></DropdownMenuItem>
