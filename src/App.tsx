@@ -82,8 +82,11 @@ const RouteFallback = () => (
   </div>
 );
 
+import { MarketProvider } from "@/contexts/MarketContext";
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <MarketProvider>
     <TooltipProvider>
       <Toaster />
       <Sonner />
@@ -157,6 +160,7 @@ const App = () => (
         </Suspense>
       </BrowserRouter>
     </TooltipProvider>
+    </MarketProvider>
   </QueryClientProvider>
 );
 

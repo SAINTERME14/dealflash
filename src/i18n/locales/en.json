@@ -1,0 +1,4 @@
+{
+  "common": { "save": "Save", "cancel": "Cancel", "loading": "Loading…", "search": "Search" },
+  "nav": { "home": "Home", "sell": "Sell", "account": "My account", "admin": "Admin" }
+}

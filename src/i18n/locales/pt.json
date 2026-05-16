@@ -1,0 +1,4 @@
+{
+  "common": { "save": "Salvar", "cancel": "Cancelar", "loading": "Carregando…", "search": "Pesquisar" },
+  "nav": { "home": "Início", "sell": "Vender", "account": "Minha conta", "admin": "Admin" }
+}
