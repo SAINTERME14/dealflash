@@ -58,6 +58,8 @@ const AdminAnnonces = lazy(() => import("./pages/AdminAnnonces"));
 const AdminMarkets = lazy(() => import("./pages/AdminMarkets"));
 const AdminFeatureFlags = lazy(() => import("./pages/AdminFeatureFlags"));
 const AdminBooster = lazy(() => import("./pages/AdminBooster"));
+const AdminCategories = lazy(() => import("./pages/AdminCategories"));
+const AdminCommissions = lazy(() => import("./pages/AdminCommissions"));
 const MerchantLeads = lazy(() => import("./pages/MerchantLeads"));
 const AffiliateQrCodes = lazy(() => import("./pages/AffiliateQrCodes"));
 const CustomerDiscountQr = lazy(() => import("./pages/CustomerDiscountQr"));
