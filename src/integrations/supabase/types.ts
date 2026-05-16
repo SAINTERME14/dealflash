@@ -1408,6 +1408,30 @@ export type Database = {
           },
         ]
       }
+      feature_flags: {
+        Row: {
+          description: string | null
+          enabled: boolean
+          key: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          description?: string | null
+          enabled?: boolean
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          description?: string | null
+          enabled?: boolean
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       featured_audit_log: {
         Row: {
           action: string
@@ -1570,6 +1594,92 @@ export type Database = {
         }
         Relationships: []
       }
+      leads: {
+        Row: {
+          affiliate_user_id: string | null
+          amount_cents: number | null
+          channel: string | null
+          converted_at: string | null
+          created_at: string
+          currency: string | null
+          customer_user_id: string | null
+          id: string
+          listing_id: string | null
+          merchant_user_id: string
+          notes: string | null
+          qr_id: string | null
+          qr_visit_id: number | null
+          scanned_at: string
+          status: Database["public"]["Enums"]["lead_status"]
+          updated_at: string
+        }
+        Insert: {
+          affiliate_user_id?: string | null
+          amount_cents?: number | null
+          channel?: string | null
+          converted_at?: string | null
+          created_at?: string
+          currency?: string | null
+          customer_user_id?: string | null
+          id?: string
+          listing_id?: string | null
+          merchant_user_id: string
+          notes?: string | null
+          qr_id?: string | null
+          qr_visit_id?: number | null
+          scanned_at?: string
+          status?: Database["public"]["Enums"]["lead_status"]
+          updated_at?: string
+        }
+        Update: {
+          affiliate_user_id?: string | null
+          amount_cents?: number | null
+          channel?: string | null
+          converted_at?: string | null
+          created_at?: string
+          currency?: string | null
+          customer_user_id?: string | null
+          id?: string
+          listing_id?: string | null
+          merchant_user_id?: string
+          notes?: string | null
+          qr_id?: string | null
+          qr_visit_id?: number | null
+          scanned_at?: string
+          status?: Database["public"]["Enums"]["lead_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "ranked_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_qr_id_fkey"
+            columns: ["qr_id"]
+            isOneToOne: false
+            referencedRelation: "qr_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_qr_visit_id_fkey"
+            columns: ["qr_visit_id"]
+            isOneToOne: false
+            referencedRelation: "qr_visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       listing_availability: {
         Row: {
           created_at: string
@@ -1731,6 +1841,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      markets: {
+        Row: {
+          country_code: string
+          created_at: string
+          currency: string
+          id: string
+          is_default: boolean
+          languages: string[]
+          name: string
+          status: Database["public"]["Enums"]["market_status"]
+          updated_at: string
+        }
+        Insert: {
+          country_code: string
+          created_at?: string
+          currency?: string
+          id?: string
+          is_default?: boolean
+          languages?: string[]
+          name: string
+          status?: Database["public"]["Enums"]["market_status"]
+          updated_at?: string
+        }
+        Update: {
+          country_code?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          is_default?: boolean
+          languages?: string[]
+          name?: string
+          status?: Database["public"]["Enums"]["market_status"]
+          updated_at?: string
+        }
+        Relationships: []
       }
       merchant_profiles: {
         Row: {
@@ -3501,8 +3647,10 @@ export type Database = {
         | "professional_license"
         | "other"
       kyc_status: "pending" | "approved" | "rejected"
+      lead_status: "scanned" | "converted" | "cancelled"
       listing_status: "draft" | "active" | "paused" | "sold" | "archived"
       listing_type: "product" | "vehicle" | "rental" | "hotel" | "service"
+      market_status: "active" | "inactive"
       notification_type:
         | "ticket_purchased"
         | "ticket_validated"
@@ -3802,8 +3950,10 @@ export const Constants = {
         "other",
       ],
       kyc_status: ["pending", "approved", "rejected"],
+      lead_status: ["scanned", "converted", "cancelled"],
       listing_status: ["draft", "active", "paused", "sold", "archived"],
       listing_type: ["product", "vehicle", "rental", "hotel", "service"],
+      market_status: ["active", "inactive"],
       notification_type: [
         "ticket_purchased",
         "ticket_validated",
