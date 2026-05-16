@@ -73,6 +73,7 @@ const sections: Array<{ title: string; items: Item[] }> = [
       { to: "/admin/dropship-orders", label: "Commandes fournisseurs", icon: ShoppingCart },
       { to: "/admin/fournisseurs", label: "Fournisseurs", icon: Truck },
       { to: "/admin/canaux", label: "Canaux de vente", icon: Globe },
+      { to: "/admin/produits-tendances", label: "Produits tendances IA", icon: Sparkles },
     ],
   },
   {
