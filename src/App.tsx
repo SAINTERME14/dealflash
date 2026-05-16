@@ -8,6 +8,7 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { AdminRoute } from "@/components/auth/AdminRoute";
 import { SellerNotesRoute } from "@/components/auth/SellerNotesRoute";
+import { FeatureFlagGuard } from "@/components/FeatureFlagGuard";
 import { Loader2 } from "lucide-react";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -101,7 +102,7 @@ const App = () => (
               <Route path="/tableau-de-bord" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/mes-annonces" element={<ProtectedRoute><MyListings /></ProtectedRoute>} />
               <Route path="/mes-reservations" element={<ProtectedRoute><MyBookings /></ProtectedRoute>} />
-              <Route path="/mes-tickets" element={<ProtectedRoute><MyTickets /></ProtectedRoute>} />
+              <Route path="/mes-tickets" element={<ProtectedRoute><FeatureFlagGuard flag="tickets_enabled"><MyTickets /></FeatureFlagGuard></ProtectedRoute>} />
               <Route path="/favoris" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
               <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
               <Route path="/profil" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
@@ -113,7 +114,7 @@ const App = () => (
               <Route path="/admin/contenu" element={<AdminRoute><AdminContent /></AdminRoute>} />
               <Route path="/admin/vedette" element={<AdminRoute><AdminFeatured /></AdminRoute>} />
               <Route path="/admin/utilisateurs" element={<AdminRoute><AdminUsers /></AdminRoute>} />
-              <Route path="/admin/tickets" element={<AdminRoute><AdminTickets /></AdminRoute>} />
+              <Route path="/admin/tickets" element={<AdminRoute><FeatureFlagGuard flag="tickets_enabled" redirectTo="/admin"><AdminTickets /></FeatureFlagGuard></AdminRoute>} />
               <Route path="/admin/journal" element={<AdminRoute><AdminAuditLog /></AdminRoute>} />
               <Route path="/admin/taches" element={<AdminRoute><AdminTasks /></AdminRoute>} />
               <Route path="/admin/finances" element={<AdminRoute><AdminFinances /></AdminRoute>} />
@@ -134,7 +135,7 @@ const App = () => (
               <Route path="/admin/annonces" element={<AdminRoute><AdminAnnonces /></AdminRoute>} />
               <Route path="/admin/marches" element={<AdminRoute><AdminMarkets /></AdminRoute>} />
               <Route path="/admin/fonctionnalites" element={<AdminRoute><AdminFeatureFlags /></AdminRoute>} />
-              <Route path="/mes-leads" element={<ProtectedRoute><MerchantLeads /></ProtectedRoute>} />
+              <Route path="/mes-leads" element={<ProtectedRoute><FeatureFlagGuard flag="leads_enabled"><MerchantLeads /></FeatureFlagGuard></ProtectedRoute>} />
               <Route path="/devenir-annonceur/:profile" element={<BecomeAdvertiser />} />
               <Route path="/affilie" element={<AffiliateDashboard />} />
               <Route path="/devenir-affilie" element={<AffiliateOnboarding />} />
