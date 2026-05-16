@@ -132,6 +132,9 @@ const App = () => (
               <Route path="/admin/partenaires" element={<AdminRoute><AdminPartners /></AdminRoute>} />
               <Route path="/admin/services-pro" element={<AdminRoute><AdminServices /></AdminRoute>} />
               <Route path="/admin/annonces" element={<AdminRoute><AdminAnnonces /></AdminRoute>} />
+              <Route path="/admin/marches" element={<AdminRoute><AdminMarkets /></AdminRoute>} />
+              <Route path="/admin/fonctionnalites" element={<AdminRoute><AdminFeatureFlags /></AdminRoute>} />
+              <Route path="/mes-leads" element={<ProtectedRoute><MerchantLeads /></ProtectedRoute>} />
               <Route path="/devenir-annonceur/:profile" element={<BecomeAdvertiser />} />
               <Route path="/affilie" element={<AffiliateDashboard />} />
               <Route path="/devenir-affilie" element={<AffiliateOnboarding />} />
