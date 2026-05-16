@@ -188,6 +188,9 @@ export default function AffiliateDashboard() {
                 </CardContent>
               </Card>
             </div>
+            <div className="bg-white/95 rounded-lg p-1">
+              <AffiliateLeadsPanel />
+            </div>
           </TabsContent>
 
           <TabsContent value="links" className="space-y-4">
