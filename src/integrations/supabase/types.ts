@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_slots: {
+        Row: {
+          code: string
+          created_at: string
+          height: number | null
+          id: string
+          is_active: boolean
+          location: string | null
+          market_id: string | null
+          name: string
+          updated_at: string
+          width: number | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          height?: number | null
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          market_id?: string | null
+          name: string
+          updated_at?: string
+          width?: number | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          height?: number | null
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          market_id?: string | null
+          name?: string
+          updated_at?: string
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_slots_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_recovery_codes: {
         Row: {
           admin_id: string
@@ -802,6 +849,70 @@ export type Database = {
           url?: string
         }
         Relationships: []
+      }
+      campaigns: {
+        Row: {
+          booster_weight: number
+          created_at: string
+          ends_at: string | null
+          id: string
+          is_active: boolean
+          listing_id: string | null
+          market_id: string | null
+          merchant_user_id: string
+          plan: string
+          starts_at: string
+          updated_at: string
+        }
+        Insert: {
+          booster_weight?: number
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          listing_id?: string | null
+          market_id?: string | null
+          merchant_user_id: string
+          plan?: string
+          starts_at?: string
+          updated_at?: string
+        }
+        Update: {
+          booster_weight?: number
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          listing_id?: string | null
+          market_id?: string | null
+          merchant_user_id?: string
+          plan?: string
+          starts_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaigns_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaigns_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "ranked_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaigns_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       categories: {
         Row: {
@@ -1594,6 +1705,51 @@ export type Database = {
         }
         Relationships: []
       }
+      lead_reports: {
+        Row: {
+          conversions_count: number
+          currency: string
+          generated_at: string
+          id: string
+          leads_count: number
+          merchant_user_id: string
+          payload: Json
+          period: string
+          period_end: string
+          period_start: string
+          sent_at: string | null
+          total_revenue_cents: number
+        }
+        Insert: {
+          conversions_count?: number
+          currency?: string
+          generated_at?: string
+          id?: string
+          leads_count?: number
+          merchant_user_id: string
+          payload?: Json
+          period: string
+          period_end: string
+          period_start: string
+          sent_at?: string | null
+          total_revenue_cents?: number
+        }
+        Update: {
+          conversions_count?: number
+          currency?: string
+          generated_at?: string
+          id?: string
+          leads_count?: number
+          merchant_user_id?: string
+          payload?: Json
+          period?: string
+          period_end?: string
+          period_start?: string
+          sent_at?: string | null
+          total_revenue_cents?: number
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           affiliate_user_id: string | null
@@ -2220,6 +2376,76 @@ export type Database = {
         }
         Relationships: []
       }
+      publications: {
+        Row: {
+          affiliate_user_id: string
+          channel: string
+          content: string | null
+          created_at: string
+          external_ref: string | null
+          external_url: string | null
+          id: string
+          listing_id: string | null
+          media_url: string | null
+          metrics: Json
+          posted_at: string | null
+          qr_code_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          affiliate_user_id: string
+          channel: string
+          content?: string | null
+          created_at?: string
+          external_ref?: string | null
+          external_url?: string | null
+          id?: string
+          listing_id?: string | null
+          media_url?: string | null
+          metrics?: Json
+          posted_at?: string | null
+          qr_code_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          affiliate_user_id?: string
+          channel?: string
+          content?: string | null
+          created_at?: string
+          external_ref?: string | null
+          external_url?: string | null
+          id?: string
+          listing_id?: string | null
+          media_url?: string | null
+          metrics?: Json
+          posted_at?: string | null
+          qr_code_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "publications_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "publications_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "ranked_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "publications_qr_code_id_fkey"
+            columns: ["qr_code_id"]
+            isOneToOne: false
+            referencedRelation: "qr_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       qr_codes: {
         Row: {
           code: string
@@ -2397,6 +2623,76 @@ export type Database = {
             columns: ["ticket_id"]
             isOneToOne: true
             referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales: {
+        Row: {
+          affiliate_user_id: string | null
+          amount_cents: number
+          commission_amount_cents: number
+          confirmed_at: string | null
+          created_at: string
+          currency: string
+          id: string
+          lead_id: string | null
+          listing_id: string | null
+          merchant_user_id: string
+          returned_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          affiliate_user_id?: string | null
+          amount_cents: number
+          commission_amount_cents?: number
+          confirmed_at?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          lead_id?: string | null
+          listing_id?: string | null
+          merchant_user_id: string
+          returned_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          affiliate_user_id?: string | null
+          amount_cents?: number
+          commission_amount_cents?: number
+          confirmed_at?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          lead_id?: string | null
+          listing_id?: string | null
+          merchant_user_id?: string
+          returned_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "ranked_listings"
             referencedColumns: ["id"]
           },
         ]
@@ -3257,6 +3553,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      translations: {
+        Row: {
+          id: string
+          key: string
+          locale: string
+          namespace: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          id?: string
+          key: string
+          locale: string
+          namespace?: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          id?: string
+          key?: string
+          locale?: string
+          namespace?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
