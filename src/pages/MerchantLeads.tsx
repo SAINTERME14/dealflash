@@ -105,7 +105,7 @@ export default function MerchantLeads() {
       affiliate_user_id: affiliateId,
       qr_id: qr.id,
       qr_visit_id: (visit as { id: number } | null)?.id ?? null,
-      listing_id: qr.target_type === "listing" ? qr.target_id : null,
+      listing_id: qr.target_type === "product" || qr.target_type === "service" ? qr.target_id : null,
       channel: qr.owner_role,
       status: "scanned",
     });
