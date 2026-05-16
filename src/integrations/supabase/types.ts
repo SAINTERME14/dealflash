@@ -3829,6 +3829,7 @@ export type Database = {
           total_reviews: number
         }[]
       }
+      has_approved_kyc: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
