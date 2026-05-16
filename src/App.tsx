@@ -54,6 +54,9 @@ const AdminBoutiques = lazy(() => import("./pages/AdminBoutiques"));
 const AdminPartners = lazy(() => import("./pages/AdminPartners"));
 const AdminServices = lazy(() => import("./pages/AdminServices"));
 const AdminAnnonces = lazy(() => import("./pages/AdminAnnonces"));
+const AdminMarkets = lazy(() => import("./pages/AdminMarkets"));
+const AdminFeatureFlags = lazy(() => import("./pages/AdminFeatureFlags"));
+const MerchantLeads = lazy(() => import("./pages/MerchantLeads"));
 const About = lazy(() => import("./pages/About"));
 const MyReviews = lazy(() => import("./pages/MyReviews"));
 const SellerStats = lazy(() => import("./pages/SellerStats"));
@@ -129,6 +132,9 @@ const App = () => (
               <Route path="/admin/partenaires" element={<AdminRoute><AdminPartners /></AdminRoute>} />
               <Route path="/admin/services-pro" element={<AdminRoute><AdminServices /></AdminRoute>} />
               <Route path="/admin/annonces" element={<AdminRoute><AdminAnnonces /></AdminRoute>} />
+              <Route path="/admin/marches" element={<AdminRoute><AdminMarkets /></AdminRoute>} />
+              <Route path="/admin/fonctionnalites" element={<AdminRoute><AdminFeatureFlags /></AdminRoute>} />
+              <Route path="/mes-leads" element={<ProtectedRoute><MerchantLeads /></ProtectedRoute>} />
               <Route path="/devenir-annonceur/:profile" element={<BecomeAdvertiser />} />
               <Route path="/affilie" element={<AffiliateDashboard />} />
               <Route path="/devenir-affilie" element={<AffiliateOnboarding />} />
