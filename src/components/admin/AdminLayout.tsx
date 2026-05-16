@@ -22,6 +22,8 @@ import {
   Handshake,
   Briefcase,
   Tag,
+  Map,
+  ToggleLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -70,7 +72,11 @@ const sections: Array<{ title: string; items: Item[] }> = [
   },
   {
     title: "Système",
-    items: [{ to: "/admin/journal", label: "Journal d'audit", icon: History }],
+    items: [
+      { to: "/admin/marches", label: "Marchés & devises", icon: Map },
+      { to: "/admin/fonctionnalites", label: "Fonctionnalités", icon: ToggleLeft },
+      { to: "/admin/journal", label: "Journal d'audit", icon: History },
+    ],
   },
 ];
 
