@@ -57,8 +57,10 @@ const AdminServices = lazy(() => import("./pages/AdminServices"));
 const AdminAnnonces = lazy(() => import("./pages/AdminAnnonces"));
 const AdminMarkets = lazy(() => import("./pages/AdminMarkets"));
 const AdminFeatureFlags = lazy(() => import("./pages/AdminFeatureFlags"));
+const AdminBooster = lazy(() => import("./pages/AdminBooster"));
 const MerchantLeads = lazy(() => import("./pages/MerchantLeads"));
 const AffiliateQrCodes = lazy(() => import("./pages/AffiliateQrCodes"));
+const CustomerDiscountQr = lazy(() => import("./pages/CustomerDiscountQr"));
 const About = lazy(() => import("./pages/About"));
 const MyReviews = lazy(() => import("./pages/MyReviews"));
 const SellerStats = lazy(() => import("./pages/SellerStats"));
@@ -136,8 +138,10 @@ const App = () => (
               <Route path="/admin/annonces" element={<AdminRoute><AdminAnnonces /></AdminRoute>} />
               <Route path="/admin/marches" element={<AdminRoute><AdminMarkets /></AdminRoute>} />
               <Route path="/admin/fonctionnalites" element={<AdminRoute><AdminFeatureFlags /></AdminRoute>} />
+              <Route path="/admin/booster" element={<AdminRoute><AdminBooster /></AdminRoute>} />
               <Route path="/mes-leads" element={<ProtectedRoute><FeatureFlagGuard flag="leads_enabled"><MerchantLeads /></FeatureFlagGuard></ProtectedRoute>} />
               <Route path="/affilie/qr-codes" element={<ProtectedRoute><AffiliateQrCodes /></ProtectedRoute>} />
+              <Route path="/mon-rabais/:listingId" element={<ProtectedRoute><FeatureFlagGuard flag="leads_enabled"><CustomerDiscountQr /></FeatureFlagGuard></ProtectedRoute>} />
               <Route path="/devenir-annonceur/:profile" element={<BecomeAdvertiser />} />
               <Route path="/affilie" element={<AffiliateDashboard />} />
               <Route path="/devenir-affilie" element={<AffiliateOnboarding />} />

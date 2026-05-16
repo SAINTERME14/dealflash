@@ -43,6 +43,7 @@ const sections: Array<{ title: string; items: Item[] }> = [
     title: "Marketplace",
     items: [
       { to: "/admin/vedette", label: "Sélection sponsorisée", icon: Sparkles },
+      { to: "/admin/booster", label: "Booster géo-campagnes", icon: Zap },
       { to: "/admin/tickets", label: "Tickets & revenus", icon: Receipt },
       { to: "/admin/finances", label: "Finances", icon: Wallet },
       { to: "/admin/ventes-flash", label: "Ventes Flash", icon: Zap },
