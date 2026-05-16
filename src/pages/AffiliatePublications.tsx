@@ -136,6 +136,6 @@ export default function AffiliatePublications() {
           </CardContent>
         </Card>
       </div>
-    </MainLayout>
+    </>
   );
 }
