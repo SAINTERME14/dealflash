@@ -139,6 +139,7 @@ const App = () => (
               <Route path="/admin/fonctionnalites" element={<AdminRoute><AdminFeatureFlags /></AdminRoute>} />
               <Route path="/mes-leads" element={<ProtectedRoute><FeatureFlagGuard flag="leads_enabled"><MerchantLeads /></FeatureFlagGuard></ProtectedRoute>} />
               <Route path="/affilie/qr-codes" element={<ProtectedRoute><AffiliateQrCodes /></ProtectedRoute>} />
+              <Route path="/mon-rabais/:listingId" element={<ProtectedRoute><FeatureFlagGuard flag="leads_enabled"><CustomerDiscountQr /></FeatureFlagGuard></ProtectedRoute>} />
               <Route path="/devenir-annonceur/:profile" element={<BecomeAdvertiser />} />
               <Route path="/affilie" element={<AffiliateDashboard />} />
               <Route path="/devenir-affilie" element={<AffiliateOnboarding />} />
