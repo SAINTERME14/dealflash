@@ -21,7 +21,7 @@ type Category = {
   name: string;
   slug: string;
   parent_id: string | null;
-  listing_type: "product" | "service" | "petite_annonce" | "ticket";
+  listing_type: "product" | "service" | "vehicle" | "rental" | "hotel";
   is_active: boolean;
   display_order: number;
 };
