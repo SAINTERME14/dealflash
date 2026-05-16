@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import boardealLogo from "@/assets/boardeal-logo.jpeg";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { useFeatureFlag } from "@/hooks/useFeatureFlag";
 import { Button } from "@/components/ui/button";
 import { Heart, MessageCircle, Plus, User, LogOut, Search, Sparkles, ShieldCheck, Menu } from "lucide-react";
 import { sidebarStore } from "./sidebarStore";
@@ -17,6 +18,8 @@ import {
 export function Header() {
   const { user, signOut } = useAuth();
   const { isAdmin } = useIsAdmin();
+  const ticketsEnabled = useFeatureFlag("tickets_enabled", true);
+  const leadsEnabled = useFeatureFlag("leads_enabled", true);
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -74,7 +77,12 @@ export function Header() {
                 <DropdownMenuContent align="end" className="w-56 bg-popover">
                   <DropdownMenuItem asChild><Link to="/tableau-de-bord">Tableau de bord</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link to="/mes-annonces">Mes annonces</Link></DropdownMenuItem>
-                  <DropdownMenuItem asChild><Link to="/mes-tickets">Mes tickets</Link></DropdownMenuItem>
+                  {ticketsEnabled && (
+                    <DropdownMenuItem asChild><Link to="/mes-tickets">Mes tickets</Link></DropdownMenuItem>
+                  )}
+                  {leadsEnabled && (
+                    <DropdownMenuItem asChild><Link to="/mes-leads">Mes leads</Link></DropdownMenuItem>
+                  )}
                   <DropdownMenuItem asChild><Link to="/mes-reservations">Mes réservations</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link to="/profil">Mon profil</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link to="/support">Support & aide</Link></DropdownMenuItem>
