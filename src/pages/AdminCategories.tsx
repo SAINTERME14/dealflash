@@ -122,8 +122,9 @@ export default function AdminCategories() {
               <SelectContent>
                 <SelectItem value="product">Produit</SelectItem>
                 <SelectItem value="service">Service</SelectItem>
-                <SelectItem value="petite_annonce">Petite annonce</SelectItem>
-                <SelectItem value="ticket">Ticket</SelectItem>
+                <SelectItem value="vehicle">Véhicule</SelectItem>
+                <SelectItem value="rental">Location</SelectItem>
+                <SelectItem value="hotel">Hôtel</SelectItem>
               </SelectContent>
             </Select>
             <Button onClick={createCategory} disabled={creating}>
