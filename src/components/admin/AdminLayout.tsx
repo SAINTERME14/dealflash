@@ -24,6 +24,8 @@ import {
   Tag,
   Map,
   ToggleLeft,
+  FolderTree,
+  Coins,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
