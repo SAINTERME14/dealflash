@@ -1,0 +1,14 @@
+{
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "loading": "Chargement…",
+    "search": "Rechercher"
+  },
+  "nav": {
+    "home": "Accueil",
+    "sell": "Vendre",
+    "account": "Mon compte",
+    "admin": "Administration"
+  }
+}
