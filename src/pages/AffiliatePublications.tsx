@@ -71,7 +71,8 @@ export default function AffiliatePublications() {
   }
 
   return (
-    <MainLayout>
+    <>
+      <Header />
       <div className="container max-w-4xl py-8 space-y-6">
         <div>
           <h1 className="text-2xl font-bold">Mes publications</h1>
