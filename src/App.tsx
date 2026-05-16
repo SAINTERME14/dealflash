@@ -72,6 +72,10 @@ const QrRedirect = lazy(() => import("./pages/QrRedirect"));
 const AffiliateDashboard = lazy(() => import("./pages/AffiliateDashboard"));
 const AffiliateOnboarding = lazy(() => import("./pages/AffiliateOnboarding"));
 const AffiliatePublications = lazy(() => import("./pages/AffiliatePublications"));
+const MerchantDropshipShops = lazy(() => import("./pages/MerchantDropshipShops"));
+const MerchantDropshipShopDetail = lazy(() => import("./pages/MerchantDropshipShopDetail"));
+const DropshipAiAssistant = lazy(() => import("./pages/DropshipAiAssistant"));
+const AdminTrendingProducts = lazy(() => import("./pages/AdminTrendingProducts"));
 
 import { CookieConsent } from "@/components/CookieConsent";
 
@@ -147,6 +151,10 @@ const App = () => (
               <Route path="/admin/booster" element={<AdminRoute><AdminBooster /></AdminRoute>} />
               <Route path="/admin/categories" element={<AdminRoute><AdminCategories /></AdminRoute>} />
               <Route path="/admin/commissions" element={<AdminRoute><AdminCommissions /></AdminRoute>} />
+              <Route path="/admin/produits-tendances" element={<AdminRoute><AdminTrendingProducts /></AdminRoute>} />
+              <Route path="/dropship/boutiques" element={<ProtectedRoute><MerchantDropshipShops /></ProtectedRoute>} />
+              <Route path="/dropship/boutique/:id" element={<ProtectedRoute><MerchantDropshipShopDetail /></ProtectedRoute>} />
+              <Route path="/dropship/assistant" element={<ProtectedRoute><DropshipAiAssistant /></ProtectedRoute>} />
               <Route path="/mes-leads" element={<ProtectedRoute><FeatureFlagGuard flag="leads_enabled"><MerchantLeads /></FeatureFlagGuard></ProtectedRoute>} />
               <Route path="/affilie/qr-codes" element={<ProtectedRoute><AffiliateQrCodes /></ProtectedRoute>} />
               <Route path="/affilie/publications" element={<ProtectedRoute><AffiliatePublications /></ProtectedRoute>} />

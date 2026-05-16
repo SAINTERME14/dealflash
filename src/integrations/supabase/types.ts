@@ -568,6 +568,76 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_assistant_conversations: {
+        Row: {
+          created_at: string
+          id: string
+          shop_id: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          shop_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          shop_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_assistant_conversations_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "dropship_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_assistant_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          metadata: Json
+          role: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          metadata?: Json
+          role: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          metadata?: Json
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_assistant_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "ai_assistant_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       appointments: {
         Row: {
           buyer_email: string
@@ -1392,6 +1462,141 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      dropship_shop_products: {
+        Row: {
+          ai_generated: boolean
+          category: string | null
+          cost_price: number
+          created_at: string
+          currency: string
+          description: string | null
+          id: string
+          images: string[]
+          metadata: Json
+          sale_price: number
+          shop_id: string
+          status: string
+          supplier_product_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          ai_generated?: boolean
+          category?: string | null
+          cost_price?: number
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          images?: string[]
+          metadata?: Json
+          sale_price?: number
+          shop_id: string
+          status?: string
+          supplier_product_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          ai_generated?: boolean
+          category?: string | null
+          cost_price?: number
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          images?: string[]
+          metadata?: Json
+          sale_price?: number
+          shop_id?: string
+          status?: string
+          supplier_product_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dropship_shop_products_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "dropship_shops"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dropship_shop_products_supplier_product_id_fkey"
+            columns: ["supplier_product_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dropship_shops: {
+        Row: {
+          ai_autopilot_enabled: boolean
+          cover_url: string | null
+          created_at: string
+          currency: string
+          default_margin_pct: number
+          description: string | null
+          id: string
+          logo_url: string | null
+          managed_plan: string | null
+          managed_started_at: string | null
+          management_mode: string
+          market_id: string | null
+          metadata: Json
+          name: string
+          niche: string | null
+          owner_user_id: string
+          slug: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          ai_autopilot_enabled?: boolean
+          cover_url?: string | null
+          created_at?: string
+          currency?: string
+          default_margin_pct?: number
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          managed_plan?: string | null
+          managed_started_at?: string | null
+          management_mode?: string
+          market_id?: string | null
+          metadata?: Json
+          name: string
+          niche?: string | null
+          owner_user_id: string
+          slug: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          ai_autopilot_enabled?: boolean
+          cover_url?: string | null
+          created_at?: string
+          currency?: string
+          default_margin_pct?: number
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          managed_plan?: string | null
+          managed_started_at?: string | null
+          management_mode?: string
+          market_id?: string | null
+          metadata?: Json
+          name?: string
+          niche?: string | null
+          owner_user_id?: string
+          slug?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       edge_function_config: {
         Row: {
@@ -3580,6 +3785,62 @@ export type Database = {
           value?: string
         }
         Relationships: []
+      }
+      trending_products: {
+        Row: {
+          category: string | null
+          currency: string
+          detected_at: string
+          expires_at: string | null
+          external_sku: string | null
+          id: string
+          metadata: Json
+          reasons: Json
+          recommended_price: number | null
+          source: string
+          supplier_product_id: string | null
+          title: string
+          trend_score: number
+        }
+        Insert: {
+          category?: string | null
+          currency?: string
+          detected_at?: string
+          expires_at?: string | null
+          external_sku?: string | null
+          id?: string
+          metadata?: Json
+          reasons?: Json
+          recommended_price?: number | null
+          source?: string
+          supplier_product_id?: string | null
+          title: string
+          trend_score?: number
+        }
+        Update: {
+          category?: string | null
+          currency?: string
+          detected_at?: string
+          expires_at?: string | null
+          external_sku?: string | null
+          id?: string
+          metadata?: Json
+          reasons?: Json
+          recommended_price?: number | null
+          source?: string
+          supplier_product_id?: string | null
+          title?: string
+          trend_score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trending_products_supplier_product_id_fkey"
+            columns: ["supplier_product_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
