@@ -72,6 +72,10 @@ const QrRedirect = lazy(() => import("./pages/QrRedirect"));
 const AffiliateDashboard = lazy(() => import("./pages/AffiliateDashboard"));
 const AffiliateOnboarding = lazy(() => import("./pages/AffiliateOnboarding"));
 const AffiliatePublications = lazy(() => import("./pages/AffiliatePublications"));
+const MerchantDropshipShops = lazy(() => import("./pages/MerchantDropshipShops"));
+const MerchantDropshipShopDetail = lazy(() => import("./pages/MerchantDropshipShopDetail"));
+const DropshipAiAssistant = lazy(() => import("./pages/DropshipAiAssistant"));
+const AdminTrendingProducts = lazy(() => import("./pages/AdminTrendingProducts"));
 
 import { CookieConsent } from "@/components/CookieConsent";
 
